@@ -6,7 +6,11 @@
   :version "0.1.0"
   :author ""
   :license ""
-  :depends-on ()
+  :depends-on (:dexador
+               :plump
+               :lquery
+               :clss ;; might do with lquery only
+               :str)
   :components ((:module "src"
                 :components
                 ((:file "bookshops"))))
