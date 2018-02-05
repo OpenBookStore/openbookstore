@@ -10,10 +10,16 @@
                :plump
                :lquery
                :clss ;; might do with lquery only
+               :unix-opts
                :str)
   :components ((:module "src"
                 :components
                 ((:file "bookshops"))))
+
+  :build-operation "program-op"
+  :build-pathname "bookshops"
+  :entry-point "bookshops:main"
+
   :description ""
   ;; :long-description
   ;; #.(read-file-string

@@ -1,5 +1,8 @@
 # Bookshops
 
+
 ## Usage
 
-## Installation
+    make build
+
+    ./bookshops search terms

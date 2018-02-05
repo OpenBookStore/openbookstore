@@ -1,9 +1,10 @@
 (defpackage bookshops
-  (:use :cl))
+  (:use :cl)
+  (:export :main))
 (in-package :bookshops)
 
 
-(defparameter *french-search* "http://www.librairie-de-paris.fr/listeliv.php?MOTS={QUERY}&SUPPORT=&NOMBRE=12&DEBUT=12&RECHERCHE=simple&TRI=&DISPOCHE=&RAYONS=&LIVREANCIEN=2&CSR="
+(defparameter *french-search* "http://www.librairie-de-paris.fr/listeliv.php?MOTS={QUERY}&SUPPORT=&RECHERCHE=simple&TRI=&DISPOCHE=&RAYONS=&LIVREANCIEN=2&CSR="
   "French source of books. The {query} string will be replaced by the list
   of '+' separated search keywords.")
 
@@ -51,6 +52,7 @@
             price ,prix
             editor ,editeur
             date-publication ,date-parution)))
+
 (defun build-url (query &key (source *datasource*))
   "Build the search url with the query terms in it.
 
@@ -61,7 +63,7 @@
   (let ((words (str:words query)))
     (str:replace-all "{QUERY}" (str:join "+" words) source)))
 
-(defun books (query)
+(defun books (query &key (datasource *datasource*))
   "From a search query (str), return an alist of results (with a title, a price, a date-publication, authors,...
   "
   (let* ((url (build-url query))
@@ -72,3 +74,38 @@
          ;; many modes ;; vector, iterate with map
          (res (clss:select "tr" node)))
     (map 'list #'book-info res)))
+
+(defun print-results (query)
+  "Search for books with `query` on `datasource`, print a colorized
+  json result."
+  (let ((results (books query)))
+    (format t "~a~&" results)))
+
+(defun handle-parser-error (c)
+  (format t "Argument error: ~a~&" (opts:option c))
+  (uiop:quit 1))
+
+(defun main ()
+
+  (opts:define-opts
+    (:name :help
+           :description "print this help and exit."
+           :short #\h
+           :long "help"))
+
+  (multiple-value-bind (options free-args)
+      (handler-bind ((error #'handle-parser-error))
+        (opts:get-opts))
+
+    (if (getf options :help)
+        (progn
+          (opts:describe)
+          (uiop:quit)))
+
+    (handler-case
+        (if free-args
+            (print-results (str:join " " free-args)))
+      (error (c)
+        (progn
+          (format *error-output* "~a~&" c)
+          (uiop:quit 1))))))
