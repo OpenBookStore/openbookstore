@@ -34,7 +34,7 @@
 
 (defmethod print-object ((author author) stream)
   (print-unreadable-object (author stream :type t)
-    (format stream "~a, ~a" (slot-value author 'name))))
+    (format stream "~a" (slot-value author 'name))))
 
 (defun get-url (url)
   "Http get this url.
@@ -118,7 +118,12 @@
     (:name :help
            :description "print this help and exit."
            :short #\h
-           :long "help"))
+           :long "help")
+
+    (:name :interactive
+           :description "enter the interactive prompt."
+           :short #\i
+           :long "interactive"))
 
   (multiple-value-bind (options free-args)
       (handler-bind ((error #'handle-parser-error))
@@ -129,10 +134,28 @@
           (opts:describe)
           (uiop:quit)))
 
-    (handler-case
-        (if free-args
-            (print-results (str:join " " free-args)))
-      (error (c)
+    (if (getf options :interactive)
         (progn
-          (format *error-output* "~a~&" c)
-          (uiop:quit 1))))))
+          (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
+
+          ;; Create the completions bindings.
+          (replic:init-completions)
+
+          ;; create commands from the exported functions and variables.
+          (replic:functions-to-commands :replic.base)
+          (push  (cons "help" #'replic::help-completion) replic:*args-completions*)
+
+          (replic:functions-to-commands :bookshops)
+
+          ;; define completions.
+          ;; (push '("add" . *results*) replic:*args-completions*)
+
+          (replic:repl))
+
+        (handler-case
+            (if free-args
+                (search (str:join " " free-args)))
+          (error (c)
+            (progn
+              (format *error-output* "~a~&" c)
+              (uiop:quit 1)))))))

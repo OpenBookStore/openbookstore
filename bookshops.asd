@@ -11,6 +11,7 @@
                :lquery
                :clss ;; might do with lquery only
                :unix-opts
+               :replic ;; not in QL
                :str)
   :components ((:module "src"
                 :components
