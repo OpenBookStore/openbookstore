@@ -1,6 +1,8 @@
 (defpackage bookshops
   (:use :cl)
-  (:export :main))
+  (:shadow :search)
+  (:export :main
+           :search))
 (in-package :bookshops)
 
 
@@ -99,11 +101,12 @@
          (res (clss:select "tr" node)))
     (map 'list #'book-info res)))
 
-(defun print-results (query)
-  "Search for books with `query` on `datasource`, print a colorized
-  json result."
+(defun search (query)
+  "Search for books with `query` on `datasource`, nicely print the result."
   (let ((results (books query)))
-    (format t "~a~&" results)))
+    (mapcar (lambda (it)
+                (format t "~a, ~a~t~a~&" (title it) (authors it) (price it)))
+            results)))
 
 (defun handle-parser-error (c)
   (format t "Argument error: ~a~&" (opts:option c))
