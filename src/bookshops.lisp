@@ -3,6 +3,12 @@
         :cl-ansi-text)
   (:shadow :search)
   (:export :main
+           ;; book accessors
+           :editor
+           :title
+           :authors
+           :price
+           ;; functions
            :search))
 (in-package :bookshops)
 
