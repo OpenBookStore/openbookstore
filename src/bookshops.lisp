@@ -1,5 +1,6 @@
 (defpackage bookshops
-  (:use :cl)
+  (:use :cl
+        :cl-ansi-text)
   (:shadow :search)
   (:export :main
            :search))
@@ -105,7 +106,7 @@
   "Search for books with `query` on `datasource`, nicely print the result."
   (let ((results (books query)))
     (mapcar (lambda (it)
-                (format t "~a, ~a~t~a~&" (title it) (authors it) (price it)))
+              (format t "~a, ~a~t~a~&" (blue (title it)) (authors it) (price it)))
             results)))
 
 (defun handle-parser-error (c)
