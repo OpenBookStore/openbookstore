@@ -102,9 +102,11 @@
          (res (clss:select "tr" node)))
     (map 'list #'book-info res)))
 
-(defun search (query)
+(defun search (query &rest rest)
   "Search for books with `query` on `datasource`, nicely print the result."
-  (let ((results (books query)))
+  ;; the &rest is for the readline repl, that gives many string arguments to this function.
+  (let* ((query (str:unwords (cons query rest)))
+         (results (books query)))
     (mapcar (lambda (it)
               (format t "~a, ~a~t~a~&" (blue (title it)) (authors it) (price it)))
             results)))
