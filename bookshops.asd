@@ -15,7 +15,8 @@
                :str)
   :components ((:module "src"
                 :components
-                ((:file "bookshops"))))
+                ((:file "models")
+                 (:file "bookshops"))))
 
   :build-operation "program-op"
   :build-pathname "bookshops"
