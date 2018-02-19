@@ -95,9 +95,11 @@
   "Search for books with `query` on `datasource`, nicely print the result."
   ;; the &rest is for the readline repl, that gives many string arguments to this function.
   (let* ((query (str:unwords (cons query rest)))
-         (results (books query)))
+         (results (books query))
+         (i 1))
     (mapcar (lambda (it)
-              (format t "~a, ~a~t~a~&" (blue (title it)) (authors it) (price it)))
+              (format t "~a- ~a, ~a~t~a~&" i (blue (title it)) (authors it) (price it))
+              (incf i))
             results)))
 
 (defun handle-parser-error (c)
