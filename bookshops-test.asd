@@ -2,10 +2,10 @@
   This file is a part of bookshops project.
 |#
 
-(defsystem "bookshops-test"
+(asdf:defsystem "bookshops-test"
   :defsystem-depends-on ("prove-asdf")
-  :author ""
-  :license ""
+  :author "vindarel"
+  :license "GPL3"
   :depends-on ("bookshops"
                "prove")
   :components ((:module "tests"
@@ -13,4 +13,5 @@
                 ((:test-file "bookshops"))))
   :description "Test system for bookshops"
 
-  :perform (test-op (op c) (symbol-call :prove-asdf :run-test-system c)))
+  ;; :perform (test-op (op c) (symbol-call :prove-asdf :run-test-system c))
+  )
