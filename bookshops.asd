@@ -6,12 +6,18 @@
   :version "0.1.0"
   :author ""
   :license ""
-  :depends-on (:dexador
+  :depends-on (
+               ;; web
+               :dexador
                :plump
                :lquery
                :clss ;; might do with lquery only
+               ;; DB
+               :mito
+               ;; readline
                :unix-opts
                :replic ;; not in QL
+               ;; utils
                :str)
   :components ((:module "src"
                 :components
