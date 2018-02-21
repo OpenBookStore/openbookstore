@@ -45,11 +45,9 @@
 
 (defmethod print-object ((book book) stream)
   (print-unreadable-object (book stream :type t)
-    (with-accessors ((title title)
-                     (price price)
-                     (authors authors))
+    (with-accessors ((title title))
         book
-      (format stream "~a, ~a" title authors))))
+      (format stream "~a" title))))
 
 (defun make-book (&key title authors editor date-publication price)
   "Create a Book instance. If given author or authors, create Author
