@@ -4,6 +4,7 @@
   (:shadow :search)
   (:import-from :bookshops.models
                 :book
+                :make-book
                 :title
                 :editor
                 :authors
@@ -62,12 +63,12 @@
         (date-parution  (node-selector-to-text ".date_parution" it))
         ;; (href (node-selector-to-text ".titre[href]"))
         )
-    (make-instance 'book
-                   :title titre
-                   :authors auteurs
-                   :price prix
-                   :editor editeur
-                   :date-publication date-parution)))
+    ;; lesson learned: don't use make-instance 'book here, object will be different.
+    (make-book :title titre
+               :authors auteurs
+               :price prix
+               :editor editeur
+               :date-publication date-parution)))
 
 (defun build-url (query &key (source *datasource*))
   "Build the search url with the query terms in it.
@@ -80,7 +81,7 @@
     (str:replace-all "{QUERY}" (str:join "+" words) source)))
 
 (defun books (query &key (datasource *datasource*))
-  "From a search query (str), return an alist of results (with a title, a price, a date-publication, authors,...
+  "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...).
   "
   (let* ((url (build-url query))
          (req (get-url url))

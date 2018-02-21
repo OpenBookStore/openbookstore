@@ -4,6 +4,7 @@
   (:export :main
            ;; book accessors
            :book
+           :make-book
            :editor
            :title
            :authors
@@ -23,7 +24,7 @@
 
 ;; col-types:
 ;; varchar, text, integer, serial, bigserial, binary,
-;; timestamp, (or ... null), relationship.
+;; timestamp, (or ... :null), relationship.
 
 
 (defclass book ()
@@ -50,11 +51,16 @@
         book
       (format stream "~a, ~a" title authors))))
 
-(defun create-book (&key title author authors editor)
+(defun make-book (&key title authors editor date-publication price)
   "Create a Book instance. If given author or authors, create Author
   instance(s) if they don't already exist in DB.
   "
-  )
+  (make-instance 'book
+                 :title title
+                 :authors authors
+                 :editor editor
+                 :price price
+                 :date-publication date-publication))
 
 (defclass author ()
   ((name :accessor name :initarg :name
