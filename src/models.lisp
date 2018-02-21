@@ -40,7 +40,7 @@
            :col-type (:varchar +varchar-length+))
    (authors :accessor authors :initarg :authors
             ;TODO: relationship
-            :col-type (:varchar +varchar-length+)))
+            :col-type (or (:varchar +varchar-length+) :null)))
   (:metaclass dao-table-class))
 
 (defmethod print-object ((book book) stream)
