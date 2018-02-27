@@ -44,12 +44,12 @@
 ;; timestamp, (or ... :null), relationship.
 
 (defclass book ()
-  "Create a Book object.
+  ;; "Create a Book object.
 
-  Mandatory fields: datasource, title, price, date-publication, authors.
+  ;; Mandatory fields: datasource, title, price, date-publication, authors.
 
-  - create a date: (local-time:now)
-  "
+  ;; - create a date: (local-time:now)
+  ;; "
   ((datasource :accessor datasource :initarg :datasource
                ;; how to use a variable for 128 ?
                ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
