@@ -14,8 +14,6 @@
 (in-package :bookshops.models)
 
 
-(defconstant +varchar-length+ 128)
-
 (defparameter *db-name* (asdf:system-relative-pathname :bookshops "db.db"))
 
 (defun connect ()
@@ -29,18 +27,20 @@
 
 (defclass book ()
   ((datasource :accessor datasource :initarg :datasource
-               :col-type (:varchar +varchar-length+))
+               ;; how to use a variable for 128 ?
+               ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
+               :col-type (:varchar 128))
    (title :accessor title :initarg :title
-          :col-type (:varchar +varchar-length+))
+          :col-type (:varchar 128))
    (price :accessor price :initarg :price
           :col-type :integer)
    (date-publication :accessor date-publication :initarg :date-publication
                      :col-type :timestamp)
    (editor :accessor editor :initarg :editor
-           :col-type (:varchar +varchar-length+))
+           :col-type (:varchar 128))
    (authors :accessor authors :initarg :authors
             ;TODO: relationship
-            :col-type (or (:varchar +varchar-length+) :null)))
+            :col-type (or (:varchar 128) :null)))
   (:metaclass dao-table-class))
 
 (defmethod print-object ((book book) stream)
@@ -62,7 +62,7 @@
 
 (defclass author ()
   ((name :accessor name :initarg :name
-         :col-type (:varchar +varchar-length+)))
+         :col-type (:varchar 128)))
   (:metaclass dao-table-class))
 
 (defmethod print-object ((author author) stream)
