@@ -2,6 +2,7 @@
   (:use :cl
         :mito)
   (:export :main
+           :connect
            ;; book accessors
            :book
            :make-book
@@ -9,6 +10,8 @@
            :title
            :authors
            :price
+           ;; book methods
+           :save-book
            ;; utils
            :erase-metaclass-from))
 (in-package :bookshops.models)
@@ -16,16 +19,37 @@
 
 (defparameter *db-name* (asdf:system-relative-pathname :bookshops "db.db"))
 
+(defparameter *db* nil
+  "DB connection object, returned by (connect).")
+
+;;
+;; DB connection, migrations.
+;;
+
 (defun connect ()
   "Connect to the DB."
-  (connect-toplevel :sqlite3 :database-name *db-name*))
+  ;; also use mito:*connection*
+  (setf *db* (connect-toplevel :sqlite3 :database-name *db-name*)))
+
+(defun migrate-all ()
+  "Migrate book."
+  (mito:migrate-table 'book)))
+
+;;
+;; DB tables definition.
+;;
 
 ;; col-types:
 ;; varchar, text, integer, serial, bigserial, binary,
 ;; timestamp, (or ... :null), relationship.
 
-
 (defclass book ()
+  "Create a Book object.
+
+  Mandatory fields: datasource, title, price, date-publication, authors.
+
+  - create a date: (local-time:now)
+  "
   ((datasource :accessor datasource :initarg :datasource
                ;; how to use a variable for 128 ?
                ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
@@ -35,11 +59,11 @@
    (price :accessor price :initarg :price
           :col-type :integer)
    (date-publication :accessor date-publication :initarg :date-publication
-                     :col-type :timestamp)
+                     :col-type (or :timestamp :null))
    (editor :accessor editor :initarg :editor
            :col-type (:varchar 128))
    (authors :accessor authors :initarg :authors
-            ;TODO: relationship
+                                        ;TODO: relationship
             :col-type (or (:varchar 128) :null)))
   (:metaclass dao-table-class))
 
@@ -49,16 +73,21 @@
         book
       (format stream "~a" title))))
 
-(defun make-book (&key title authors editor date-publication price)
+(defun make-book (&key title authors editor date-publication price datasource)
   "Create a Book instance. If given author or authors, create Author
   instance(s) if they don't already exist in DB.
   "
   (make-instance 'book
+                 :datasource datasource
                  :title title
                  :authors authors
                  :editor editor
                  :price price
                  :date-publication date-publication))
+
+(defun save-book (book)
+  "Save this book in DB."
+  (insert-dao book))
 
 (defclass author ()
   ((name :accessor name :initarg :name
