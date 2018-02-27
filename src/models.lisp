@@ -10,6 +10,7 @@
            :title
            :authors
            :price
+           :quantity
            ;; book methods
            :save-book
            ;; utils
@@ -64,7 +65,10 @@
            :col-type (:varchar 128))
    (authors :accessor authors :initarg :authors
                                         ;TODO: relationship
-            :col-type (or (:varchar 128) :null)))
+            :col-type (or (:varchar 128) :null))
+   (quantity :accessor quantity
+             :initform 0
+             :col-type (or :integer :null)))
   (:metaclass dao-table-class))
 
 (defmethod print-object ((book book) stream)
