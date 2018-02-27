@@ -65,6 +65,7 @@
         )
     ;; lesson learned: don't use make-instance 'book here, object will be different.
     (make-book :title titre
+               :datasource "fr"
                :authors auteurs
                :price prix
                :editor editeur
