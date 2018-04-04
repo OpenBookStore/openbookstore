@@ -13,6 +13,7 @@
            :quantity
            ;; book methods
            :save-book
+           :quantity-of
            ;; utils
            :erase-metaclass-from))
 (in-package :bookshops.models)
