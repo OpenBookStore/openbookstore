@@ -55,15 +55,15 @@
   ((datasource :accessor datasource :initarg :datasource
                ;; how to use a variable for 128 ?
                ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
-               :col-type (:varchar 128))
+               :col-type (or (:varchar 128) :null))
    (title :accessor title :initarg :title
           :col-type (:varchar 128))
    (price :accessor price :initarg :price
-          :col-type :integer)
+          :col-type (or :integer :null))
    (date-publication :accessor date-publication :initarg :date-publication
-                     :col-type (or :timestamp :null))
+                     :col-type (or (:varchar 128) :null))
    (editor :accessor editor :initarg :editor
-           :col-type (:varchar 128))
+           :col-type (or (:varchar 128) :null))
    (authors :accessor authors :initarg :authors
                                         ;TODO: relationship
             :col-type (or (:varchar 128) :null))
