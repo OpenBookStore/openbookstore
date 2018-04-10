@@ -3,6 +3,7 @@
         :mito)
   (:export :main
            :connect
+           :ensure-tables-exist
            ;; book accessors
            :book
            :make-book
@@ -46,7 +47,8 @@ Usage:
   ;; also use mito:*connection*
   (setf *db* (connect-toplevel :sqlite3 :database-name *db-name*)))
 
-;; (mito:ensure-table-exists 'book)
+(defun ensure-tables-exist ()
+  (ensure-table-exists 'book))
 
 (defun migrate-all ()
   "Migrate the Book table after we changed the class definition."
@@ -111,7 +113,11 @@ Usage:
   ;; logging
   (let ((new (insert-dao book)))
     (incf (quantity new))
-    (save-dao new)))
+    (save-dao new)
+    new))
+
+(defun find-book ()
+  (find-dao 'book))
 
 (defun quantity-of (book)
   ;; err... this is stupid, just use (quantity <book>)
