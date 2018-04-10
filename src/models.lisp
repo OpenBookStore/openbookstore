@@ -18,6 +18,19 @@
            :erase-metaclass-from))
 (in-package :bookshops.models)
 
+#|
+Usage:
+
+(connect)
+
+(make-book :title "antigone" :datasource "xxx")
+
+(save-book *)
+
+(find-dao 'book)
+;; => #<Book antigone>
+
+|#
 
 (defparameter *db-name* (asdf:system-relative-pathname :bookshops "db.db"))
 
@@ -33,9 +46,11 @@
   ;; also use mito:*connection*
   (setf *db* (connect-toplevel :sqlite3 :database-name *db-name*)))
 
+;; (mito:ensure-table-exists 'book)
+
 (defun migrate-all ()
-  "Migrate book."
-  (mito:migrate-table 'book)))
+  "Migrate the Book table after we changed the class definition."
+  (mito:migrate-table 'book))
 
 ;;
 ;; DB tables definition.
@@ -46,10 +61,11 @@
 ;; timestamp, (or ... :null), relationship.
 
 (defclass book ()
-  ;; "Create a Book object.
-
-  ;; Mandatory fields: datasource, title, price, date-publication, authors.
-
+  ;; "Book class. Use make-book to create an object
+  ;; (do not export and use book directly, use make-book).
+  ;;
+  ;; After modification, run (migrate-all)
+  ;;
   ;; - create a date: (local-time:now)
   ;; "
   ((datasource :accessor datasource :initarg :datasource
@@ -92,7 +108,16 @@
 
 (defun save-book (book)
   "Save this book in DB."
-  (insert-dao book))
+  ;; logging
+  (let ((new (insert-dao book)))
+    (incf (quantity new))
+    (save-dao new)))
+
+(defun quantity-of (book)
+  ;; err... this is stupid, just use (quantity <book>)
+  (let ((res (find-dao 'book :title (title book))))
+    (when res
+      (quantity res))))
 
 (defclass author ()
   ((name :accessor name :initarg :name

@@ -4,8 +4,8 @@
 
 (asdf:defsystem "bookshops"
   :version "0.1.0"
-  :author ""
-  :license ""
+  :author "vindarel"
+  :license "MIT"
   :depends-on (
                ;; web
                :dexador
