@@ -25,13 +25,15 @@
   `(let* ((*random-state* (make-random-state t))
           (prefix (concatenate 'string
                                (random-string 8)
-                               "/")))
+                               "/"))
+          (old-name *db-name*))
      (uiop:with-temporary-file (:pathname name :prefix prefix)
        (let* ((*db-name* name)
               (*db* (connect)))
          (ensure-tables-exist)
          (migrate-all)
-         ,@body)))
-  ;; Despite the let, we must re-connect to our DB.
-  ;; If body was the last element evaluated, we'd see the migration traces.
-  (connect))
+         ,@body
+         ;; Despite the let, we must re-connect to our DB.
+         (setf *db-name* old-name)
+         (connect))))
+  )
