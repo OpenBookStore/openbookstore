@@ -22,7 +22,8 @@
   :components ((:module "src"
                 :components
                 ((:file "models")
-                 (:file "bookshops"))))
+                 (:file "bookshops")
+                 (:file "commands"))))
 
   :build-operation "program-op"
   :build-pathname "bookshops"

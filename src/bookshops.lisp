@@ -27,6 +27,9 @@
 (defparameter *datasource* *french-search*
   "The default data source.")
 
+(defvar *last-results* nil
+  "List of last results by `books` (objects).")
+
 (defun get-url (url)
   "Http get this url.
    Function mocked in unit tests."
@@ -54,7 +57,7 @@
     (str:trim txt)))
 
 (defun book-info (it)
-  "Takes a plump node and returns an alist with book data: title, authors, price, publisher, date of publication, etc.
+  "Takes a plump node and returns a list of book objects with: title, authors, price, publisher, date of publication, etc.
   "
   (let ((titre (node-selector-to-text  ".titre" it))
         (auteurs (node-selector-to-text ".auteurs" it))
@@ -84,6 +87,7 @@
 (defun books (query &key (datasource *datasource*))
   "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...).
   "
+  (declare (ignorable datasource))
   (let* ((url (build-url query))
          (req (get-url url))
          (parsed (parse req))
@@ -91,18 +95,7 @@
          (node (clss:select ".tab_listlivre" parsed))
          ;; many modes ;; vector, iterate with map
          (res (clss:select "tr" node)))
-    (map 'list #'book-info res)))
-
-(defun search (query &rest rest)
-  "Search for books with `query` on `datasource`, nicely print the result."
-  ;; the &rest is for the readline repl, that gives many string arguments to this function.
-  (let* ((query (str:unwords (cons query rest)))
-         (results (books query))
-         (i 1))
-    (mapcar (lambda (it)
-              (format t "~a- ~a, ~a~t~a~&" i (blue (title it)) (authors it) (price it))
-              (incf i))
-            results)))
+    (setf *last-results* (map 'list #'book-info res))))
 
 (defun handle-parser-error (c)
   (format t "Argument error: ~a~&" (opts:option c))
@@ -141,11 +134,13 @@
           (replic:functions-to-commands :replic.base)
           (replic.completion:add-completion "help" #'replic::help-completion)
 
-          (replic:functions-to-commands :bookshops)
+          (setf replic:*help-preamble* "Search for books by keywords or isbn.")
+          (replic:functions-to-commands :bookshops.commands)
 
           ;; define completions.
           ;; (push '("add" . *results*) replic:*args-completions*)
 
+          (bookshops.models:connect)
           (replic:repl))
 
         (handler-case
