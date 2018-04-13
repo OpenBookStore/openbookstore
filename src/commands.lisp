@@ -34,10 +34,14 @@
   (when (stringp index)
     ;; generics ?
     (setf index (parse-integer index)))
-  (let* ((bk (nth index bookshops::*last-results*)))
-    (format t "Gonna register ~a~&" (title bk))
-    (save-book bk)
-    (print "done.")))
+  (decf index)
+  (unless bookshops::*last-results*
+    (format t "Please do a search before."))
+  (when bookshops::*last-results*
+    (let* ((bk (nth index bookshops::*last-results*)))
+      (format t "Gonna register ~a~&" (title bk))
+      (save-book bk)
+      (print "done."))))
 
 (defun stock ()
   "List our stock (books in DB)."
