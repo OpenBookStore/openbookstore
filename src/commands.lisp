@@ -10,6 +10,7 @@
                 :save-book
                 :find-book
                 :print-book
+                :print-book-details
                 :title
                 :editor
                 :authors
@@ -17,6 +18,7 @@
   (:export :main
            :search
            :add
+           :details
            :stock))
 (in-package :bookshops.commands)
 
@@ -61,3 +63,9 @@
     (mapcar (lambda (it)
               (print-book it))
             (sublist all 0 *max-lines*))))
+
+(defun details (pk)
+  "Print all the book information."
+  (when (stringp pk)
+    (parse-integer pk))
+  (print-book-details pk))

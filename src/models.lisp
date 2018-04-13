@@ -1,6 +1,7 @@
 (defpackage bookshops.models
   (:use :cl
-        :mito)
+        :mito
+        :cl-ansi-text)
   (:export :main
            :connect
            :ensure-tables-exist
@@ -13,6 +14,7 @@
            :authors
            :price
            :print-book
+           :print-book-details
            :quantity
            ;; book methods
            :save-book
@@ -101,12 +103,21 @@ Usage:
 (defun print-book (book &optional (stream t))
   "Print to stream a user-readable output."
   ;; xxx: print as a nice table.
-  (format stream "~2@a- ~30a ~15@a ~15@a x ~a~&"
+  (format stream "~2@a- ~30a ~15a ~15a x ~a~&"
           (object-id book)
-          (cl-ansi-text:blue (title book))
+          (blue (title book))
           (or (authors book) "")
           (or (price book) "")
           (cl-ansi-text:red (prin1-to-string (quantity-of book)))))
+
+(defun print-book-details (pk)
+  (let ((bk (find-dao 'book :id pk)))
+    (if bk
+        (progn
+          (format t "~a x ~a~&" (blue (title bk)) (quantity-of bk))
+          (format t "~t~a~&" (authors bk))
+          (format t "~t~a~&" (price bk)))
+        (format t "There is no such book with id ~a~&" pk))))
 
 (defun make-book (&key title authors editor date-publication price datasource)
   "Create a Book instance. If given author or authors, create Author
