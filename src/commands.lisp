@@ -8,6 +8,8 @@
                 :book
                 :make-book
                 :save-book
+                :find-book
+                :print-book
                 :title
                 :editor
                 :authors
@@ -43,6 +45,19 @@
       (save-book bk)
       (print "done."))))
 
+(defvar *max-lines* 15
+  "Truncate prints that exceed this number of lines.")
+
+(defun sublist (seq start end)
+  (if (> (length seq)
+           end)
+      (subseq seq start end))
+  seq)
+
 (defun stock ()
   "List our stock (books in DB)."
-  (print "working on it !"))
+  (let ((all (find-book)))
+    (format t "Results: ~a. Page: ~a~&" (length all) *max-lines*)
+    (mapcar (lambda (it)
+              (print-book it))
+            (sublist all 0 *max-lines*))))

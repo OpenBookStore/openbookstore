@@ -13,7 +13,11 @@ get a readline interactive prompt:
     ./bookshops -i
     bookshops > help
 
-Available commands: `help`, `help help`, `search`,...
+Available commands: `help`, `help help`
+
+- `search`
+- `add`
+- `stock`
 
 
 ## Dev
@@ -25,6 +29,7 @@ Model usage:
 
 ```lisp
 (in-package :bookshops.model)
+(use-package '(:mito :sxql))
 
 (connect)
 
@@ -34,6 +39,9 @@ Model usage:
 
 (find-dao 'book)
 ;; => #<Book antigone>
+
+(select-dao 'book
+    (where (:like :title "%ti%")))
 ```
 
 Slots: `title`... `quantity`, etc.

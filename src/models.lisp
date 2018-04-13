@@ -8,9 +8,11 @@
            :book
            :make-book
            :editor
+           :find-book
            :title
            :authors
            :price
+           :print-book
            :quantity
            ;; book methods
            :save-book
@@ -96,6 +98,16 @@ Usage:
         book
       (format stream "~a" title))))
 
+(defun print-book (book &optional (stream t))
+  "Print to stream a user-readable output."
+  ;; xxx: print as a nice table.
+  (format stream "~2@a- ~30a ~15@a ~15@a x ~a~&"
+          (object-id book)
+          (cl-ansi-text:blue (title book))
+          (or (authors book) "")
+          (or (price book) "")
+          (cl-ansi-text:red (prin1-to-string (quantity-of book)))))
+
 (defun make-book (&key title authors editor date-publication price datasource)
   "Create a Book instance. If given author or authors, create Author
   instance(s) if they don't already exist in DB.
@@ -111,19 +123,20 @@ Usage:
 (defun save-book (book)
   "Save this book in DB."
   ;; logging
-  (let ((new (insert-dao book)))
-    (incf (quantity new))
-    (save-dao new)
-    new))
+  (handler-case
+      (let ((new (insert-dao book)))
+        (incf (quantity new))
+        (save-dao new)
+        new)
+    (error (c) (format t "Oops, an unexpected error happened:~&~a~&" c))))
 
-(defun find-book ()
-  (find-dao 'book))
+(defun find-book (&optional title)
+  "Return a list of book objects."
+  (select-dao 'book))
 
 (defun quantity-of (book)
-  ;; err... this is stupid, just use (quantity <book>)
-  (let ((res (find-dao 'book :title (title book))))
-    (when res
-      (quantity res))))
+  ;; Use a wrapper around the quantity accessor, for future additions.
+  (quantity book))
 
 (defclass author ()
   ((name :accessor name :initarg :name

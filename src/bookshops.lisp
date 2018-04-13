@@ -134,7 +134,7 @@
           (replic:functions-to-commands :replic.base)
           (replic.completion:add-completion "help" #'replic::help-completion)
 
-          (setf replic:*help-preamble* "Search for books by keywords or isbn.")
+          (setf replic:*help-preamble* "With cl-bookshops you can search for books by keywords or isbn, add some to your stock and explore it.")
           (replic:functions-to-commands :bookshops.commands)
 
           ;; define completions.
