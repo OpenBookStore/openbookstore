@@ -11,6 +11,7 @@
                 :find-book
                 :print-book
                 :print-book-details
+                :count-book
                 :title
                 :editor
                 :authors
@@ -19,7 +20,8 @@
            :search
            :add
            :details
-           :stock))
+           :stock
+           :stats))
 (in-package :bookshops.commands)
 
 (defun search (query &rest rest)
@@ -69,3 +71,7 @@
   (when (stringp pk)
     (parse-integer pk))
   (print-book-details pk))
+
+(defun stats ()
+  "Print some numbers about the stock."
+  (format t "Books in stock: ~a~&" (count-book)))

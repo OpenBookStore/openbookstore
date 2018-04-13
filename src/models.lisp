@@ -15,6 +15,7 @@
            :price
            :print-book
            :print-book-details
+           :count-book
            :quantity
            ;; book methods
            :save-book
@@ -144,6 +145,10 @@ Usage:
 (defun find-book (&optional title)
   "Return a list of book objects."
   (select-dao 'book))
+
+(defun count-book ()
+  ""
+  (count-dao 'book))
 
 (defun quantity-of (book)
   ;; Use a wrapper around the quantity accessor, for future additions.
