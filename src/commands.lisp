@@ -24,6 +24,10 @@
            :stats))
 (in-package :bookshops.commands)
 
+(defvar *max-lines* 15
+  "Truncate prints that exceed this number of lines.")
+(setf *max-lines* 15)
+
 (defun search (query &rest rest)
   "Search for books with `query` on `datasource`, nicely print the result."
   ;; the &rest is for the readline repl, that gives many string arguments to this function.
@@ -49,22 +53,49 @@
       (save-book bk)
       (print "done."))))
 
-(defvar *max-lines* 15
-  "Truncate prints that exceed this number of lines.")
-
 (defun sublist (seq start end)
   (if (> (length seq)
-           end)
-      (subseq seq start end))
-  seq)
+         end)
+      (subseq seq start end)
+      (subseq seq start (length seq))))
+
+(defvar *current-page* 1
+  "Current page of the stock pager.")
+
+(defun total-pages (total)
+  "Compute the number of pages given this total quantity."
+  (multiple-value-bind (fl rest)
+      (floor (/ total *max-lines*))
+    (if (= 0 rest)
+        fl
+        (incf fl))))
+
+(defun next ()
+  "Print next page of results (now Stock, should be the last function
+  that printed results)."
+  (when (< *current-page*
+           (total-pages (count-book)))
+    (incf *current-page*))
+  (stock))
+
+(defun previous ()
+  "Print the previous page of results (the stock for now)."
+  (when (> *current-page* 1)
+    (decf *current-page*))
+  (stock))
 
 (defun stock ()
   "Show our stock (books in DB)."
   (let ((all (find-book)))
-    (format t "Results: ~a. On page: ~a~&" (length all) *max-lines*)
+    (format t "Results: ~a. Page: ~a/~a~&"
+            (length all)
+            *current-page*
+            (total-pages (count-book)))
     (mapcar (lambda (it)
               (print-book it))
-            (sublist all 0 *max-lines*))))
+            (sublist all
+                     (* (- *current-page* 1) *max-lines*)
+                     (*  *current-page* *max-lines*)))))
 
 (defun details (pk)
   "Print all the book information."
