@@ -104,12 +104,13 @@ Usage:
 (defun print-book (book &optional (stream t))
   "Print to stream a user-readable output."
   ;; xxx: print as a nice table.
-  (format stream "~2@a- ~30a ~15a ~15a x ~a~&"
-          (object-id book)
-          (blue (title book))
-          (or (authors book) "")
-          (or (price book) "")
-          (cl-ansi-text:red (prin1-to-string (quantity-of book)))))
+  ;; ~30a = substring 20 + ansi colors markers.
+  (format stream "~2@a- ~30a ~30a ~15a x ~3a~&"
+          (str:substring 0 4 (prin1-to-string (object-id book)))
+          (blue (str:substring 0 20 (title book)))
+          (str:substring 0 30 (or (authors book) ""))
+          (str:substring 0 15 (or (price book) ""))
+          (red (str:substring 0 3 (prin1-to-string (quantity-of book))))))
 
 (defun print-book-details (pk)
   (let ((bk (find-dao 'book :id pk)))

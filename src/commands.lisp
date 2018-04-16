@@ -59,9 +59,9 @@
   seq)
 
 (defun stock ()
-  "List our stock (books in DB)."
+  "Show our stock (books in DB)."
   (let ((all (find-book)))
-    (format t "Results: ~a. Page: ~a~&" (length all) *max-lines*)
+    (format t "Results: ~a. On page: ~a~&" (length all) *max-lines*)
     (mapcar (lambda (it)
               (print-book it))
             (sublist all 0 *max-lines*))))
