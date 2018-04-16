@@ -15,18 +15,22 @@
                 :title
                 :editor
                 :authors
+                :quantity
                 :price)
   (:export :main
            :search
            :add
            :details
            :stock
-           :stats))
+           :next
+           :previous
+           :stats
+           :*page-size*))
 (in-package :bookshops.commands)
 
-(defvar *max-lines* 15
-  "Truncate prints that exceed this number of lines.")
-(setf *max-lines* 15)
+(defvar *page-size* 15
+  "Maximum number of lines to show when printing results.")
+(setf *page-size* 15)
 
 (defun search (query &rest rest)
   "Search for books with `query` on `datasource`, nicely print the result."
@@ -65,7 +69,7 @@
 (defun total-pages (total)
   "Compute the number of pages given this total quantity."
   (multiple-value-bind (fl rest)
-      (floor (/ total *max-lines*))
+      (floor (/ total *page-size*))
     (if (= 0 rest)
         fl
         (incf fl))))
@@ -94,8 +98,8 @@
     (mapcar (lambda (it)
               (print-book it))
             (sublist all
-                     (* (- *current-page* 1) *max-lines*)
-                     (*  *current-page* *max-lines*)))))
+                     (* (- *current-page* 1) *page-size*)
+                     (*  *current-page* *page-size*)))))
 
 (defun details (pk)
   "Print all the book information."

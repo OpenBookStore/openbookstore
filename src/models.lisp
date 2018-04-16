@@ -101,6 +101,16 @@ Usage:
         book
       (format stream "~a" title))))
 
+(defun print-quantity-red-green (qty &optional (stream nil))
+  "If qty is > 0, print in green. If < 0, in red."
+  (cond
+    ((= 0 qty)
+     (format stream "~a" qty))
+    ((< qty 0)
+     (red (prin1-to-string qty)))
+    ((> qty 0)
+     (green (prin1-to-string qty)))))
+
 (defun print-book (book &optional (stream t))
   "Print to stream a user-readable output."
   ;; xxx: print as a nice table.
@@ -110,7 +120,7 @@ Usage:
           (blue (str:substring 0 20 (title book)))
           (str:substring 0 30 (or (authors book) ""))
           (str:substring 0 15 (or (price book) ""))
-          (red (str:substring 0 3 (prin1-to-string (quantity-of book))))))
+          (print-quantity-red-green (quantity-of book))))
 
 (defun print-book-details (pk)
   (let ((bk (find-dao 'book :id pk)))
