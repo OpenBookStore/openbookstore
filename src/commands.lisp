@@ -1,5 +1,6 @@
 (defpackage bookshops.commands
   (:use :cl
+        :mito
         :cl-ansi-text)
   (:shadow :search)
   (:import-from :bookshops
@@ -28,8 +29,8 @@
            :*page-size*))
 (in-package :bookshops.commands)
 
-(defvar *last-results nil
-  "List of last search results.")
+(defvar *last-results* nil
+  "List of last search results (for now, a list of book objects).")
 
 (defvar *last-search* nil
   "List of keywords used on the last search. For example, \"stock ant\" to filter on titles.")
@@ -84,7 +85,7 @@
   "Print next page of results (now Stock, should be the last function
   that printed results)."
   (when (< *current-page*
-           (total-pages (length *last-results)))
+           (total-pages (length *last-results*)))
     (incf *current-page*))
   (stock *last-search*))
 
@@ -97,22 +98,31 @@
 (defun stock (&optional title-kw)
   "Show our stock (books in DB)."
   (setf *last-search* title-kw)
-  (setf *last-results (find-book title-kw))
+  (setf *last-results* (find-book title-kw))
   (format t "Results: ~a. Page: ~a/~a~&"
-          (length *last-results)
+          (length *last-results*)
           *current-page*
-          (total-pages (length *last-results)))
+          (total-pages (length *last-results*)))
     (mapcar (lambda (it)
               (print-book it))
-            (sublist *last-results
+            (sublist *last-results*
                      (* (- *current-page* 1) *page-size*)
                      (*  *current-page* *page-size*))))
 
 (defun details (pk)
-  "Print all the book information."
+  "Print all information about the book of the given id.
+
+   You can complete the argument with the TAB key."
   (when (stringp pk)
     (parse-integer pk))
   (print-book-details pk))
+
+;; Get a list of ids of the last search.
+;; Specially handy when we have filtered the search.
+(replic.completion:add-completion "details" (lambda ()
+                                              (mapcar (lambda (it)
+                                                        (prin1-to-string (object-id it)))
+                                                      *last-results*)))
 
 (defun stats ()
   "Print some numbers about the stock."

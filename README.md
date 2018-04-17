@@ -17,7 +17,10 @@ Available commands: `help`, `help help`
 
 - `search`
 - `add`
-- `stock`, optional keyword to filter by titles. Use `next` and `previous` for pagination.
+- `stock [keyword]`, with an optional keyword to filter by titles. Use `next` and `previous` for pagination.
+- `details <i>`: print more information about the last search result
+  number `<i>`. You can complete this argument using the TAB key
+  (specially handy when you have filtered the results).
 
 Parameters, to change with `set`:
 

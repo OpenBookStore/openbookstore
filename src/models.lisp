@@ -116,10 +116,10 @@ Usage:
   "Print to stream a user-readable output."
   ;; xxx: print as a nice table.
   ;; ~30a = substring 20 + ansi colors markers.
-  (format stream "~2@a- ~30a ~30a ~15a x ~3a~&"
+  (format stream "~2@a- ~40a ~40a ~15a x ~3a~&"
           (str:substring 0 4 (prin1-to-string (object-id book)))
-          (blue (str:substring 0 20 (title book)))
-          (str:substring 0 30 (or (authors book) ""))
+          (blue (str:substring 0 30 (title book)))
+          (str:substring 0 40 (or (authors book) ""))
           (str:substring 0 15 (or (price book) ""))
           (print-quantity-red-green (quantity-of book))))
 
