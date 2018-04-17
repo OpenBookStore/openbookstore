@@ -127,12 +127,8 @@
         (progn
           (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
 
-          ;; Create the completions bindings.
-          (replic:init-completions)
-
           ;; create commands from the exported functions and variables.
           (replic:functions-to-commands :replic.base)
-          (replic.completion:add-completion "help" #'replic::help-completion)
 
           (setf replic:*help-preamble* "With cl-bookshops you can search for books by keywords or isbn, add some to your stock and explore it.")
           (replic:functions-to-commands :bookshops.commands)
