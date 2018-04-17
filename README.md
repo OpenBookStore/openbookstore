@@ -17,7 +17,14 @@ Available commands: `help`, `help help`
 
 - `search`
 - `add`
-- `stock`
+- `stock`, optional keyword to filter by titles. Use `next` and `previous` for pagination.
+
+Parameters, to change with `set`:
+
+- `*page-size*`
+
+
+![](img.png)
 
 
 ## Dev

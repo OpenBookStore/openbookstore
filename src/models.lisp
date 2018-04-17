@@ -1,6 +1,7 @@
 (defpackage bookshops.models
   (:use :cl
         :mito
+        :sxql
         :cl-ansi-text)
   (:export :main
            :connect
@@ -153,9 +154,12 @@ Usage:
         new)
     (error (c) (format t "Oops, an unexpected error happened:~&~a~&" c))))
 
-(defun find-book (&optional title)
-  "Return a list of book objects."
-  (select-dao 'book))
+(defun find-book (&optional title-kw)
+  "Return a list of book objects. If a keyword is given, filter by titles."
+  (if title-kw
+      (select-dao 'book
+        (where (:like :title (str:concat "%" title-kw "%"))))
+      (select-dao 'book)))
 
 (defun count-book ()
   ""
