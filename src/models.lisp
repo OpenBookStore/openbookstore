@@ -82,6 +82,8 @@ Usage:
                :col-type (or (:varchar 128) :null))
    (title :accessor title :initarg :title
           :col-type (:varchar 128))
+   (isbn :accessor isbn :initarg :isbn
+         :col-type (or (:varchar 128) :null))
    (price :accessor price :initarg :price
           :col-type (or :integer :null))
    (date-publication :accessor date-publication :initarg :date-publication
@@ -128,17 +130,19 @@ Usage:
     (if bk
         (progn
           (format t "~a x ~a~&" (blue (title bk)) (quantity-of bk))
+          (format t "isbn: ~a" (isbn bk))
           (format t "~t~a~&" (authors bk))
           (format t "~t~a~&" (price bk)))
         (format t "There is no such book with id ~a~&" pk))))
 
-(defun make-book (&key title authors editor date-publication price datasource)
+(defun make-book (&key title isbn authors editor date-publication price datasource)
   "Create a Book instance. If given author or authors, create Author
   instance(s) if they don't already exist in DB.
   "
   (make-instance 'book
                  :datasource datasource
                  :title title
+                 :isbn isbn
                  :authors authors
                  :editor editor
                  :price price

@@ -64,10 +64,12 @@
         (prix  (node-selector-to-text ".prix_indicatif" it))
         (editeur  (node-selector-to-text ".editeur" it))
         (date-parution  (node-selector-to-text ".date_parution" it))
+        (isbn (node-selector-to-text ".gencod" it))
         ;; (href (node-selector-to-text ".titre[href]"))
         )
     ;; lesson learned: don't use make-instance 'book here, object will be different.
     (make-book :title titre
+               :isbn isbn
                :datasource "fr"
                :authors auteurs
                :price prix
