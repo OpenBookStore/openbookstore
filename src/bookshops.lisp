@@ -65,12 +65,16 @@
         (editeur  (node-selector-to-text ".editeur" it))
         (date-parution  (node-selector-to-text ".date_parution" it))
         (isbn (node-selector-to-text ".gencod" it))
+        (cover-url (aref (lquery-funcs:attr (clss:select "img" it)
+                                            "src")
+                         0))
         ;; (href (node-selector-to-text ".titre[href]"))
         )
     ;; lesson learned: don't use make-instance 'book here, object will be different.
     (make-book :title titre
                :isbn isbn
                :datasource "fr"
+               :cover-url cover-url
                :authors auteurs
                :price prix
                :editor editeur

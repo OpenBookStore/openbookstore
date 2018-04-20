@@ -13,6 +13,7 @@
            :find-book
            :title
            :authors
+           :cover-url
            :price
            :print-book
            :print-book-details
@@ -95,7 +96,9 @@ Usage:
             :col-type (or (:varchar 128) :null))
    (quantity :accessor quantity
              :initform 0
-             :col-type (or :integer :null)))
+             :col-type (or :integer :null))
+   (cover-url :accessor cover-url :initarg :cover-url
+              :col-type (or (:varchar 1024) :null)))
   (:metaclass dao-table-class))
 
 (defmethod print-object ((book book) stream)
@@ -132,15 +135,17 @@ Usage:
           (format t "~a x ~a~&" (blue (title bk)) (quantity-of bk))
           (format t "isbn: ~a" (isbn bk))
           (format t "~t~a~&" (authors bk))
-          (format t "~t~a~&" (price bk)))
+          (format t "~t~a~&" (price bk))
+          (format t "~tcover: ~a~&" (cover-url bk)))
         (format t "There is no such book with id ~a~&" pk))))
 
-(defun make-book (&key title isbn authors editor date-publication price datasource)
+(defun make-book (&key title isbn authors cover-url editor date-publication price datasource)
   "Create a Book instance. If given author or authors, create Author
   instance(s) if they don't already exist in DB.
   "
   (make-instance 'book
                  :datasource datasource
+                 :cover-url cover-url
                  :title title
                  :isbn isbn
                  :authors authors
