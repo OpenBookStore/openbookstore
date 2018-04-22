@@ -133,8 +133,8 @@ Usage:
     (if bk
         (progn
           (format t "~a x ~a~&" (blue (title bk)) (quantity-of bk))
-          (format t "isbn: ~a" (isbn bk))
           (format t "~t~a~&" (authors bk))
+          (format t "~tisbn: ~a~&" (isbn bk))
           (format t "~t~a~&" (price bk))
           (format t "~tcover: ~a~&" (cover-url bk)))
         (format t "There is no such book with id ~a~&" pk))))
@@ -163,11 +163,11 @@ Usage:
         new)
     (error (c) (format t "Oops, an unexpected error happened:~&~a~&" c))))
 
-(defun find-book (&optional title-kw)
-  "Return a list of book objects. If a keyword is given, filter by titles."
-  (if title-kw
+(defun find-book (&optional query)
+  "Return a list of book objects. If a query string is given, filter by title."
+  (if query
       (select-dao 'book
-        (where (:like :title (str:concat "%" title-kw "%"))))
+        (where (:like :title (str:concat "%" query "%"))))
       (select-dao 'book)))
 
 (defun count-book ()

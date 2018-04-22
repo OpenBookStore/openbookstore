@@ -87,27 +87,33 @@
   (when (< *current-page*
            (total-pages (length *last-results*)))
     (incf *current-page*))
-  (stock *last-search*))
+  (print-page *last-results* *current-page*))
 
 (defun previous ()
   "Print the previous page of results (the stock for now)."
   (when (> *current-page* 1)
     (decf *current-page*))
-  (stock *last-search*))
+  (print-page *last-results* *current-page*))
 
-(defun stock (&optional title-kw)
-  "Show our stock (books in DB)."
-  (setf *last-search* title-kw)
-  (setf *last-results* (find-book title-kw))
+(defun print-page (seq page)
+  ""
   (format t "Results: ~a. Page: ~a/~a~&"
-          (length *last-results*)
-          *current-page*
-          (total-pages (length *last-results*)))
-    (mapcar (lambda (it)
-              (print-book it))
-            (sublist *last-results*
-                     (* (- *current-page* 1) *page-size*)
-                     (*  *current-page* *page-size*))))
+            (length seq)
+            page
+            (total-pages (length seq)))
+  (mapcar (lambda (it)
+            (print-book it))
+          (sublist seq
+                   (* (- page 1) *page-size*)
+                   (*  page *page-size*))))
+
+(defun stock (&optional title-kw &rest rest)
+  "Show our stock (books in DB)."
+  (let* ((query (if title-kw (str:join "%" (cons title-kw rest))))
+         (results (find-book query)))
+    (setf *last-search* query)
+    (setf *last-results* results)
+    (print-page results *current-page*)))
 
 (defun details (pk)
   "Print all information about the book of the given id.
@@ -127,3 +133,11 @@
 (defun stats ()
   "Print some numbers about the stock."
   (format t "Books in stock: ~a~&" (count-book)))
+
+
+(defun reset ()
+  "For use in the repl."
+  (setf *last-results* nil)
+  (setf *last-search* nil)
+  (setf *page-size* 15)
+  (setf *current-page* 1))
