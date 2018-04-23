@@ -5,6 +5,7 @@
   (:import-from :bookshops.models
                 :book
                 :make-book
+                :find-existing
                 :title
                 :editor
                 :authors
@@ -68,17 +69,19 @@
         (cover-url (aref (lquery-funcs:attr (clss:select "img" it)
                                             "src")
                          0))
+        bk
         ;; (href (node-selector-to-text ".titre[href]"))
         )
     ;; lesson learned: don't use make-instance 'book here, object will be different.
-    (make-book :title titre
-               :isbn isbn
-               :datasource "fr"
-               :cover-url cover-url
-               :authors auteurs
-               :price prix
-               :editor editeur
-               :date-publication date-parution)))
+    (setf bk (make-book :title titre
+                        :isbn isbn
+                        :datasource "fr"
+                        :cover-url cover-url
+                        :authors auteurs
+                        :price prix
+                        :editor editeur
+                        :date-publication date-parution))
+    (find-existing bk)))
 
 (defun build-url (query &key (source *datasource*))
   "Build the search url with the query terms in it.

@@ -12,6 +12,7 @@
            :editor
            :find-book
            :find-by
+           :find-existing
            :find-book-noisbn
            :title
            :authors
@@ -179,6 +180,14 @@ Usage:
 (defun find-by (key val)
   (when val
     (find-dao 'book key val)))
+
+(defun find-existing (bk)
+  "bk: a book object. Check in the DB if it already exists. Return a book."
+  (when bk
+    (let ((existing (find-by :isbn (isbn bk))))
+      (if existing
+          existing
+          bk))))
 
 (defun find-book (query)
   "Return a list of book objects. If a query string is given, filter by title."
