@@ -30,12 +30,6 @@
            :*page-size*))
 (in-package :bookshops.commands)
 
-(defvar *last-results* nil
-  "List of last search results (for now, a list of book objects).")
-
-(defvar *last-search* nil
-  "List of keywords used on the last search. For example, \"stock ant\" to filter on titles.")
-
 (defvar *page-size* 15
   "Maximum number of lines to show when printing results.")
 (setf *page-size* 15)
@@ -58,6 +52,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Commands
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defvar *last-results* nil
+  "List of last search results (for now, a list of book objects).")
+
+(defvar *last-page* nil
+  "Sublist of search results. Used to autocomplete the ids of books lastly printed.")
+
+(defvar *last-search* nil
+  "List of keywords used on the last search. For example, \"stock ant\" to filter on titles.")
+
 (defun search (query &rest rest)
   "Search for books with `query` on `datasource`, nicely print the result."
   ;; the &rest is for the readline repl, that gives many string arguments to this function.
@@ -108,15 +112,16 @@
 (defun print-page (seq &optional (page *current-page*))
   ""
   (setf *last-results* seq)
+  (setf *last-page* (sublist seq
+                             (* (- page 1) *page-size*)
+                             (*  page *page-size*)))
   (format t "Results: ~a. Page: ~a/~a~&"
-            (length seq)
-            page
-            (total-pages (length seq)))
+          (length seq)
+          page
+          (total-pages (length seq)))
   (mapcar (lambda (it)
             (print-book it))
-          (sublist seq
-                   (* (- page 1) *page-size*)
-                   (*  page *page-size*))))
+          *last-page*))
 
 (defun stock (&optional title-kw &rest rest)
   "Show our stock (books in DB)."
@@ -138,8 +143,7 @@
 (replic.completion:add-completion "details" (lambda ()
                                               (mapcar (lambda (it)
                                                         (prin1-to-string (object-id it)))
-                                                      *last-results*)))
-
+                                                      *last-page*)))
 
 (defun stats (&optional arg)
   "Print some numbers about the stock.
