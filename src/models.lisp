@@ -11,6 +11,7 @@
            :make-book
            :editor
            :find-book
+           :find-book-noisbn
            :title
            :authors
            :cover-url
@@ -169,6 +170,10 @@ Usage:
       (select-dao 'book
         (where (:like :title (str:concat "%" query "%"))))
       (select-dao 'book)))
+
+(defun find-book-noisbn ()
+  (select-dao 'book
+    (where (:is-null :isbn))))
 
 (defun count-book ()
   ""

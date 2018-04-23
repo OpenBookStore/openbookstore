@@ -10,6 +10,7 @@
                 :make-book
                 :save-book
                 :find-book
+                :find-book-noisbn
                 :print-book
                 :print-book-details
                 :count-book
@@ -42,6 +43,21 @@
 (defvar *current-page* 1
   "Current page of the stock pager.")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Utils
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun percentage (low max)
+  (* 100 (/ (float low)
+            max)))
+
+(defun sublist (seq start end)
+  (if (> (length seq)
+         end)
+      (subseq seq start end)
+      (subseq seq start (length seq))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Commands
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun search (query &rest rest)
   "Search for books with `query` on `datasource`, nicely print the result."
   ;; the &rest is for the readline repl, that gives many string arguments to this function.
@@ -67,12 +83,6 @@
       (save-book bk)
       (print "done."))))
 
-(defun sublist (seq start end)
-  (if (> (length seq)
-         end)
-      (subseq seq start end)
-      (subseq seq start (length seq))))
-
 (defun total-pages (total)
   "Compute the number of pages given this total quantity."
   (multiple-value-bind (fl rest)
@@ -87,16 +97,17 @@
   (when (< *current-page*
            (total-pages (length *last-results*)))
     (incf *current-page*))
-  (print-page *last-results* *current-page*))
+  (print-page *last-results*))
 
 (defun previous ()
   "Print the previous page of results (the stock for now)."
   (when (> *current-page* 1)
     (decf *current-page*))
-  (print-page *last-results* *current-page*))
+  (print-page *last-results*))
 
-(defun print-page (seq page)
+(defun print-page (seq &optional (page *current-page*))
   ""
+  (setf *last-results* seq)
   (format t "Results: ~a. Page: ~a/~a~&"
             (length seq)
             page
@@ -112,7 +123,6 @@
   (let* ((query (if title-kw (str:join "%" (cons title-kw rest))))
          (results (find-book query)))
     (setf *last-search* query)
-    (setf *last-results* results)
     (print-page results *current-page*)))
 
 (defun details (pk)
@@ -130,11 +140,27 @@
                                                         (prin1-to-string (object-id it)))
                                                       *last-results*)))
 
-(defun stats ()
-  "Print some numbers about the stock."
-  (format t "Books in stock: ~a~&" (count-book)))
+
+(defun stats (&optional arg)
+  "Print some numbers about the stock.
+
+   Prints the total number of books and ones without isbn.
+
+   If given an argument (use the TAB key to choose it), print the list of results."
+  (format t "Books in stock: ~a~&" (count-book))
+  (let ((res (find-book-noisbn)))
+    (format t "Books without isbn: ~a (~,2f%)~&" (length res) (percentage (length res) (count-book)))
+    (when (string= arg "noisbn")
+      (setf *current-page* 1)
+      (format t "-----------------~&")
+      (print-page res))))
+
+(replic.completion:add-completion "stats" '("noisbn"))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Dev
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun reset ()
   "For use in the repl."
   (setf *last-results* nil)
