@@ -11,10 +11,12 @@
            :make-book
            :editor
            :find-book
+           :find-by
            :find-book-noisbn
            :title
            :authors
            :cover-url
+           :isbn
            :price
            :print-book
            :print-book-details
@@ -158,13 +160,27 @@ Usage:
   "Save this book in DB."
   ;; logging
   (handler-case
-      (let ((new (insert-dao book)))
-        (incf (quantity new))
-        (save-dao new)
-        new)
+      (let ((existing (find-by :isbn (isbn book))))
+        (if existing
+            (progn
+              (format t "--- this book is already in DB.~&")
+              (incf (quantity existing))
+              (save-dao existing)
+              (quantity existing)
+              existing)
+            (progn
+              (format t "-- saving ~a~&" book)
+              (let ((new (insert-dao book)))
+                (incf (quantity new))
+                (save-dao new)
+                new))))
     (error (c) (format t "Oops, an unexpected error happened:~&~a~&" c))))
 
-(defun find-book (&optional query)
+(defun find-by (key val)
+  (when val
+    (find-dao 'book key val)))
+
+(defun find-book (query)
   "Return a list of book objects. If a query string is given, filter by title."
   (if query
       (select-dao 'book

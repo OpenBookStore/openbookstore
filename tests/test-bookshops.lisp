@@ -8,7 +8,9 @@
                 :make-book
                 :save-book
                 :title
-                :quantity)
+                :isbn
+                :quantity
+                :find-by)
   (:import-from :bookshops-test.utils
                 :with-empty-db))
 (in-package :bookshops-test)
@@ -31,5 +33,23 @@
       (is (quantity bk)
           1
           "The quantity is 1 after adding to the DB."))))
+
+(defvar fixtures nil)
+
+(defun fixtures-init ()
+  (setf fixtures (list (make-book :title "test"
+                                  :isbn "9782710381419"))))
+
+(subtest "Add a book that already exists"
+  (fixtures-init)
+  (with-empty-db
+    (let* ((bk (first fixtures))
+           (same-bk (make-book :title "different title"
+                               :isbn (isbn bk))))
+      (save-book bk)
+      (save-book same-bk)
+      (is (quantity (find-by :isbn (isbn bk)))
+          2)
+      )))
 
 (finalize)
