@@ -26,7 +26,7 @@
           (prefix (concatenate 'string
                                (random-string 8)
                                "/"))
-          (old-name *db-name*))
+          (connection mito:*connection*))
      (uiop:with-temporary-file (:pathname name :prefix prefix)
        (let* ((*db-name* name)
               (*db* (connect)))
@@ -34,6 +34,6 @@
          (migrate-all)
          ,@body
          ;; Despite the let, we must re-connect to our DB.
-         (setf *db-name* old-name)
+         (setf mito:*connection* connection)
          (connect))))
   )

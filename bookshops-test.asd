@@ -10,7 +10,8 @@
                "prove")
   :components ((:module "tests"
                 :components
-                ((:test-file "bookshops"))))
+                ((:file "test-utils")
+                 (:test-file "bookshops"))))
   :description "Test system for bookshops"
 
   ;; :perform (test-op (op c) (symbol-call :prove-asdf :run-test-system c))
