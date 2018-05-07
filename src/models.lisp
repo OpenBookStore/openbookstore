@@ -49,6 +49,7 @@ Usage:
 (defparameter *db* nil
   "DB connection object, returned by (connect).")
 
+(setf str:*ellipsis* "(…)")
 ;;
 ;; DB connection, migrations.
 ;;
@@ -125,11 +126,11 @@ Usage:
   "Print to stream a user-readable output."
   ;; xxx: print as a nice table.
   ;; ~30a = substring 20 + ansi colors markers.
-  (format stream "~2@a- ~40a ~40a ~15a x ~3a~&"
-          (str:substring 0 4 (prin1-to-string (object-id book)))
-          (blue (str:substring 0 30 (title book)))
-          (str:substring 0 40 (or (authors book) ""))
-          (str:substring 0 15 (or (price book) ""))
+  (format stream "~2@a- ~40a ~40a ~15a x ~3@a~&"
+          (prin1-to-string (object-id book))
+          (blue (str:prune 30 (title book)))
+          (str:prune 40 (or (authors book) ""))
+          (str:prune 15 (or (price book) ""))
           (print-quantity-red-green (quantity-of book))))
 
 (defun print-book-details (pk)
@@ -178,6 +179,7 @@ Usage:
     (error (c) (format t "Oops, an unexpected error happened:~&~a~&" c))))
 
 (defun find-by (key val)
+  "Find by slot. Example: (find-by :isbn xxx). Return only the first matching result."
   (when val
     (find-dao 'book key val)))
 
@@ -189,7 +191,7 @@ Usage:
           existing
           bk))))
 
-(defun find-book (query)
+(defun find-book (&optional query)
   "Return a list of book objects. If a query string is given, filter by title."
   (if query
       (select-dao 'book
