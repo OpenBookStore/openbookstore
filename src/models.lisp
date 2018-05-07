@@ -2,7 +2,8 @@
   (:use :cl
         :mito
         :sxql
-        :cl-ansi-text)
+        :cl-ansi-text
+        :log4cl)
   (:export :main
            :connect
            :ensure-tables-exist
@@ -165,13 +166,12 @@ Usage:
       (let ((existing (find-by :isbn (isbn book))))
         (if existing
             (progn
-              (format t "--- this book is already in DB.~&")
+              (log:info "book of isbn " (isbn book) " is already in stock.")
               (incf (quantity existing))
               (save-dao existing)
               (quantity existing)
               existing)
             (progn
-              (format t "-- saving ~a~&" book)
               (let ((new (insert-dao book)))
                 (incf (quantity new))
                 (save-dao new)

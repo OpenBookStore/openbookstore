@@ -12,6 +12,7 @@
                :plump
                :lquery
                :clss ;; might do with lquery only
+               :log4cl
                ;; DB
                :mito
                ;; readline
