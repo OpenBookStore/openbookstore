@@ -27,6 +27,7 @@
            ;; book methods
            :save-book
            :quantity-of
+           :set-quantity
            ;; utils
            :erase-metaclass-from))
 (in-package :bookshops.models)
@@ -83,28 +84,51 @@ Usage:
   ;;
   ;; - create a date: (local-time:now)
   ;; "
-  ((datasource :accessor datasource :initarg :datasource
-               ;; how to use a variable for 128 ?
-               ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
-               :col-type (or (:varchar 128) :null))
-   (title :accessor title :initarg :title
-          :col-type (:varchar 128))
-   (isbn :accessor isbn :initarg :isbn
-         :col-type (or (:varchar 128) :null))
-   (price :accessor price :initarg :price
-          :col-type (or :integer :null))
-   (date-publication :accessor date-publication :initarg :date-publication
-                     :col-type (or (:varchar 128) :null))
-   (editor :accessor editor :initarg :editor
-           :col-type (or (:varchar 128) :null))
-   (authors :accessor authors :initarg :authors
-                                        ;TODO: relationship
-            :col-type (or (:varchar 128) :null))
-   (quantity :accessor quantity
-             :initform 0
-             :col-type (or :integer :null))
-   (cover-url :accessor cover-url :initarg :cover-url
-              :col-type (or (:varchar 1024) :null)))
+  ((datasource
+    :accessor datasource
+    :initarg :datasource
+    ;; how to use a variable for 128 ?
+    ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
+    :col-type (or (:varchar 128) :null))
+
+   (title
+    :accessor title
+    :initarg :title
+    :col-type (:varchar 128))
+
+   (isbn
+    :accessor isbn
+    :initarg :isbn
+    :col-type (or (:varchar 128) :null))
+
+   (price
+    :accessor price
+    :initarg :price
+    :col-type (or :integer :null))
+
+   (date-publication
+    :accessor date-publication
+    :initarg :date-publication
+    :col-type (or (:varchar 128) :null))
+
+   (editor
+    :accessor editor :initarg :editor
+    :col-type (or (:varchar 128) :null))
+
+   (authors
+    :accessor authors
+    :initarg :authors                   ;TODO: relationship
+    :col-type (or (:varchar 128) :null))
+
+   (quantity
+    :accessor quantity
+    :initform 0
+    :col-type (or :integer :null))
+
+   (cover-url
+    :accessor cover-url
+    :initarg :cover-url
+    :col-type (or (:varchar 1024) :null)))
   (:metaclass dao-table-class))
 
 (defmethod print-object ((book book) stream)
@@ -127,7 +151,7 @@ Usage:
   "Print to stream a user-readable output."
   ;; xxx: print as a nice table.
   ;; ~30a = substring 20 + ansi colors markers.
-  (format stream "~2@a- ~40a ~40a ~15a x ~3@a~&"
+  (format stream "~&~2@a- ~40a ~40a ~15a x ~3@a~&"
           (prin1-to-string (object-id book))
           (blue (str:prune 30 (title book)))
           (str:prune 40 (or (authors book) ""))
@@ -210,6 +234,11 @@ Usage:
 (defun quantity-of (book)
   ;; Use a wrapper around the quantity accessor, for future additions.
   (quantity book))
+
+(defun set-quantity (book nb)
+  "Set the quantity of this book."
+  (assert (numberp nb))
+  (setf (quantity book) nb))
 
 (defclass author ()
   ((name :accessor name :initarg :name

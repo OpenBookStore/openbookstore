@@ -18,6 +18,7 @@
                 :editor
                 :authors
                 :quantity
+                :set-quantity
                 :price)
   (:export :main
            :search
@@ -27,6 +28,7 @@
            :next
            :previous
            :stats
+           :create
            :*page-size*))
 (in-package :bookshops.commands)
 
@@ -161,6 +163,50 @@
 
 (replic.completion:add-completion "stats" '("noisbn"))
 
+(defun create (&optional what)
+  "Create a new book."
+  (unless what
+    (setf what "book"))
+  (when (symbolp what)
+    (string-downcase (symbol-name what)))
+  (when (string-equal what "book")
+    (create-book)))
+
+(defun create-book ()
+  "Create a new book.."
+  ;; next step: class and column introspection, data validation, etc.
+  (let (bk title authors price quantity)
+    (format t "~&Title* ? ")
+    (finish-output)
+    (setf title (read-line))
+    (when (str:blank? title)
+      (error "The title field is mandatory, please try again."))
+    (format t "~&Author(s) ? (comma separated) ")
+    (finish-output)
+    (setf authors (read-line))
+    (format t "~&Price ? [0] ")
+    (finish-output)
+    (setf price (read-line))
+    (if (str:blank? price)
+        (setf price 0)
+        (setf price (parse-integer price)))
+    (format t "~&Quantity ? [0] ")
+    (finish-output)
+    (setf quantity (read-line))
+    (if (str:blank? quantity)
+        (setf quantity 0)
+        (setf quantity (parse-integer quantity)))
+
+    (setf bk (make-book :title title :authors authors :price price))
+    (set-quantity bk quantity)
+    ;; save-book increments quantity
+    (save-book bk)
+    ;; set this for completion of ids of other commands.
+    (setf *last-page* (list bk))
+    (print-book bk)
+    ))
+
+(replic.completion:add-completion "create" '("book"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Dev
