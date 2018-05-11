@@ -131,7 +131,8 @@ Usage:
           (prin1-to-string (object-id book))
           (blue (str:prune 30 (title book)))
           (str:prune 40 (or (authors book) ""))
-          (str:prune 15 (or (price book) ""))
+          (str:prune 15 (or (format nil "~a" (price book))
+                            ""))
           (print-quantity-red-green (quantity-of book))))
 
 (defun print-book-details (pk)
