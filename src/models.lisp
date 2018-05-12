@@ -28,6 +28,7 @@
            :save-book
            :quantity-of
            :set-quantity
+           :delete-books
            ;; utils
            :erase-metaclass-from))
 (in-package :bookshops.models)
@@ -248,6 +249,17 @@ Usage:
 (defmethod print-object ((author author) stream)
   (print-unreadable-object (author stream :type t)
     (format stream "~a" (slot-value author 'name))))
+
+;;
+;; Delete
+;;
+(defun delete-matching (kw)
+  "Delete the books whose titles match kw."
+  (delete-books (find-book kw)))
+
+(defun delete-books (bklist)
+  "Delete this list of books."
+  (mapcar #'mito:delete-dao bklist))
 
 ;;
 ;; utils

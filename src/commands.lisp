@@ -2,7 +2,8 @@
   (:use :cl
         :mito
         :cl-ansi-text)
-  (:shadow :search)
+  (:shadow :search
+           :delete)
   (:import-from :bookshops
                 :books)
   (:import-from :bookshops.models
@@ -19,6 +20,7 @@
                 :authors
                 :quantity
                 :set-quantity
+                :delete-books
                 :price)
   (:export :main
            :search
@@ -29,6 +31,7 @@
            :previous
            :stats
            :create
+           :delete
            :*page-size*))
 (in-package :bookshops.commands)
 
@@ -112,7 +115,8 @@
   (print-page *last-results*))
 
 (defun print-page (seq &optional (page *current-page*))
-  ""
+  "Usage: print-page <full list of results>,
+   and it prints respecting the list page by page."
   (setf *last-results* seq)
   (setf *last-page* (sublist seq
                              (* (- page 1) *page-size*)
@@ -174,7 +178,8 @@
 
 (defun create-book ()
   "Create a new book.."
-  ;; next step: class and column introspection, data validation, etc.
+  ;; next step: class and column introspection, data validation,
+  ;; completion of fields etc.
   (let (bk title authors price quantity)
     (setf title (rl:readline :prompt (format nil (str:concat "Title"
                                                   (cl-ansi-text:red "*")
@@ -193,7 +198,7 @@
 
     (setf bk (make-book :title title :authors authors :price price))
     (set-quantity bk quantity)
-    ;; save-book increments quantity
+    ;; xxx save-book increments quantity
     (save-book bk)
     ;; set this for completion of ids of other commands.
     (setf *last-page* (list bk))
@@ -201,6 +206,21 @@
     ))
 
 (replic.completion:add-completion "create" '("book"))
+
+(defun delete (&rest kw)
+  "Delete (after confirmation) the books whose title match the given keywords.
+
+   For example, `delete on time` will find 'once upon a time'."
+  ;; xxx Doesn't work on the repl, needs a console readline.
+  (let ((bklist (when kw
+                  (find-book (str:join "%" kw)))))
+    (if bklist
+        (progn
+          (print-page bklist)
+          (finish-output)
+          (when (replic:confirm "Do you want to delete those books ?")
+            (delete-books bklist)))
+        (format t "~&No results, nothing to do.~&"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Dev

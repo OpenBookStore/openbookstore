@@ -17,12 +17,17 @@ Available commands: `help`, `help help`
 
 - `search`
 - `add`
+- `create`
+- `delete`
 - `stock [keyword]`, with an optional keyword to filter by titles. Use `next` and `previous` for pagination.
 - `details <i>`: print more information about the last search result
   number `<i>`. You can complete this argument using the TAB key
   (specially handy when you have filtered the results).
 - `stats`: some numbers. Percentage of books without isbn. With optional parameters to print the related results:
   - `noisbn`
+- `quit`
+
+When you are printed a list of results, use the pagination with `next` and `previous`.
 
 Parameters, to change with `set`:
 
