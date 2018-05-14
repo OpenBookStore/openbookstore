@@ -10,7 +10,10 @@
                 :title
                 :isbn
                 :quantity
-                :find-by)
+                :find-by
+                :make-place
+                :save-place
+                :add-to)
   (:import-from :bookshops-test.utils
                 :with-empty-db))
 (in-package :bookshops-test)
@@ -51,5 +54,20 @@
       (is (quantity (find-by :isbn (isbn bk)))
           2)
       )))
+
+(defvar place nil)
+
+(defun fixtures-places ()
+  (setf place (make-place "default place")))
+
+(subtest "Places"
+  (fixtures-init)
+  (fixtures-places)
+  (with-empty-db
+    ;; xxx Better fixtures, save the objects before.
+    (save-place place)
+    (save-book (first fixtures))
+    (is (add-to place (first fixtures))
+        1)))
 
 (finalize)

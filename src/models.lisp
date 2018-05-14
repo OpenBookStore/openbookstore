@@ -29,6 +29,10 @@
            :quantity-of
            :set-quantity
            :delete-books
+           ;; places
+           :make-place
+           :save-place
+           :add-to
            ;; utils
            :erase-metaclass-from))
 (in-package :bookshops.models)
@@ -63,11 +67,15 @@ Usage:
   (setf *db* (connect-toplevel :sqlite3 :database-name *db-name*)))
 
 (defun ensure-tables-exist ()
-  (ensure-table-exists 'book))
+  (mapcar #'ensure-table-exists '(book
+                                  place
+                                  place-copies)))
 
 (defun migrate-all ()
   "Migrate the Book table after we changed the class definition."
-  (mito:migrate-table 'book))
+  (mapcar #'mito:migrate-table '(book
+                                 place
+                                 place-copies)))
 
 ;;
 ;; DB tables definition.
@@ -137,6 +145,60 @@ Usage:
     (with-accessors ((title title))
         book
       (format stream "~a" title))))
+
+;; Intermediate table for the book <-> place many-to-many relationship.
+(defclass place-copies ()
+  ((book
+    :accessor place-copies-book
+    :initarg :book
+    :col-type book)
+   (place
+    :accessor place-copies-place
+    :initarg :place
+    :col-type place)
+   (quantity
+    :accessor place-copies-quantity
+    :col-type (or (:integer) :null)))
+  (:metaclass dao-table-class))
+
+(defclass place ()
+  ((name
+    :accessor place-name
+    :initarg :name
+    :col-type (:varchar 128)))
+  (:metaclass dao-table-class))
+
+(defun make-place (name)
+  "Create a Place object."
+  (make-instance 'place :name name))
+
+(defun save-place (place)
+  (insert-dao place))
+
+(defmethod print-object ((place place) stream)
+  (print-unreadable-object (place stream :type t)
+    (format stream "~a" (place-name place))))
+
+(defun add-to (place bk &key (quantity 1))
+  "Add the given book to this place.
+   Return the quantity. nil means it is not presnet."
+  (unless (object-id bk)
+    (error "The book ~a is not saved in DB." bk))
+  (let ((existing (find-dao 'place-copies :place place :book bk))
+        place-copy)
+    (if existing
+        (progn
+          (log:info "The book ~a exists in ~a." bk place)
+          (place-copies-quantity existing))
+        (progn
+          (log:info "~a doesn't exist in ~a yet.~&" bk place)
+          (setf place-copy (make-instance 'place-copies
+                                          :place place
+                                          :book bk
+                                          :quantity quantity))
+          (insert-dao place-copy)
+          (place-copies-quantity place-copy)))))
+
 
 (defun print-quantity-red-green (qty &optional (stream nil))
   "If qty is > 0, print in green. If < 0, in red."
