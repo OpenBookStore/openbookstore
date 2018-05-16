@@ -146,28 +146,28 @@ Usage:
         book
       (format stream "~a" title))))
 
+(defclass place ()
+  ((name
+    :accessor place-name
+    :initarg :name
+    :col-type (:varchar 128)))
+  (:metaclass dao-table-class))
+
 ;; Intermediate table for the book <-> place many-to-many relationship.
 (defclass place-copies ()
   ((book
     :accessor place-copies-book
     :initarg :book
+    :initform (error "you must specify a book.")
     :col-type book)
    (place
     :accessor place-copies-place
     :initarg :place
+    :initform (error "you must specify a place.")
     :col-type place)
    (quantity
     :accessor place-copies-quantity
-    :initform (error "you must specify a book.")
     :col-type (or (:integer) :null)))
-  (:metaclass dao-table-class))
-
-(defclass place ()
-    :initform (error "you must specify a place.")
-  ((name
-    :accessor place-name
-    :initarg :name
-    :col-type (:varchar 128)))
   (:metaclass dao-table-class))
 
 (defun make-place (name)
