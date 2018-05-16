@@ -158,10 +158,12 @@ Usage:
     :col-type place)
    (quantity
     :accessor place-copies-quantity
+    :initform (error "you must specify a book.")
     :col-type (or (:integer) :null)))
   (:metaclass dao-table-class))
 
 (defclass place ()
+    :initform (error "you must specify a place.")
   ((name
     :accessor place-name
     :initarg :name
