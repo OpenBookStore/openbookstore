@@ -111,8 +111,10 @@ Usage:
     :col-type (or (:varchar 128) :null))
 
    (price
-    :accessor price
     :initarg :price
+    ;; We'll use a generic price accessor because some existing objects won't have the price slot initialized,
+    ;; we don't default it to 0 (nil denotes a missing field),
+    ;; and it might be useful for other objects.
     :col-type (or :integer :null))
 
    (date-publication
@@ -139,6 +141,19 @@ Usage:
     :initarg :cover-url
     :col-type (or (:varchar 1024) :null)))
   (:metaclass dao-table-class))
+
+(defgeneric price (obj)
+  (:documentation "Return the price of the current object. Return 0 if nil."))
+
+(defmethod price ((book book))
+  (cond
+    ;; should not happen now with the initform to 0.
+    ((null (slot-value book 'price))
+     0)
+    (t (slot-value book 'price))))
+
+(defmethod price ((place place))
+  (reduce #'+ (mapcar #'price (place-books place))))
 
 (defmethod print-object ((book book) stream)
   (print-unreadable-object (book stream :type t)
