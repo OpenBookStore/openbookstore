@@ -194,6 +194,9 @@ Usage:
   (print-unreadable-object (place stream :type t)
     (format stream "~a" (place-name place))))
 
+(defun place-books (place)
+  (mapcar #'place-copies-book (select-dao 'place-copies
+                                (where (:= :place place)))))
 (defun add-to (place bk &key (quantity 1))
   "Add the given book to this place.
    Return the quantity. nil means it is not presnet."
