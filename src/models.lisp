@@ -158,12 +158,10 @@ Usage:
   ((book
     :accessor place-copies-book
     :initarg :book
-    :initform (error "you must specify a book.")
     :col-type book)
    (place
     :accessor place-copies-place
     :initarg :place
-    :initform (error "you must specify a place.")
     :col-type place)
    (quantity
     :accessor place-copies-quantity
@@ -171,8 +169,8 @@ Usage:
   (:metaclass dao-table-class))
 
 (defun make-place (name)
-  "Create a Place object."
-  (make-instance 'place :name name))
+  "Create a Place object in the DB."
+  (create-dao 'place :name name))
 
 (defun save-place (place)
   (insert-dao place))
