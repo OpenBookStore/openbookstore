@@ -194,9 +194,20 @@ Usage:
   (print-unreadable-object (place stream :type t)
     (format stream "~a" (place-name place))))
 
+(defun print-place (place &key (stream t) (details nil))
+  "Print the name of the place and its number of books.
+   If :details is t, print a paginated list of its books."
+  (format stream "~a~t x~a, total: ~a~&"
+          (place-name place)
+          (length (place-books place))
+          (price place))
+  (when details
+    (format stream "~a~&" (mapcar #'print-book (place-books place)))))
+
 (defun place-books (place)
   (mapcar #'place-copies-book (select-dao 'place-copies
                                 (where (:= :place place)))))
+
 (defun add-to (place bk &key (quantity 1))
   "Add the given book to this place.
    Return the quantity. nil means it is not presnet."
