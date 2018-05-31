@@ -136,6 +136,8 @@
         (progn
           (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
 
+          (format t "Initializing...~&")
+
           ;; create commands from the exported functions and variables.
           (replic:functions-to-commands :replic.base)
 

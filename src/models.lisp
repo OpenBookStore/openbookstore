@@ -32,6 +32,8 @@
            ;; places
            :make-place
            :save-place
+           :print-place
+           :find-places
            :add-to
            ;; utils
            :erase-metaclass-from))
@@ -152,9 +154,6 @@ Usage:
      0)
     (t (slot-value book 'price))))
 
-(defmethod price ((place place))
-  (reduce #'+ (mapcar #'price (place-books place))))
-
 (defmethod print-object ((book book) stream)
   (print-unreadable-object (book stream :type t)
     (with-accessors ((title title))
@@ -183,21 +182,37 @@ Usage:
     :col-type (or (:integer) :null)))
   (:metaclass dao-table-class))
 
+(defmethod price ((place place))
+  (reduce #'+ (mapcar #'price (place-books place))))
+
 (defun make-place (name)
   "Create a Place object in the DB."
-  (create-dao 'place :name name))
+  (make-instance 'place :name name))
 
 (defun save-place (place)
   (insert-dao place))
+
+(defun create-place (name)
+  (create-dao 'place :name name))
+
+(defun find-places (&optional query)
+  "If query (list of strings), return places matching this name. Otherwise, return all places."
+  (if query
+      (select-dao 'place
+        (where (:like :name (str:concat "%" (str:join "%" query) "%"))))
+      (select-dao 'place)))
 
 (defmethod print-object ((place place) stream)
   (print-unreadable-object (place stream :type t)
     (format stream "~a" (place-name place))))
 
-(defun print-place (place &key (stream t) (details nil))
+(defparameter *print-details* nil
+  "Print some lists with details.")
+
+(defun print-place (place &key (stream t) (details *print-details*))
   "Print the name of the place and its number of books.
    If :details is t, print a paginated list of its books."
-  (format stream "~a~t x~a, total: ~a~&"
+  (format stream "~40a~t x~3a total: ~3a~&"
           (place-name place)
           (length (place-books place))
           (price place))

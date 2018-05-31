@@ -21,7 +21,12 @@
                 :quantity
                 :set-quantity
                 :delete-books
-                :price)
+                :price
+                ;; places
+                :print-place
+                :place-name
+                :find-places
+                )
   (:export :main
            :search
            :add
@@ -32,6 +37,7 @@
            :stats
            :create
            :delete
+           :places
            :*page-size*))
 (in-package :bookshops.commands)
 
@@ -211,7 +217,6 @@
   "Delete (after confirmation) the books whose title match the given keywords.
 
    For example, `delete on time` will find 'once upon a time'."
-  ;; xxx Doesn't work on the repl, needs a console readline.
   (let ((bklist (when kw
                   (find-book (str:join "%" kw)))))
     (if bklist
@@ -221,6 +226,22 @@
           (when (replic:confirm "Do you want to delete those books ?")
             (delete-books bklist)))
         (format t "~&No results, nothing to do.~&"))))
+
+;;
+;; Places
+;;
+
+(defun places (&optional name &rest rest)
+  "Show a summary of all places or the given one.
+
+   If print-details is t, print a paginated list of books inside this place."
+  ;; a name can be of many words. Join them.
+  (when rest
+    (setf name (cons name rest)))
+  (let ((bookshops.models::*print-details* (or name)))
+    (mapcar #'print-place (find-places name))))
+
+(replic.completion:add-completion "places" (lambda () (mapcar #'place-name (bookshops.models:find-places))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Dev
