@@ -182,6 +182,13 @@ Usage:
     :col-type (or (:integer) :null)))
   (:metaclass dao-table-class))
 
+(defmethod print-object ((pc place-copies) stream)
+  (print-unreadable-object (pc stream :type t)
+    (format stream "place: \"~a\" in \"~a\", x~a"
+            (str:prune 20 (title (place-copies-book pc)))
+            (place-name (place-copies-place pc))
+            (place-copies-quantity pc))))
+
 (defmethod price ((place place))
   (reduce #'+ (mapcar #'price (place-books place))))
 
