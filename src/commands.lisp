@@ -174,13 +174,18 @@
 (replic.completion:add-completion "stats" '("noisbn"))
 
 (defun create (&optional what)
-  "Create a new book."
+  "Create a new book or a new place."
   (unless what
     (setf what "book"))
   (when (symbolp what)
     (string-downcase (symbol-name what)))
-  (when (string-equal what "book")
-    (create-book)))
+  (cond
+    ((string-equal what "book")
+     (create-book))
+    ((string-equal what "place")
+     (create-place))
+    (t
+     (format t "Unrecognized command. Nothing to do."))))
 
 (defun create-book ()
   "Create a new book.."
@@ -208,10 +213,18 @@
     (save-book bk)
     ;; set this for completion of ids of other commands.
     (setf *last-page* (list bk))
-    (print-book bk)
-    ))
+    (print-book bk)))
 
-(replic.completion:add-completion "create" '("book"))
+(defun create-place ()
+  "Interactively create a new place."
+  (let (name)
+    (setf name (rl:readline :prompt (str:concat "Name" (cl-ansi-text:red "*") " ? ")))
+    (when (str:blank? name)
+      (error "The name field is mandatory, please try again."))
+    (bookshops.models::create-place name)))
+
+(replic.completion:add-completion "create" '("book"
+                                             "place"))
 
 (defun delete (&rest kw)
   "Delete (after confirmation) the books whose title match the given keywords.
