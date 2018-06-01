@@ -147,7 +147,7 @@
 
    You can complete the argument with the TAB key."
   (when (stringp pk)
-    (parse-integer pk))
+    (setf pk (parse-integer pk)))
   (print-book-details pk))
 
 ;; Get a list of ids of the last search.

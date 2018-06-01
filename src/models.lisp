@@ -274,16 +274,49 @@ Usage:
                             ""))
           (print-quantity-red-green (quantity-of book))))
 
-(defun print-book-details (pk)
-  (let ((bk (find-dao 'book :id pk)))
+(defun print-book-repartition (bk)
+  "Print a list of places where this book exists with its quantity.
+   bk: book object or id (int).
+
+   Example output:
+
+   1  - default place                              x1
+   2  - second place                               x-2
+   "
+  (when (integerp bk)
+    (setf bk (find-dao 'book :id bk)))
+  (let ((bk-places (select-dao 'place-copies
+                     (where (:= :book bk)))))
+    (if bk-places
+        (progn
+          (format t "----------~&")
+          (format t "In places:~%")
+          (format t "----------~%")
+
+          (mapc (lambda (it)
+                  (format t "~2a - ~40a ~t x~a~&"
+                          (object-id (place-copies-place it))
+                          (place-name (place-copies-place it))
+                          (print-quantity-red-green (place-copies-quantity it))))
+                bk-places))
+        (format t "~%This book is not registered in any place.~&"))))
+
+(defun print-book-details (bk)
+  (when (integerp bk)
+    (setf bk (find-dao 'book :id bk)))
+  (let (bk-places)
     (if bk
         (progn
           (format t "~a x ~a~&" (blue (title bk)) (quantity-of bk))
           (format t "~t~a~&" (authors bk))
           (format t "~tisbn: ~a~&" (isbn bk))
           (format t "~t~a~&" (price bk))
-          (format t "~tcover: ~a~&" (cover-url bk)))
-        (format t "There is no such book with id ~a~&" pk))))
+          (format t "~tcover: ~a~&" (cover-url bk))
+
+          (print-book-repartition bk)
+
+          )
+        (format t "There is no such book with id ~a~&" bk))))
 
 (defun make-book (&key title isbn authors cover-url editor date-publication price datasource)
   "Create a Book instance. If given author or authors, create Author
