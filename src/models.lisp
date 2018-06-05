@@ -26,7 +26,7 @@
            :quantity
            ;; book methods
            :save-book
-           :quantity-of
+           :quantity
            :set-quantity
            :delete-books
            ;; places
@@ -134,11 +134,6 @@ Usage:
     :initarg :authors                   ;TODO: relationship
     :col-type (or (:varchar 128) :null))
 
-   (quantity
-    :accessor quantity
-    :initform 0
-    :col-type (or :integer :null))
-
    (cover-url
     :accessor cover-url
     :initarg :cover-url
@@ -232,9 +227,13 @@ Usage:
   (mapcar #'place-copies-book (select-dao 'place-copies
                                 (where (:= :place place)))))
 
+(defun book-places (bk)
+  (mapcar #'place-copies-place (select-dao 'place-copies
+                                 (where (:= :book bk)))))
+
 (defun add-to (place bk &key (quantity 1))
   "Add the given book to this place.
-   Return the quantity. nil means it is not presnet."
+   Return the quantity. nil means it is not present."
   (unless (object-id bk)
     (error "The book ~a is not saved in DB." bk))
   (let ((existing (find-dao 'place-copies :place place :book bk))
@@ -273,7 +272,7 @@ Usage:
           (str:prune 40 (or (authors book) ""))
           (str:prune 15 (or (format nil "~a" (price book))
                             ""))
-          (print-quantity-red-green (quantity-of book))))
+          (print-quantity-red-green (quantity book))))
 
 (defun print-book-repartition (bk)
   "Print a list of places where this book exists with its quantity.
@@ -308,15 +307,13 @@ Usage:
   (let (bk-places)
     (if bk
         (progn
-          (format t "~a x ~a~&" (blue (title bk)) (quantity-of bk))
+          (format t "~a x ~a~&" (blue (title bk)) (quantity bk))
           (format t "~t~a~&" (authors bk))
           (format t "~tisbn: ~a~&" (isbn bk))
           (format t "~t~a~&" (price bk))
           (format t "~tcover: ~a~&" (cover-url bk))
 
-          (print-book-repartition bk)
-
-          )
+          (print-book-repartition bk))
         (format t "There is no such book with id ~a~&" bk))))
 
 (defun make-book (&key title isbn authors cover-url editor date-publication price datasource)
@@ -380,10 +377,10 @@ Usage:
   ""
   (count-dao 'book))
 
-(defun quantity-of (book)
-  ;; Use a wrapper around the quantity accessor, for future additions.
-  ;; or just don't set the accessor ;)
-  (quantity book))
+(defun quantity (book)
+  "Sum of the quantities in all places."
+  (reduce #'+ (mapcar #'place-copies-quantity (select-dao 'place-copies
+                                                (where (:= :book book))))))
 
 (defun set-quantity (book nb)
   "Set the quantity of this book."
