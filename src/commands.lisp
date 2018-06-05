@@ -26,6 +26,7 @@
                 :print-place
                 :place-name
                 :find-places
+                :default-place
                 ;; utils
                 :print-quantity-red-green
                 )
@@ -196,7 +197,7 @@
      (format t "Unrecognized command. Nothing to do."))))
 
 (defun create-book ()
-  "Create a new book.."
+  "Create a new book."
   ;; next step: class and column introspection, data validation,
   ;; completion of fields etc.
   (let (bk title authors price quantity)
@@ -216,9 +217,9 @@
         (setf quantity (parse-integer quantity)))
 
     (setf bk (make-book :title title :authors authors :price price))
-    (set-quantity bk quantity)
     ;; xxx save-book increments quantity
     (save-book bk)
+    (add-to (default-place) bk)
     ;; set this for completion of ids of other commands.
     (setf *last-page* (list bk))
     (print-book bk)))

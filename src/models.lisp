@@ -198,6 +198,9 @@ Usage:
 (defun create-place (name)
   (create-dao 'place :name name))
 
+(defun default-place ()
+  (find-dao 'place))
+
 (defun find-places (&optional query)
   "If query (list of strings), return places matching this name. Otherwise, return all places."
   (if query
@@ -241,7 +244,9 @@ Usage:
     (if existing
         (progn
           (log:info "The book ~a exists in ~a." bk place)
-          (place-copies-quantity existing))
+          (incf (place-copies-quantity existing) quantity)
+          (save-dao existing)
+          (quantity bk))
         (progn
           (log:info "~a doesn't exist in ~a yet.~&" bk place)
           (setf place-copy (make-instance 'place-copies
@@ -249,7 +254,7 @@ Usage:
                                           :book bk
                                           :quantity quantity))
           (insert-dao place-copy)
-          (place-copies-quantity place-copy)))))
+          (quantity bk)))))
 
 
 (defun print-quantity-red-green (qty &optional (stream nil))
@@ -338,14 +343,14 @@ Usage:
         (if existing
             (progn
               (log:info "book of isbn " (isbn book) " is already in stock.")
-              (incf (quantity existing))
               (save-dao existing)
-              (quantity existing)
+              (add-to (default-place) existing)
               existing)
             (progn
               (let ((new (insert-dao book)))
-                (incf (quantity new))
+                (log:info "creating new book")
                 (save-dao new)
+                (add-to (default-place) new)
                 new))))
     (error (c) (format t "Oops, an unexpected error happened:~&~a~&" c))))
 
@@ -383,9 +388,9 @@ Usage:
                                                 (where (:= :book book))))))
 
 (defun set-quantity (book nb)
-  "Set the quantity of this book."
+  "Set the quantity of this book into the default place."
   (assert (numberp nb))
-  (setf (quantity book) nb))
+  (add-to (default-place) book :quantity nb))
 
 (defclass author ()
   ((name :accessor name :initarg :name

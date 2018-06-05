@@ -28,8 +28,21 @@
     (is (title book) "Antigone" "title access"))
   )
 
+(defvar fixtures nil)
+
+(defun fixtures-init ()
+  (setf fixtures (list (make-book :title "test"
+                                  :isbn "9782710381419"))))
+
+(defvar *default-place* nil)
+
+(defun fixtures-places ()
+  (setf *default-place* (make-place "default place")))
+
 (subtest "Creation and DB save"
+  (fixtures-places)
   (with-empty-db
+    (save-place *default-place*)
     (let ((bk (make-book :title "in-test")))
       (save-book bk)
 
@@ -37,15 +50,11 @@
           1
           "The quantity is 1 after adding to the DB."))))
 
-(defvar fixtures nil)
-
-(defun fixtures-init ()
-  (setf fixtures (list (make-book :title "test"
-                                  :isbn "9782710381419"))))
-
 (subtest "Add a book that already exists"
   (fixtures-init)
+  (fixtures-places)
   (with-empty-db
+    (save-place *default-place*)
     (let* ((bk (first fixtures))
            (same-bk (make-book :title "different title"
                                :isbn (isbn bk))))
@@ -55,19 +64,14 @@
           2)
       )))
 
-(defvar place nil)
-
-(defun fixtures-places ()
-  (setf place (make-place "default place")))
-
 (subtest "Places"
   (fixtures-init)
   (fixtures-places)
   (with-empty-db
     ;; xxx Better fixtures, save the objects before.
-    (save-place place)
+    (save-place *default-place*)
     (save-book (first fixtures))
-    (is (add-to place (first fixtures))
-        1)))
+    (is (add-to *default-place* (first fixtures))
+        2)))
 
 (finalize)
