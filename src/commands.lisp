@@ -26,6 +26,8 @@
                 :print-place
                 :place-name
                 :find-places
+                ;; utils
+                :print-quantity-red-green
                 )
   (:export :main
            :search
@@ -82,7 +84,11 @@
          (results (books query))
          (i (length results)))
     (mapcar (lambda (it)
-              (format t "~2@a- ~a, ~a~t~a~&" i (blue (title it)) (authors it) (price it))
+              (format t "~2@a- ~a, ~a~t~a stock ? x~a~&" i
+                      (blue (title it))
+                      (authors it)
+                      (price it)
+                      (print-quantity-red-green (quantity it)))
               (decf i))
             (reverse results))))
 

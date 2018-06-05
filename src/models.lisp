@@ -36,6 +36,7 @@
            :find-places
            :add-to
            ;; utils
+           :print-quantity-red-green
            :erase-metaclass-from))
 (in-package :bookshops.models)
 
@@ -381,6 +382,7 @@ Usage:
 
 (defun quantity-of (book)
   ;; Use a wrapper around the quantity accessor, for future additions.
+  ;; or just don't set the accessor ;)
   (quantity book))
 
 (defun set-quantity (book nb)
