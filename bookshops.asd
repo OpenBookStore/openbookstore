@@ -19,7 +19,8 @@
                :unix-opts
                :replic ;; not in QL
                ;; utils
-               :str)
+               :str
+               :cl-i18n)
   :components ((:module "src"
                 :components
                 ((:file "models")

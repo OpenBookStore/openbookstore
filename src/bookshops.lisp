@@ -11,6 +11,7 @@
                 :authors
                 :price)
   (:export :main
+           :i18n-load
            ;; book accessors
            :editor
            :title
@@ -106,6 +107,13 @@
          (res (clss:select "tr" node)))
     (setf *last-results* (map 'list #'book-info res))))
 
+(defun i18n-load ()
+  (setf cl-i18n::*translation-table*
+        (cl-i18n:load-language "locale/mo/fr_FR/messages.mo"
+                               :store-hashtable nil
+                               :store-plural-function t
+                               :update-translation-table nil)))
+
 (defun handle-parser-error (c)
   (format t "Argument error: ~a~&" (opts:option c))
   (uiop:quit 1))
@@ -134,6 +142,9 @@
 
     (if (getf options :interactive)
         (progn
+
+          (i18n-load)
+
           (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
 
           (format t "Initializing...~&")

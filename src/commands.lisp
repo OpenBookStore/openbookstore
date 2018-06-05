@@ -51,6 +51,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utils
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun _ (a) (cl-i18n:translate a))
+
 (defun percentage (low max)
   (* 100 (/ (float low)
             max)))
@@ -127,7 +129,7 @@
   (setf *last-page* (sublist seq
                              (* (- page 1) *page-size*)
                              (*  page *page-size*)))
-  (format t "Results: ~a. Page: ~a/~a~&"
+  (format t (_ "Results: ~a. Page: ~a/~a~&")
           (length seq)
           page
           (total-pages (length seq)))

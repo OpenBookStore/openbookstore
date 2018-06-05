@@ -1,0 +1,29 @@
+# cl-bookshops
+# Copyright (C) 2018 vindarel
+# This file is distributed under the same license as the cl-bookshops package.
+# vindarel <vindarel@mailz.org>, 2018
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-06-05 11:57+0200\n"
+"PO-Revision-Date: 2018-06-05 11:15+0200\n"
+"Last-Translator: vince <vindarel@mailz.org>\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: src/commands.lisp:133
+#, lisp-format
+msgid "Results: ~a. Page: ~a/~a~&"
+msgstr "Résultats: ~a. Page: ~a/~a~&"
+
+#~ msgid "world"
+#~ msgstr "monde"
+
+#~ msgid "yoyo"
+#~ msgstr "eheh"

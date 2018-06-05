@@ -37,6 +37,10 @@ Parameters, to change with `set`:
 
 ![](img.png)
 
+## i18n
+
+This software is available in other languages than english.
+
 
 ## Dev
 
