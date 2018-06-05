@@ -20,8 +20,7 @@
             'string)))
 
 (defmacro with-empty-db (&body body)
-  "Run `body` with a new temporary DB.
-  "
+  "Run `body` with a new temporary DB."
   `(let* ((*random-state* (make-random-state t))
           (prefix (concatenate 'string
                                (random-string 8)
@@ -30,10 +29,13 @@
      (uiop:with-temporary-file (:pathname name :prefix prefix)
        (let* ((*db-name* name)
               (*db* (connect)))
-         (ensure-tables-exist)
-         (migrate-all)
-         ,@body
-         ;; Despite the let, we must re-connect to our DB.
-         (setf mito:*connection* connection)
-         (connect))))
+         ;; catch anything to always re-connect to our real db.
+         (handler-case
+             (progn
+               (ensure-tables-exist)
+               (migrate-all)
+               ,@body)
+           (t () nil))
+
+         (setf mito:*connection* connection))))
   )
