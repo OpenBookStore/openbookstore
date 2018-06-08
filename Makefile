@@ -16,8 +16,8 @@ test:
 
 # Install dependencies, mostly for docker (gitlab CI).
 install:
-	git clone https://github.com/vindarel/replic/ ~/quicklisp/local-projects/
-	git clone https://github.com/vindarel/cl-str/ ~/quicklisp/local-projects/
+	git clone https://github.com/vindarel/replic/ ~/quicklisp/local-projects/replic/
+	git clone https://github.com/vindarel/cl-str/ ~/quicklisp/local-projects/cl-str/
 
 
 # Workflow:
