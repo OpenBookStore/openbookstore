@@ -9,9 +9,14 @@ build:
 
 test:
 	$(LISP) --non-interactive \
+		--load bookshops.asd \
 		--load bookshops-test.asd \
 	     	--eval '(ql:quickload :bookshops-test)' \
 	     	--eval '(prove:run #p"tests/test-bookshops.lisp")' \
+
+# Install dependencies, mostly for docker (gitlab CI).
+install:
+	git clone https://github.com/vindarel/replic/ ~/quicklisp/local-projects/
 
 
 # Workflow:

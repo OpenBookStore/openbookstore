@@ -3,6 +3,12 @@ image: daewok/lisp-devel
 stages:
   - test
 
+# We need to install (clone) libraries not in Quicklisp.
+before_script:
+  - apt-get update -qy
+  - apt-get install -y git-core
+  - make install
+
 test:
   stage: test
   script:
