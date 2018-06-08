@@ -27,8 +27,8 @@
                                "/"))
           (connection *db*))
      (uiop:with-temporary-file (:pathname name :prefix prefix)
-       (let* ((*db-name* name)
-              (*db* (connect)))
+       (let* ((*db-name* name))
+         (connect)
          ;; catch anything to always re-connect to our real db.
          (handler-case
              (progn
