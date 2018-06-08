@@ -1,0 +1,9 @@
+image: daewok/lisp-devel
+
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+    - make test
