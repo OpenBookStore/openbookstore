@@ -25,7 +25,7 @@
           (prefix (concatenate 'string
                                (random-string 8)
                                "/"))
-          (connection mito:*connection*))
+          (connection *db*))
      (uiop:with-temporary-file (:pathname name :prefix prefix)
        (let* ((*db-name* name)
               (*db* (connect)))
@@ -37,5 +37,5 @@
                ,@body)
            (t () nil))
 
-         (setf mito:*connection* connection))))
+         (setf mito.connection:*connection* connection))))
   )

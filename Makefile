@@ -13,7 +13,7 @@ test:
 	        --load bookshops-test.asd \
 	     --eval '(ql:quickload :bookshops)' \
 	     --eval '(ql:quickload :bookshops-test)' \
-	     --eval '(prove:run #p"tests/bookshops.lisp")' \
+	     --eval '(prove:run #p"tests/test-bookshops.lisp")' \
 	     --eval '(quit)'
 
 

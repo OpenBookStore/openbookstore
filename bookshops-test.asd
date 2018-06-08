@@ -7,11 +7,12 @@
   :author "vindarel"
   :license "GPL3"
   :depends-on ("bookshops"
-               "prove")
+               "prove"
+               "mito")
   :components ((:module "tests"
                 :components
                 ((:file "test-utils")
-                 (:test-file "bookshops"))))
+                 (:test-file "test-bookshops"))))
   :description "Test system for bookshops"
 
   ;; :perform (test-op (op c) (symbol-call :prove-asdf :run-test-system c))
