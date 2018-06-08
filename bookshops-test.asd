@@ -3,7 +3,6 @@
 |#
 
 (asdf:defsystem "bookshops-test"
-  :defsystem-depends-on ("prove-asdf")
   :author "vindarel"
   :license "GPL3"
   :depends-on ("bookshops"
@@ -12,7 +11,7 @@
   :components ((:module "tests"
                 :components
                 ((:file "test-utils")
-                 (:test-file "test-bookshops"))))
+                 (:file "test-bookshops"))))
   :description "Test system for bookshops"
 
   ;; :perform (test-op (op c) (symbol-call :prove-asdf :run-test-system c))
