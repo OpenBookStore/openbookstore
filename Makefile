@@ -8,10 +8,10 @@ build:
 		--eval '(quit)'
 
 test:
-	$(LISP) --load bookshops-test.asd \
-	     --eval '(ql:quickload :bookshops-test)' \
-	     --eval '(prove:run #p"tests/test-bookshops.lisp")' \
-	     --eval '(quit)'
+	$(LISP) --non-interactive \
+		--load bookshops-test.asd \
+	     	--eval '(ql:quickload :bookshops-test)' \
+	     	--eval '(prove:run #p"tests/test-bookshops.lisp")' \
 
 
 # Workflow:
