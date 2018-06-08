@@ -2,6 +2,8 @@
 
 In development, don't look.
 
+![](https://gitlab.com/vindarel/cl-bookshops/badges/master/pipeline.svg)
+
 ## Usage
 
     make build
