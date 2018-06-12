@@ -250,7 +250,7 @@ Usage:
           (log:info "The book ~a exists in ~a." bk place)
           (incf (place-copies-quantity existing) quantity)
           (save-dao existing)
-          (quantity bk))
+          (place-copies-quantity existing))
         (progn
           (log:info "~a doesn't exist in ~a yet.~&" bk place)
           (setf place-copy (make-instance 'place-copies
@@ -258,7 +258,7 @@ Usage:
                                           :book bk
                                           :quantity quantity))
           (insert-dao place-copy)
-          (quantity bk)))))
+          (place-copies-quantity place-copy)))))
 
 
 (defun print-quantity-red-green (qty &optional (stream nil))
@@ -348,13 +348,11 @@ Usage:
             (progn
               (log:info "book of isbn " (isbn book) " is already in stock.")
               (save-dao existing)
-              (add-to (default-place) existing)
               existing)
             (progn
               (let ((new (insert-dao book)))
                 (log:info "creating new book")
                 (save-dao new)
-                (add-to (default-place) new)
                 new))))
     (error (c) (format t "Oops, an unexpected error happened:~&~a~&" c))))
 
@@ -386,15 +384,27 @@ Usage:
   ""
   (count-dao 'book))
 
-(defun quantity (book)
+(defgeneric quantity (obj)
+  (:documentation "Quantity of the given book, or the number of books in the given place."))
+
+(defmethod quantity ((book book))
   "Sum of the quantities in all places."
   (reduce #'+ (mapcar #'place-copies-quantity (select-dao 'place-copies
                                                 (where (:= :book book))))))
+
+(defmethod quantity ((place place))
+  "Quantity of books in this place."
+  (reduce #'+ (mapcar #'place-copies-quantity (select-dao 'place-copies
+                                                (where (:= :place place))))))
 
 (defun set-quantity (book nb)
   "Set the quantity of this book into the default place."
   (assert (numberp nb))
   (add-to (default-place) book :quantity nb))
+
+;;
+;; Authors
+;;
 
 (defclass author ()
   ((name :accessor name :initarg :name

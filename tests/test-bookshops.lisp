@@ -13,6 +13,7 @@
                 :find-by
                 :make-place
                 :save-place
+                :create-place
                 :default-place
                 :add-to)
   (:import-from :bookshops-test.utils
@@ -36,9 +37,11 @@
                                   :isbn "9782710381419"))))
 
 (defvar *default-place* nil)
+(defvar *second-place* nil)
 
 (defun fixtures-places ()
-  (setf *default-place* (make-place "default place")))
+  (setf *default-place* (make-place "default place"))
+  (setf *second-place* (create-place "second place")))
 
 (subtest "Creation and DB save"
   (fixtures-places)
@@ -71,9 +74,32 @@
         'bookshops.models::place
         "we create a default place if there is none.")))
 
+(subtest "quantity"
+  (with-empty-db
+    (fixtures-init)
+    (fixtures-places)
+    (save-place *default-place*)
+    (save-book (first fixtures))
+
+    (add-to *default-place* (first fixtures) :quantity 2)
+    (is 2
+        (quantity (first fixtures))
+        "quantity of a book")
+    (is 2
+        (quantity *default-place*)
+        "quantity of a place")
+    (add-to *second-place* (first fixtures))
+    (is 3
+        (quantity (first fixtures))
+        "quantity of a book accross two places")
+    (is 1
+        (quantity *second-place*)
+        "quantity in second place")))
+
 (subtest "Places"
   (fixtures-init)
   (fixtures-places)
+
   (with-empty-db
     ;; xxx Better fixtures, save the objects before.
     (save-place *default-place*)
