@@ -13,6 +13,7 @@
                 :find-by
                 :make-place
                 :save-place
+                :default-place
                 :add-to)
   (:import-from :bookshops-test.utils
                 :with-empty-db))
@@ -63,6 +64,12 @@
       (is (quantity (find-by :isbn (isbn bk)))
           2)
       )))
+
+(subtest "Create a default place"
+  (with-empty-db
+    (is (type-of (default-place))
+        'bookshops.models::place
+        "we create a default place if there is none.")))
 
 (subtest "Places"
   (fixtures-init)
