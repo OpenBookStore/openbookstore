@@ -3,11 +3,11 @@ LISP?=sbcl
 all: test
 
 build:
-	$(LISP) --load bookshops.asd \
+	$(LISP)	--non-interactive \
+		--load bookshops.asd \
                 --load ../replic/replic.asd \
 		--eval '(ql:quickload :bookshops)' \
-		--eval '(asdf:make :bookshops)' \
-		--eval '(quit)'
+		--eval '(asdf:make :bookshops)'
 
 test:
 	$(LISP) --non-interactive \
