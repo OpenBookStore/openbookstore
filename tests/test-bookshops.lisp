@@ -2,11 +2,13 @@
   (:shadow :search)
   (:use :cl
         :bookshops
+        :mito
         :prove)
   (:import-from :bookshops.models
                 :book
                 :make-book
                 :save-book
+                :create-book
                 :title
                 :isbn
                 :quantity
@@ -20,9 +22,10 @@
                 :with-empty-db))
 (in-package :bookshops-test)
 
-;; NOTE: To run this test file, execute `(asdf:test-system :bookshops)' in your Lisp.
-
 (plan nil)
+
+(defvar *books* nil)
+(defvar *places* nil)
 
 (subtest "Simple creation and access"
   (let ((book (make-instance 'book :title "Antigone")))
@@ -30,43 +33,40 @@
     (is (title book) "Antigone" "title access"))
   )
 
-(defvar fixtures nil)
+(defmacro with-book-fixtures (&body body)
+  "Create some books in DB."
+  `(progn
+     (setf *books* (list (create-book :title "test"
+                                      :isbn "9782710381419")))
+     ,@body))
 
-(defun fixtures-init ()
-  (setf fixtures (list (make-book :title "test"
-                                  :isbn "9782710381419"))))
-
-(defvar *default-place* nil)
-(defvar *second-place* nil)
-
-(defun fixtures-places ()
-  (setf *default-place* (make-place "default place"))
-  (setf *second-place* (create-place "second place")))
+(defmacro with-place-fixtures (&body body)
+  "Create some places in DB."
+  `(progn
+     (setf *places* (list (create-place "place 1")
+                          (create-place "place 2")))
+     ,@body))
 
 (subtest "Creation and DB save"
-  (fixtures-places)
   (with-empty-db
-    (save-place *default-place*)
-    (let ((bk (make-book :title "in-test")))
-      (save-book bk)
-
-      (is (quantity bk)
-          1
-          "The quantity is 1 after adding to the DB."))))
+    (with-place-fixtures
+      (let ((bk (make-book :title "in-test")))
+        (save-book bk)
+        (is (quantity bk)
+            0
+            "book creation ok, quantity 0.")))))
 
 (subtest "Add a book that already exists"
-  (fixtures-init)
-  (fixtures-places)
   (with-empty-db
-    (save-place *default-place*)
-    (let* ((bk (first fixtures))
-           (same-bk (make-book :title "different title"
-                               :isbn (isbn bk))))
-      (save-book bk)
-      (save-book same-bk)
-      (is (quantity (find-by :isbn (isbn bk)))
-          2)
-      )))
+    (with-book-fixtures
+      (with-place-fixtures
+        (let* ((bk (first *books*))
+               (same-bk (make-book :title "different title"
+                                   :isbn (isbn bk))))
+          (is (object-id (save-book same-bk))
+              (object-id bk)
+              "saving a book that already exists doesn't create a new one.")
+          )))))
 
 (subtest "Create a default place"
   (with-empty-db
@@ -76,35 +76,30 @@
 
 (subtest "quantity"
   (with-empty-db
-    (fixtures-init)
-    (fixtures-places)
-    (save-place *default-place*)
-    (save-book (first fixtures))
+    (with-book-fixtures
+      (with-place-fixtures
 
-    (add-to *default-place* (first fixtures) :quantity 2)
-    (is 2
-        (quantity (first fixtures))
-        "quantity of a book")
-    (is 2
-        (quantity *default-place*)
-        "quantity of a place")
-    (add-to *second-place* (first fixtures))
-    (is 3
-        (quantity (first fixtures))
-        "quantity of a book accross two places")
-    (is 1
-        (quantity *second-place*)
-        "quantity in second place")))
+        (add-to (first *places*) (first *books*) :quantity 2)
+        (is 2
+            (quantity (first *books*))
+            "quantity of a book")
+        (is 2
+            (quantity (first *places*))
+            "quantity of a place")
+        (add-to (second *places*) (first *books*))
+        (is 3
+            (quantity (first *books*))
+            "quantity of a book accross two places")
+        (is 1
+            (quantity (second *places*))
+            "quantity in second place")))))
 
 (subtest "Places"
-  (fixtures-init)
-  (fixtures-places)
-
   (with-empty-db
-    ;; xxx Better fixtures, save the objects before.
-    (save-place *default-place*)
-    (save-book (first fixtures))
-    (is (add-to *default-place* (first fixtures))
-        2)))
+    (with-book-fixtures
+      (with-place-fixtures
+        (is (add-to (first *places*) (first *books*))
+            1
+            "add-to")))))
 
 (finalize)

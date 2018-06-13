@@ -26,6 +26,7 @@
            :quantity
            ;; book methods
            :save-book
+           :create-book
            :quantity
            :set-quantity
            :delete-books
@@ -354,6 +355,11 @@ Usage:
                  :editor editor
                  :price price
                  :date-publication date-publication))
+
+(defun create-book (&key title isbn)
+  (create-dao 'book
+              :title title
+              :isbn isbn))
 
 (defun save-book (book)
   "Save this book in DB."
