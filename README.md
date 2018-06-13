@@ -43,6 +43,8 @@ Parameters, to change with `set`:
 
 This software is available in other languages than english.
 
+See the makefile and `i18n-load` in `utils.lisp`.
+
 
 ## Dev
 
@@ -56,6 +58,7 @@ Model usage:
 (use-package '(:mito :sxql))
 
 (connect)
+(i18n-load)
 
 (make-book :title "antigone" :datasource "xxx")
 
