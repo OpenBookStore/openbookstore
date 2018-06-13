@@ -10,7 +10,9 @@
                 :title
                 :editor
                 :authors
-                :price)
+                :price
+                :default-place
+                :place-name)
   (:export :main
            :i18n-load
            ;; book accessors
@@ -142,9 +144,10 @@
     (if (getf options :interactive)
         (progn
 
-          (i18n-load)
+          (init)
 
           (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
+          (setf replic:*prompt-prefix* (format nil "(~a) " (place-name (default-place))))
 
           (format t "Initializing...~&")
 
@@ -157,7 +160,6 @@
           ;; define completions.
           ;; (push '("add" . *results*) replic:*args-completions*)
 
-          (init)
           (replic:repl))
 
         (handler-case

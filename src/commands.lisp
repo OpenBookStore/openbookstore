@@ -44,6 +44,7 @@
            :delete
            :places
            :inside
+           :fortune
            :*page-size*))
 (in-package :bookshops.commands)
 
@@ -284,6 +285,7 @@
       (let* ((name (str:unwords rest))
              (place (find-place-by :name name)))
         (setf *current-place* place)
+        (setf replic:*prompt-prefix* (format nil "(~a) " (place-name *current-place*)))
         (format t "Now inside ~a.~&" name))
       (progn
         (format t "Current place: ~a.~&" (place-name (current-place))))))
@@ -294,6 +296,10 @@
 (replic.completion:add-completion "places" #'place-names)
 (replic.completion:add-completion "inside" #'place-names)
 
+(defun fortune ()
+  (if (probe-file "/usr/games/fortune")
+      (uiop:run-program "/usr/games/fortune" :output *standard-output*)
+      (format t "nothing in /usr/games/fortune, man.~&")))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
