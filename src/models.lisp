@@ -203,7 +203,7 @@ Usage:
    If none exist, create one."
   (if (= 0 (count-dao 'place))
       (create-place "home")
-      (find-dao 'place)))
+      (first (select-dao 'place (order-by (:desc :id))))))
 
 (defun find-places (&optional query)
   "If query (list of strings), return places matching this name. Otherwise, return all places."
