@@ -27,6 +27,7 @@
                 :print-place
                 :place-name
                 :find-places
+                :find-place-by
                 :default-place
                 ;; utils
                 :print-quantity-red-green
@@ -42,6 +43,7 @@
            :create
            :delete
            :places
+           :inside
            :*page-size*))
 (in-package :bookshops.commands)
 
@@ -51,6 +53,9 @@
 
 (defvar *current-page* 1
   "Current page of the stock pager.")
+
+(defvar *current-place* (default-place)
+  "The current place we manipulate the books from.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utils
@@ -262,7 +267,34 @@
   (let ((bookshops.models::*print-details* (or name)))
     (mapcar #'print-place (find-places name))))
 
-(replic.completion:add-completion "places" (lambda () (mapcar #'place-name (bookshops.models:find-places))))
+
+(defun move (bk place)
+  "Usage: 'move <book> [to] <place>'."
+  )
+
+(defun current-place ()
+  "Return the current place, set it with the default one if needed."
+  ;; since it wasn't initialized, see above.
+  (or *current-place*
+      (setf *current-place* (default-place))))
+
+(defun inside (&rest rest)
+  "Print the current place, or change it."
+  (if rest
+      (let* ((name (str:unwords rest))
+             (place (find-place-by :name name)))
+        (setf *current-place* place)
+        (format t "Now inside ~a.~&" name))
+      (progn
+        (format t "Current place: ~a.~&" (place-name (current-place))))))
+
+(defun place-names ()
+  (mapcar #'place-name (bookshops.models:find-places)))
+
+(replic.completion:add-completion "places" #'place-names)
+(replic.completion:add-completion "inside" #'place-names)
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Dev
@@ -272,4 +304,5 @@
   (setf *last-results* nil)
   (setf *last-search* nil)
   (setf *page-size* 15)
-  (setf *current-page* 1))
+  (setf *current-page* 1)
+  (setf *current-place* (default-place)))

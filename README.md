@@ -25,6 +25,7 @@ Available commands: `help`, `help help`
 - `details <i>`: print more information about the last search result
   number `<i>`. You can complete this argument using the TAB key
   (specially handy when you have filtered the results).
+- `inside`: print the current place we manipulate the books from. With an argument, change it (use TAB completion).
 - `places`: lists the existing places with their number of books and their total cost.
 - `stats`: some numbers. Percentage of books without isbn. With optional parameters to print the related results:
   - `noisbn`

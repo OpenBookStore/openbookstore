@@ -36,6 +36,7 @@
            :save-place
            :print-place
            :find-places
+           :find-place-by
            :add-to
            ;; utils
            :print-quantity-red-green
@@ -203,9 +204,12 @@ Usage:
 (defun default-place ()
   "Return the default place (the first created one by default).
    If none exist, create one."
-  (if (= 0 (count-dao 'place))
-      (create-place "home")
-      (first (select-dao 'place (order-by (:desc :id))))))
+  (when (mito.connection:connected-p)
+    ;; Check the connection because of setf *current-place* in commands package.
+    ;; Or initialize it elsewhere.
+    (if (= 0 (count-dao 'place))
+        (create-place "home")
+        (first (select-dao 'place (order-by (:desc :id)))))))
 
 (defun find-places (&optional query)
   "If query (list of strings), return places matching this name. Otherwise, return all places."
@@ -213,6 +217,11 @@ Usage:
       (select-dao 'place
         (where (:like :name (str:concat "%" (str:join "%" query) "%"))))
       (select-dao 'place)))
+
+(defun find-place-by (key val)
+  "Find a place by key. "
+  (when val
+    (find-dao 'place key val)))
 
 (defmethod print-object ((place place) stream)
   (print-unreadable-object (place stream :type t)
