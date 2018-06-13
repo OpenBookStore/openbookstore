@@ -12,18 +12,19 @@
                :plump
                :lquery
                :clss ;; might do with lquery only
-               :log4cl
                ;; DB
                :mito
                ;; readline
                :unix-opts
-               :replic ;; not in QL
+               :replic ;; XXX not in QL
                ;; utils
                :str
+               :log4cl
                :cl-i18n)
   :components ((:module "src"
                 :components
-                ((:file "models")
+                ((:file "utils")
+                 (:file "models")
                  (:file "bookshops")
                  (:file "commands"))))
 

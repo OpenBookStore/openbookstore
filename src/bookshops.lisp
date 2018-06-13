@@ -1,5 +1,6 @@
 (defpackage bookshops
   (:use :cl
+        :bookshops.utils
         :cl-ansi-text)
   (:shadow :search)
   (:import-from :bookshops.models
@@ -107,12 +108,10 @@
          (res (clss:select "tr" node)))
     (setf *last-results* (map 'list #'book-info res))))
 
-(defun i18n-load ()
-  (setf cl-i18n::*translation-table*
-        (cl-i18n:load-language "locale/mo/fr_FR/messages.mo"
-                               :store-hashtable nil
-                               :store-plural-function t
-                               :update-translation-table nil)))
+(defun init ()
+  "Init i18n, connect to the DB,..."
+  (bookshops.models:connect)
+  (i18n-load))
 
 (defun handle-parser-error (c)
   (format t "Argument error: ~a~&" (opts:option c))
@@ -158,12 +157,12 @@
           ;; define completions.
           ;; (push '("add" . *results*) replic:*args-completions*)
 
-          (bookshops.models:connect)
+          (init)
           (replic:repl))
 
         (handler-case
             (if free-args
-                (search (str:join " " free-args)))
+                (books (str:join " " free-args)))
           (error (c)
             (progn
               (format *error-output* "~a~&" c)

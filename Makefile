@@ -1,5 +1,7 @@
 LISP?=sbcl
 
+all: test
+
 build:
 	$(LISP) --load bookshops.asd \
                 --load ../replic/replic.asd \

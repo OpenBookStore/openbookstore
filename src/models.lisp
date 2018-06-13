@@ -1,5 +1,6 @@
 (defpackage bookshops.models
   (:use :cl
+        :bookshops.utils
         :mito
         :sxql
         :cl-ansi-text
@@ -461,7 +462,7 @@ Usage:
   (log:info from (object-id from)
             to (object-id to))
   (if (= (object-id from) (object-id to))
-      (format t "No need to move this book from and to the same place (~a).~&" (place-name to))
+      (format t (_ "No need to move this book from and to the same place (~a).~&") (place-name to))
       (progn
         (remove-from from bk)
         (add-to to bk)

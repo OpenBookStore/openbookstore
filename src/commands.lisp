@@ -1,5 +1,6 @@
 (defpackage bookshops.commands
   (:use :cl
+        :bookshops.utils
         :mito
         :cl-ansi-text)
   (:shadow :search
@@ -54,8 +55,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utils
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun _ (a) (cl-i18n:translate a))
-
 (defun percentage (low max)
   (* 100 (/ (float low)
             max)))
