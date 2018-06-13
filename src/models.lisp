@@ -260,6 +260,22 @@ Usage:
           (insert-dao place-copy)
           (place-copies-quantity place-copy)))))
 
+(defun remove-from (place bk &key (quantity 1))
+  "Remove the given book from this place.
+   Return the quantity."
+  (unless (object-id bk)
+    (error "The book ~a is not saved in the DB." bk))
+  (let ((existing (find-dao 'place-copies :place place :book bk))
+        qty)
+    (if existing
+        (progn
+          (setf qty (place-copies-quantity existing))
+          (setf (place-copies-quantity existing) (decf qty quantity))
+          (save-dao existing)
+          ;; (when (minusp qty)
+          ;;   (format t "~a" (red (format nil "mmh, you now have a negative stock of \"~a\"" (title bk)))))
+          qty)
+        (error "Could not find the book ~a in place ~a" bk place))))
 
 (defun print-quantity-red-green (qty &optional (stream nil))
   "If qty is > 0, print in green. If < 0, in red."
@@ -397,6 +413,9 @@ Usage:
   (reduce #'+ (mapcar #'place-copies-quantity (select-dao 'place-copies
                                                 (where (:= :place place))))))
 
+(defmethod quantity ((pc place-copies))
+  (place-copies-quantity pc))
+
 (defun set-quantity (book nb)
   "Set the quantity of this book into the default place."
   (assert (numberp nb))
@@ -425,6 +444,23 @@ Usage:
 (defun delete-books (bklist)
   "Delete this list of books."
   (mapcar #'mito:delete-dao bklist))
+
+;;
+;; Move from place to place
+;;
+;; use current-place, new command "inside <place>" ?
+(defun move (bk to &key (quantity 1) (from (default-place)))
+  "Move a book from the actual place (the default one) to another one.
+   If :from is specified, move from this place."
+  (log:info from (object-id from)
+            to (object-id to))
+  (if (= (object-id from) (object-id to))
+      (format t "No need to move this book from and to the same place (~a).~&" (place-name to))
+      (progn
+        (remove-from from bk)
+        (add-to to bk)
+        (format t "Moved ~a copy(ies) of '~a' from ~a to ~a...~&"
+                quantity (title bk) (place-name from) (place-name to)))))
 
 ;;
 ;; utils
