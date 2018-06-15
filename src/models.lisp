@@ -233,10 +233,11 @@ Usage:
 (defun print-place (place &key (stream t) (details *print-details*))
   "Print the name of the place and its number of books.
    If :details is t, print a paginated list of its books."
-  (format stream "~2a - ~40a~t x~3a total: ~3a~&"
+  (format stream "~2a - ~40a~t x~3a/ ~3a total: ~3a~&"
           (object-id place)
           (place-name place)
           (length (place-books place))
+          (reduce #'+ (mapcar #'quantity (place-books place)))
           (price place))
   (when details
     (format stream "~a~&" (mapcar #'print-book (place-books place)))))
