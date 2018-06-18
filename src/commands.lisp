@@ -13,6 +13,7 @@
                 :save-book
                 :find-book
                 :find-book-noisbn
+                :find-by
                 :print-book
                 :print-book-details
                 :count-book
@@ -29,6 +30,7 @@
                 :find-places
                 :find-place-by
                 :default-place
+                :*current-place*
                 ;; utils
                 :print-quantity-red-green
                 )
@@ -43,6 +45,7 @@
            :create
            :delete
            :places
+           :move
            :inside
            :fortune
            :*page-size*))
@@ -54,9 +57,6 @@
 
 (defvar *current-page* 1
   "Current page of the stock pager.")
-
-(defvar *current-place* (default-place)
-  "The current place we manipulate the books from.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utils
@@ -265,23 +265,30 @@
   ;; a name can be of many words. Join them.
   (when rest
     (setf name (cons name rest)))
-  (let ((bookshops.models::*print-details* (or name)))
+  (let ((bookshops.models::*print-details* name))
     (mapcar #'print-place (find-places name))))
 
+(defun place-names ()
+  (mapcar #'place-name (bookshops.models:find-places)))
 
-(defun move (bk place)
-  "Usage: 'move <book> [to] <place>'."
-  )
+(defun move (bk place-name &rest rest-name)
+  "Move a book to the given place.
 
-(defun current-place ()
-  "Return the current place, set it with the default one if needed."
-  ;; since it wasn't initialized, see above.
-  (or *current-place*
-      (setf *current-place* (default-place))))
+  Give the book id and the place name (use TAB-completion).
+  Change the current place we manipulate the stock from with the command 'inside ...' (use TAB completion again)."
+  (when (stringp bk)
+    (setf bk (parse-integer bk)))
+  (let ((book (find-by :id bk))
+        (place (find-place-by :name (str:unwords (cons place-name rest-name)))))
+    (format t "Moving book ~a to ~a...~&" book place)
+    (bookshops.models:move book place)))
+
+(replic.completion:add-completion "move" #'place-names)
 
 (defun inside (&rest rest)
   "Print the current place, or change it."
   (if rest
+      ;; The name of the place can be of several words.
       (let* ((name (str:unwords rest))
              (place (find-place-by :name name)))
         (setf *current-place* place)
@@ -289,9 +296,6 @@
         (format t "Now inside ~a.~&" name))
       (progn
         (format t "Current place: ~a.~&" (place-name (current-place))))))
-
-(defun place-names ()
-  (mapcar #'place-name (bookshops.models:find-places)))
 
 (replic.completion:add-completion "places" #'place-names)
 (replic.completion:add-completion "inside" #'place-names)

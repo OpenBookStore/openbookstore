@@ -37,7 +37,10 @@
            :print-place
            :find-places
            :find-place-by
+           :default-place
            :add-to
+           :move
+           :*current-place*
            ;; utils
            :print-quantity-red-green
            :erase-metaclass-from))
@@ -61,6 +64,9 @@ Usage:
 
 (defparameter *db* nil
   "DB connection object, returned by (connect).")
+
+(defvar *current-place* nil
+  "The current place we manipulate the books from.")
 
 (setf str:*ellipsis* "(…)")
 ;;
@@ -211,6 +217,12 @@ Usage:
         (create-place "home")
         (first (select-dao 'place (order-by (:asc :id)))))))
 
+(defun current-place ()
+  "Return the current place, set it with the default one if needed."
+  ;; since it wasn't initialized, see above.
+  (or *current-place*
+      (setf *current-place* (default-place))))
+
 (defun find-places (&optional query)
   "If query (list of strings), return places matching this name. Otherwise, return all places."
   (if query
@@ -274,20 +286,23 @@ Usage:
 
 (defun remove-from (place bk &key (quantity 1))
   "Remove the given book from this place.
-   Return the quantity."
+   Return the quantity.
+   If the book was never in the original place, don't remove it. Otherwise, it can end in a negative quantity."
   (unless (object-id bk)
     (error "The book ~a is not saved in the DB." bk))
   (let ((existing (find-dao 'place-copies :place place :book bk))
         qty)
     (if existing
         (progn
-          (setf qty (place-copies-quantity existing))
-          (setf (place-copies-quantity existing) (decf qty quantity))
+          (setf qty (quantity existing))
+          (setf (quantity existing) (decf qty quantity))
           (save-dao existing)
           ;; (when (minusp qty)
           ;;   (format t "~a" (red (format nil "mmh, you now have a negative stock of \"~a\"" (title bk)))))
           qty)
-        (error "Could not find the book ~a in place ~a" bk place))))
+        (progn
+          (format t "Will not remove the book ~a from ~a, it doesn't exist there.~&" bk place)
+          nil))))
 
 (defun print-quantity-red-green (qty &optional (stream nil))
   "If qty is > 0, print in green. If < 0, in red."
@@ -334,7 +349,7 @@ Usage:
                   (format t "~2a - ~40a ~t x~a~&"
                           (object-id (place-copies-place it))
                           (place-name (place-copies-place it))
-                          (print-quantity-red-green (place-copies-quantity it))))
+                          (print-quantity-red-green (quantity it))))
                 bk-places))
         (format t "~%This book is not registered in any place.~&"))))
 
@@ -433,6 +448,9 @@ Usage:
 (defmethod quantity ((pc place-copies))
   (place-copies-quantity pc))
 
+(defmethod (setf quantity) (val (pc place-copies))
+  (setf (place-copies-quantity pc) val))
+
 (defun set-quantity (book nb)
   "Set the quantity of this book into the default place."
   (assert (numberp nb))
@@ -466,7 +484,7 @@ Usage:
 ;; Move from place to place
 ;;
 ;; use current-place, new command "inside <place>" ?
-(defun move (bk to &key (quantity 1) (from (default-place)))
+(defun move (bk to &key (quantity 1) (from (current-place)))
   "Move a book from the actual place (the default one) to another one.
    If :from is specified, move from this place."
   (log:info from (object-id from)
@@ -474,10 +492,11 @@ Usage:
   (if (= (object-id from) (object-id to))
       (format t (_ "No need to move this book from and to the same place (~a).~&") (place-name to))
       (progn
-        (remove-from from bk)
-        (add-to to bk)
-        (format t "Moved ~a copy(ies) of '~a' from ~a to ~a...~&"
-                quantity (title bk) (place-name from) (place-name to)))))
+        (if (remove-from from bk :quantity quantity)
+            (progn
+              (add-to to bk)
+              (format t "Moved ~a copy(ies) of '~a' from ~a to ~a.~&"
+                      quantity (title bk) (place-name from) (place-name to)))))))
 
 ;;
 ;; utils
