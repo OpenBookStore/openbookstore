@@ -271,17 +271,27 @@
 (defun place-names ()
   (mapcar #'place-name (bookshops.models:find-places)))
 
-(defun move (bk place-name &rest rest-name)
+(defun parse-quantity (rest)
+  "Given a list of strings, extract the integer if the last element starts with an x.
+   For example, '(\"rst\" \"x3\") will return a quantity of 3."
+  (when (str:starts-with? "x" (car (last rest)))
+    (parse-integer (str:substring 1 t (car (last rest))))))
+
+(defun move (bk place-name &rest rest)
   "Move a book to the given place.
 
   Give the book id and the place name (use TAB-completion).
-  Change the current place we manipulate the stock from with the command 'inside ...' (use TAB completion again)."
+  The place of origin is the current one we are in. Change it with the command 'inside ...' (use TAB completion again)."
   (when (stringp bk)
     (setf bk (parse-integer bk)))
-  (let ((book (find-by :id bk))
-        (place (find-place-by :name (str:unwords (cons place-name rest-name)))))
-    (format t "Moving book ~a to ~a...~&" book place)
-    (bookshops.models:move book place)))
+  (let* ((book (find-by :id bk))
+         (quantity (or (parse-quantity rest)
+                       1))
+         (name (if (str:starts-with? "x" (car (last rest)))
+                   (cons place-name (butlast rest))
+                   (cons place-name rest)))
+         (place (find-place-by :name (str:unwords name))))
+    (bookshops.models:move book place :quantity quantity)))
 
 (replic.completion:add-completion "move" #'place-names)
 
