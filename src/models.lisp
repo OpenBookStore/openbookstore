@@ -43,6 +43,7 @@
            :*current-place*
            ;; utils
            :print-quantity-red-green
+           :negative-quantities
            :erase-metaclass-from))
 (in-package :bookshops.models)
 
@@ -113,7 +114,7 @@ Usage:
     :col-type (or (:varchar 128) :null))
 
    (title
-    :accessor title
+    ;; accessor is defined with generic methods, to manipulate the intermediate table too.
     :initarg :title
     :col-type (:varchar 128))
 
@@ -149,6 +150,11 @@ Usage:
     :col-type (or (:varchar 1024) :null)))
   (:metaclass dao-table-class))
 
+(defgeneric title (obj))
+
+(defmethod title ((book book))
+  (slot-value book 'title))
+
 (defgeneric price (obj)
   (:documentation "Return the price of the current object. Return 0 if nil."))
 
@@ -167,10 +173,18 @@ Usage:
 
 (defclass place ()
   ((name
-    :accessor place-name
+    ;; accessor as generic, for the intermediate class too.
     :initarg :name
     :col-type (:varchar 128)))
   (:metaclass dao-table-class))
+
+(defgeneric place-name (obj))
+
+(defmethod place-name ((place place))
+  (slot-value place 'name))
+
+(defmethod (setf place-name) (val (place place))
+  (setf (slot-value place 'name) val))
 
 ;; Intermediate table for the book <-> place many-to-many relationship.
 (defclass place-copies ()
@@ -190,9 +204,15 @@ Usage:
 (defmethod print-object ((pc place-copies) stream)
   (print-unreadable-object (pc stream :type t)
     (format stream "place: \"~a\" in \"~a\", x~a"
-            (str:prune 20 (title (place-copies-book pc)))
+            (str:prune 20 (title pc))
             (place-name (place-copies-place pc))
             (place-copies-quantity pc))))
+
+(defmethod title ((it place-copies))
+  (title (place-copies-book it)))
+
+(defmethod place-name ((it place-copies))
+  (place-name (place-copies-place it)))
 
 (defmethod price ((place place))
   (reduce #'+ (mapcar #'price (place-books place))))
@@ -497,6 +517,14 @@ Usage:
               (add-to to bk :quantity quantity)
               (format t "Moved ~a copy(ies) of '~a' from ~a to ~a.~&"
                       quantity (title bk) (place-name from) (place-name to)))))))
+
+;;
+;; Some stats, observing the stock.
+;;
+(defun negative-quantities ()
+  "Return a list of place-copies where the book's quantity is negative."
+  (select-dao 'place-copies
+    (where (:< :quantity 0))))
 
 ;;
 ;; utils

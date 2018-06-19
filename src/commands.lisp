@@ -25,6 +25,8 @@
                 :delete-books
                 :price
                 ;; places
+                :place-copies-book
+                :place-copies-place
                 :print-place
                 :place-name
                 :find-places
@@ -180,12 +182,24 @@
   (format t "Books in stock: ~a~&" (count-book))
   (let ((res (find-book-noisbn)))
     (format t "Books without isbn: ~a (~,2f%)~&" (length res) (percentage (length res) (count-book)))
-    (when (string= arg "noisbn")
-      (setf *current-page* 1)
-      (format t "-----------------~&")
-      (print-page res))))
+    (str:string-case arg
+      ("noisbn"
+       (setf *current-page* 1)
+       (format t "-----------------~&")
+       (print-page res))
+      ("negative"
+       (let ((negative (bookshops.models:negative-quantities)))
+         (format t "~a book(s) have a negative stock:~&" (length negative))
+         (mapcar (lambda (it)
+                   (format t "~2a- ~35a ~2a- ~20a: x~a~&"
+                           (object-id (place-copies-book it))
+                           (title it)
+                           (object-id (place-copies-place it))
+                           (place-name it)
+                           (print-quantity-red-green (quantity it))))
+                 negative))))))
 
-(replic.completion:add-completion "stats" '("noisbn"))
+(replic.completion:add-completion "stats" '("noisbn" "negative"))
 
 (defun create (&optional what)
   "Create a new book or a new place."
