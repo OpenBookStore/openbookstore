@@ -114,7 +114,8 @@
 (defun init ()
   "Init i18n, connect to the DB,..."
   (bookshops.models:connect)
-  (i18n-load))
+  (i18n-load)
+  (log:config :error))
 
 (defun handle-parser-error (c)
   (format t "Argument error: ~a~&" (opts:option c))
