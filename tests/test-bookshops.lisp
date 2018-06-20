@@ -6,7 +6,8 @@
         :mito
         :sxql
         :prove
-        :parachute)
+        ;; :parachute
+        )
   (:import-from :bookshops-test.utils
                 :with-empty-db))
 (in-package :bookshops-test)
@@ -97,6 +98,7 @@
 
 
 ;; With Parachute: interactive reports on errors.
+#|
 (define-test delete
   (with-empty-db
     (with-book-fixtures
@@ -119,5 +121,6 @@
 (test 'delete :report 'interactive)
 
 (test 'delete)
+|#
 
 (finalize)
