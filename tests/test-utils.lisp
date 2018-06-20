@@ -30,12 +30,9 @@
        (let* ((*db-name* name))
          (connect)
          ;; catch anything to always re-connect to our real db.
-         (handler-case
-             (progn
-               (ensure-tables-exist)
-               (migrate-all)
-               ,@body)
-           (t () nil))
+         (ensure-tables-exist)
+           (migrate-all)
+           ,@body
 
          (setf mito.connection:*connection* connection))))
   )
