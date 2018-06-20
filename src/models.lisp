@@ -5,8 +5,7 @@
         :sxql
         :cl-ansi-text
         :log4cl)
-  (:export :main
-           :connect
+  (:export :connect
            :ensure-tables-exist
            ;; book accessors
            :book
@@ -31,14 +30,20 @@
            :quantity
            :set-quantity
            :delete-books
+           :delete-obj
+           :delete-objects
            ;; places
+           :place
+           :place-copies
            :make-place
+           :create-place
            :save-place
            :print-place
            :find-places
            :find-place-by
            :default-place
            :add-to
+           :remove-from
            :move
            :*current-place*
            ;; utils
@@ -209,7 +214,9 @@ Usage:
             (place-copies-quantity pc))))
 
 (defmethod title ((it place-copies))
-  (title (place-copies-book it)))
+  (if (place-copies-book it)
+      (title (place-copies-book it))
+      "<no book>"))
 
 (defmethod place-name ((it place-copies))
   (place-name (place-copies-place it)))
@@ -246,8 +253,12 @@ Usage:
 (defun find-places (&optional query)
   "If query (list of strings), return places matching this name. Otherwise, return all places."
   (if query
-      (select-dao 'place
-        (where (:like :name (str:concat "%" (str:join "%" query) "%"))))
+      (progn
+        ;; xxx should be same interface as find-book
+        (unless (consp query)
+          (setf query (cons query nil)))
+        (select-dao 'place
+          (where (:like :name (str:concat "%" (str:join "%" query) "%")))))
       (select-dao 'place)))
 
 (defun find-place-by (key val)
@@ -274,6 +285,9 @@ Usage:
   (when details
     (format stream "~a~&" (mapcar #'print-book (place-books place)))))
 
+(defmethod print-obj ((obj place) &optional (stream t))
+  (print-place obj :stream stream))
+
 (defun place-books (place)
   (mapcar #'place-copies-book (select-dao 'place-copies
                                 (where (:= :place place)))))
@@ -285,6 +299,8 @@ Usage:
 (defun add-to (place bk &key (quantity 1))
   "Add the given book to this place.
    Return the quantity. nil means it is not present."
+  (assert bk)
+  (assert place)
   (unless (object-id bk)
     (error "The book ~a is not saved in DB." bk))
   (let ((existing (find-dao 'place-copies :place place :book bk))
@@ -294,15 +310,15 @@ Usage:
           (log:info "The book ~a exists in ~a." bk place)
           (incf (place-copies-quantity existing) quantity)
           (save-dao existing)
-          (place-copies-quantity existing))
+          (quantity existing))
         (progn
-          (log:info "~a doesn't exist in ~a yet.~&" bk place)
+          (log:info "~a doesn't exist in ~a yet, let's add it.~&" bk place)
           (setf place-copy (make-instance 'place-copies
                                           :place place
                                           :book bk
                                           :quantity quantity))
           (insert-dao place-copy)
-          (place-copies-quantity place-copy)))))
+          (quantity place-copy)))))
 
 (defun remove-from (place bk &key (quantity 1))
   "Remove the given book from this place.
@@ -345,6 +361,9 @@ Usage:
           (str:prune 15 (or (format nil "~a" (price book))
                             ""))
           (print-quantity-red-green (quantity book))))
+
+(defmethod print-obj ((obj book) &optional (stream t))
+  (print-book obj stream))
 
 (defun print-book-repartition (bk)
   "Print a list of places where this book exists with its quantity.
@@ -499,6 +518,22 @@ Usage:
 (defun delete-books (bklist)
   "Delete this list of books."
   (mapcar #'mito:delete-dao bklist))
+
+(defgeneric delete-obj (obj)
+  (:method (obj)
+    (let ((place-copies (select-dao 'place-copies
+                          (where (:= :book obj)))))
+      (mapcar #'delete-dao place-copies)
+      (delete-dao obj))))
+
+(defmethod delete-obj ((place place))
+  (let ((place-copies (select-dao 'place-copies
+                        (where (:= :place place)))))
+    (mapcar #'delete-dao place-copies)
+    (delete-dao place)))
+
+(defun delete-objects (objlist)
+  (mapcar #'delete-obj objlist))
 
 ;;
 ;; Move from place to place

@@ -14,15 +14,17 @@
                 :find-book
                 :find-book-noisbn
                 :find-by
-                :print-book
+                :print-obj
                 :print-book-details
                 :count-book
                 :title
                 :editor
                 :authors
                 :quantity
+                :add-to
                 :set-quantity
                 :delete-books
+                :delete-objects
                 :price
                 ;; places
                 :place-copies-book
@@ -148,7 +150,7 @@
           page
           (total-pages (length seq)))
   (mapcar (lambda (it)
-            (print-book it))
+            (print-obj it))
           *last-page*))
 
 (defun stock (&optional title-kw &rest rest)
@@ -241,7 +243,7 @@
     (add-to (default-place) bk)
     ;; set this for completion of ids of other commands.
     (setf *last-page* (list bk))
-    (print-book bk)))
+    (print-obj bk)))
 
 (defun create-place ()
   "Interactively create a new place."
@@ -254,19 +256,34 @@
 (replic.completion:add-completion "create" '("book"
                                              "place"))
 
-(defun delete (&rest kw)
-  "Delete (after confirmation) the books whose title match the given keywords.
+(defun delete (what &rest kw)
+  "Delete, after confirmation, the books or places whose title (or name) match the given keywords. Also accepts ids as arguments.
 
-   For example, `delete on time` will find 'once upon a time'."
-  (let ((bklist (when kw
-                  (find-book (str:join "%" kw)))))
-    (if bklist
+   Usage: delete books/places <keywords or ids>
+
+   For example, `delete books onc tim` will find a book with title 'once upon a time'."
+  ;; (unless (eql (type-of kw) 'cons)
+  ;;   (error "foo"))
+  (let* ((what (str:string-case what
+                 ("books"
+                  #'find-book)
+                 ("places"
+                  #'find-places)
+                 (t
+                  (error "We don't know how to delete '~a'. Please give one of 'books', 'places' as the first argument (use TAB-completion)." what))))
+         (objlist (when kw
+                    (funcall what (str:join "%" kw)))))
+    (if objlist
         (progn
-          (print-page bklist)
+          (print-page objlist)
           (finish-output)
-          (when (replic:confirm "Do you want to delete those books ?")
-            (delete-books bklist)))
-        (format t "~&No results, nothing to do.~&"))))
+          ;TODO: confirm: use eval in the repl, readline in terminal.
+          (when (replic:confirm (_ "Do you want to delete all of these ?"))
+            (delete-objects objlist)))
+        (format t (_ "~&No results, nothing to do.~&")))))
+
+(replic.completion:add-completion "delete" '("books"
+                                             "places"))
 
 ;;
 ;; Places

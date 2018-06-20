@@ -2,22 +2,11 @@
   (:shadow :search)
   (:use :cl
         :bookshops
+        :bookshops.models
         :mito
-        :prove)
-  (:import-from :bookshops.models
-                :book
-                :make-book
-                :save-book
-                :create-book
-                :title
-                :isbn
-                :quantity
-                :find-by
-                :make-place
-                :save-place
-                :create-place
-                :default-place
-                :add-to)
+        :sxql
+        :prove
+        :parachute)
   (:import-from :bookshops-test.utils
                 :with-empty-db))
 (in-package :bookshops-test)
@@ -37,7 +26,9 @@
   "Create some books in DB."
   `(progn
      (setf *books* (list (create-book :title "test"
-                                      :isbn "9782710381419")))
+                                      :isbn "9782710381419")
+                         (create-book :title "book 2"
+                                      :isbn "978xxxxxxxxxx")))
      ,@body))
 
 (defmacro with-place-fixtures (&body body)
@@ -45,6 +36,8 @@
   `(progn
      (setf *places* (list (create-place "place 1")
                           (create-place "place 2")))
+     (add-to (first *places*) (first *books*))
+     (add-to (second *places*) (second *books*) :quantity 2)
      ,@body))
 
 (subtest "Creation and DB save"
@@ -101,5 +94,30 @@
         (is (add-to (first *places*) (first *books*))
             1
             "add-to")))))
+
+
+;; With Parachute: interactive reports on errors.
+(define-test delete
+  (with-empty-db
+    (with-book-fixtures
+      (with-place-fixtures
+        ;; delete a book.
+        (is = 1 (quantity (first *books*)))
+        (is = 2 (count-dao 'place-copies))
+        (delete-obj (first *books*))
+        (is = 0 (quantity (first *books*)))
+        (is = 1 (count-dao 'place-copies))
+        ;; delete a place.
+        (is = 2 (count-dao 'place))
+        (delete-obj (first *places*))
+        (is = 1 (count-dao 'place))
+        ;; delete a list of objects.
+        (delete-objects (append *books* *places*))
+        (is = 0 (count-dao 'place))
+        (is = 0 (count-dao 'book))))))
+
+(test 'delete :report 'interactive)
+
+(test 'delete)
 
 (finalize)

@@ -7,7 +7,9 @@
   :license "GPL3"
   :depends-on ("bookshops"
                "prove"
-               "mito")
+               "mito"
+               "sxql"
+               "parachute")
   :components ((:module "tests"
                 :components
                 ((:file "test-utils")
