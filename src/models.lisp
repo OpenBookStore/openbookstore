@@ -429,19 +429,17 @@ Usage:
 (defun save-book (book)
   "Save this book in DB."
   ;; logging
-  (handler-case
-      (let ((existing (find-by :isbn (isbn book))))
-        (if existing
-            (progn
-              (log:info "book of isbn " (isbn book) " is already in stock.")
-              (save-dao existing)
-              existing)
-            (progn
-              (let ((new (insert-dao book)))
-                (log:info "creating new book")
-                (save-dao new)
-                new))))
-    (error (c) (format t "Oops, an unexpected error happened:~&~a~&" c))))
+  (let ((existing (find-by :isbn (isbn book))))
+    (if existing
+        (progn
+          (log:info "book of isbn " (isbn book) " is already in stock.")
+          (save-dao existing)
+          existing)
+        (progn
+          (let ((new (insert-dao book)))
+            (log:info "creating new book")
+            (save-dao new)
+            new)))))
 
 (defun find-by (key val)
   "Find by slot. Example: (find-by :isbn xxx). Return only the first matching result."
