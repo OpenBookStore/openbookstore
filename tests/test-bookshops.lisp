@@ -42,13 +42,20 @@
      (add-to (second *places*) (second *books*) :quantity 2)
      ,@body))
 
-(subtest "Places add-to"
+(subtest "add to places"
+  ;; Our fixtures work.
   (with-empty-db
     (with-book-fixtures
       (with-place-fixtures
         (is (quantity (first *books*))
             1
-            "add-to")))))
+            "add-to")
+        (is (quantity (second *books*))
+            2
+            "add many")
+        (is (quantity (second *places*))
+            2
+            "quantity of books in a place")))))
 
 (subtest "Creation and DB save"
   (with-empty-db
@@ -79,26 +86,6 @@
     (is (type-of (default-place))
         'bookshops.models::place
         "we create a default place if there is none.")))
-
-(subtest "quantity"
-  (with-empty-db
-    (with-book-fixtures
-      (with-place-fixtures
-
-        (add-to (first *places*) (first *books*) :quantity 2)
-        (is 2
-            (quantity (first *books*))
-            "quantity of a book")
-        (is 2
-            (quantity (first *places*))
-            "quantity of a place")
-        (add-to (second *places*) (first *books*))
-        (is 3
-            (quantity (first *books*))
-            "quantity of a book accross two places")
-        (is 1
-            (quantity (second *places*))
-            "quantity in second place")))))
 
 
 ;; With Parachute: interactive reports on errors.
