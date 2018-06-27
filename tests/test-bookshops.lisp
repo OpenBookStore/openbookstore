@@ -37,18 +37,30 @@
   `(progn
      (setf *places* (list (create-place "place 1")
                           (create-place "place 2")))
+     (log:info "--- fixture adding ~a of id ~a~&" (first *books*) (object-id (first *books*)))
      (add-to (first *places*) (first *books*))
      (add-to (second *places*) (second *books*) :quantity 2)
      ,@body))
 
+(subtest "Places add-to"
+  (with-empty-db
+    (with-book-fixtures
+      (with-place-fixtures
+        (is (quantity (first *books*))
+            1
+            "add-to")))))
+
 (subtest "Creation and DB save"
   (with-empty-db
-    (with-place-fixtures
-      (let ((bk (make-book :title "in-test")))
-        (save-book bk)
-        (is (quantity bk)
-            0
-            "book creation ok, quantity 0.")))))
+    (with-book-fixtures
+      (with-place-fixtures
+        (let ((bk (make-book :title "in-test")))
+          (log:info "~&-- qty book not saved: ~a~&" (quantity bk))
+          (save-book bk)
+          (log:info "~&-- qty: ~a~&" (quantity bk))
+          (is (quantity bk)
+              0
+              "book creation ok, quantity 0."))))))
 
 (subtest "Add a book that already exists"
   (with-empty-db
@@ -87,14 +99,6 @@
         (is 1
             (quantity (second *places*))
             "quantity in second place")))))
-
-(subtest "Places"
-  (with-empty-db
-    (with-book-fixtures
-      (with-place-fixtures
-        (is (add-to (first *places*) (first *books*))
-            1
-            "add-to")))))
 
 
 ;; With Parachute: interactive reports on errors.
