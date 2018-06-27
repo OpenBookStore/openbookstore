@@ -474,8 +474,12 @@ Usage:
 
 (defmethod quantity ((book book))
   "Sum of the quantities in all places."
-  (reduce #'+ (mapcar #'place-copies-quantity (select-dao 'place-copies
-                                                (where (:= :book book))))))
+  (if (object-id book)
+      (let ((place-copies (select-dao 'place-copies
+                            (where (:= :book book)))))
+        (reduce #'+ (mapcar #'place-copies-quantity place-copies)))
+      ;; if book not saved in db.
+      0))
 
 (defmethod quantity ((place place))
   "Quantity of books in this place."
