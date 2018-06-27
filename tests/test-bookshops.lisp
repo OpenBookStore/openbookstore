@@ -88,6 +88,33 @@
         "we create a default place if there is none.")))
 
 
+(subtest "Deleting cards"
+  (with-empty-db
+    (with-book-fixtures
+      (with-place-fixtures
+        (is (count-dao 'place-copies)
+            2)
+        (delete-obj (first *books*))
+        (is (quantity (first *books*))
+            0)
+        (is (count-dao 'place-copies)
+            1
+            "deleting a book")))))
+
+(subtest "Delete a place"
+  (with-empty-db
+    (with-book-fixtures
+      (with-place-fixtures
+        (delete-obj (first *places*))
+        (is 1 (count-dao 'place)
+            "deleting a place")
+        ;; delete a list of objects
+        (delete-objects (append *books* *places*))
+        (is 0 (count-dao 'place))
+        (is 0 (count-dao 'book)
+            "deleting a list of objects")))))
+
+
 ;; With Parachute: interactive reports on errors.
 #|
 (define-test delete
