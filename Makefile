@@ -13,8 +13,7 @@ test:
 	$(LISP) --non-interactive \
 		--load bookshops.asd \
 		--load bookshops-test.asd \
-	     	--eval '(ql:quickload :bookshops-test)' \
-	     	--eval '(prove:run #p"tests/test-bookshops.lisp")'
+	     	--eval '(ql:quickload :bookshops-test)' # prove tests are run when loaded.
 
 # Install dependencies, mostly for docker (gitlab CI).
 install:
