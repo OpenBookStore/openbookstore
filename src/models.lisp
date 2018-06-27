@@ -203,12 +203,13 @@ Usage:
     :col-type place)
    (quantity
     :accessor place-copies-quantity
+    :initform 0
     :col-type (or (:integer) :null)))
   (:metaclass dao-table-class))
 
 (defmethod print-object ((pc place-copies) stream)
   (print-unreadable-object (pc stream :type t)
-    (format stream "place: \"~a\" in \"~a\", x~a"
+    (format stream "book \"~a\" in \"~a\", x~a"
             (str:prune 20 (title pc))
             (place-name (place-copies-place pc))
             (place-copies-quantity pc))))
@@ -395,17 +396,16 @@ Usage:
 (defun print-book-details (bk)
   (when (integerp bk)
     (setf bk (find-dao 'book :id bk)))
-  (let (bk-places)
-    (if bk
-        (progn
-          (format t "~a x ~a~&" (blue (title bk)) (quantity bk))
-          (format t "~t~a~&" (authors bk))
-          (format t "~tisbn: ~a~&" (isbn bk))
-          (format t "~t~a~&" (price bk))
-          (format t "~tcover: ~a~&" (cover-url bk))
+  (if bk
+      (progn
+        (format t "~a x ~a~&" (blue (title bk)) (quantity bk))
+        (format t "~t~a~&" (authors bk))
+        (format t "~tisbn: ~a~&" (isbn bk))
+        (format t "~t~a~&" (price bk))
+        (format t "~tcover: ~a~&" (cover-url bk))
 
-          (print-book-repartition bk))
-        (format t "There is no such book with id ~a~&" bk))))
+        (print-book-repartition bk))
+      (format t "There is no such book with id ~a~&" bk)))
 
 (defun make-book (&key title isbn authors cover-url editor date-publication price datasource)
   "Create a Book instance. If given author or authors, create Author
