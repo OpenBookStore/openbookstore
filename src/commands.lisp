@@ -30,7 +30,7 @@
                 :place-copies-book
                 :place-copies-place
                 :print-place
-                :place-name
+                :name
                 :find-places
                 :find-place-by
                 :default-place
@@ -197,7 +197,7 @@
                            (object-id (place-copies-book it))
                            (title it)
                            (object-id (place-copies-place it))
-                           (place-name it)
+                           (name it)
                            (print-quantity-red-green (quantity it))))
                  negative))))))
 
@@ -300,7 +300,7 @@
     (mapcar #'print-place (find-places name))))
 
 (defun place-names ()
-  (mapcar #'place-name (bookshops.models:find-places)))
+  (mapcar #'name (bookshops.models:find-places)))
 
 (defun parse-quantity (rest)
   "Given a list of strings, extract the integer if the last element starts with an x.
@@ -308,7 +308,7 @@
   (when (str:starts-with? "x" (car (last rest)))
     (parse-integer (str:substring 1 t (car (last rest))))))
 
-(defun move (bk place-name &rest rest)
+(defun move (bk name &rest rest)
   "Move a book to the given place.
 
   Give the book id and the place name (use TAB-completion).
@@ -319,8 +319,8 @@
          (quantity (or (parse-quantity rest)
                        1))
          (name (if (str:starts-with? "x" (car (last rest)))
-                   (cons place-name (butlast rest))
-                   (cons place-name rest)))
+                   (cons name (butlast rest))
+                   (cons name rest)))
          (place (find-place-by :name (str:unwords name))))
     (bookshops.models:move book place :quantity quantity)))
 
@@ -333,10 +333,10 @@
       (let* ((name (str:unwords rest))
              (place (find-place-by :name name)))
         (setf *current-place* place)
-        (setf replic:*prompt-prefix* (format nil "(~a) " (place-name *current-place*)))
+        (setf replic:*prompt-prefix* (format nil "(~a) " (name *current-place*)))
         (format t "Now inside ~a.~&" name))
       (progn
-        (format t "Current place: ~a.~&" (place-name (current-place))))))
+        (format t "Current place: ~a.~&" (name (current-place))))))
 
 (replic.completion:add-completion "places" #'place-names)
 (replic.completion:add-completion "inside" #'place-names)

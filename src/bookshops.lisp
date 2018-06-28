@@ -13,7 +13,7 @@
                 :authors
                 :price
                 :default-place
-                :place-name)
+                :name)
   (:export :main
            :i18n-load
            ;; book accessors
@@ -149,7 +149,7 @@
           (init)
 
           (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
-          (setf replic:*prompt-prefix* (format nil "(~a) " (place-name (default-place))))
+          (setf replic:*prompt-prefix* (format nil "(~a) " (name (default-place))))
 
           (format t "Initializing...~&")
 

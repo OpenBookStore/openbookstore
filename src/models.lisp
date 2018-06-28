@@ -183,12 +183,12 @@ Usage:
     :col-type (:varchar 128)))
   (:metaclass dao-table-class))
 
-(defgeneric place-name (obj))
+(defgeneric name (obj))
 
-(defmethod place-name ((place place))
+(defmethod name ((place place))
   (slot-value place 'name))
 
-(defmethod (setf place-name) (val (place place))
+(defmethod (setf name) (val (place place))
   (setf (slot-value place 'name) val))
 
 ;; Intermediate table for the book <-> place many-to-many relationship.
@@ -211,7 +211,7 @@ Usage:
   (print-unreadable-object (pc stream :type t)
     (format stream "book \"~a\" in \"~a\", x~a"
             (str:prune 20 (title pc))
-            (place-name (place-copies-place pc))
+            (name (place-copies-place pc))
             (place-copies-quantity pc))))
 
 (defmethod title ((it place-copies))
@@ -219,8 +219,8 @@ Usage:
       (title (place-copies-book it))
       "<no book>"))
 
-(defmethod place-name ((it place-copies))
-  (place-name (place-copies-place it)))
+(defmethod name ((it place-copies))
+  (name (place-copies-place it)))
 
 (defmethod price ((place place))
   (reduce #'+ (mapcar #'price (place-books place))))
@@ -269,7 +269,7 @@ Usage:
 
 (defmethod print-object ((place place) stream)
   (print-unreadable-object (place stream :type t)
-    (format stream "~a" (place-name place))))
+    (format stream "~a" (name place))))
 
 (defparameter *print-details* nil
   "Print some lists with details.")
@@ -279,7 +279,7 @@ Usage:
    If :details is t, print a paginated list of its books."
   (format stream "~2a - ~40a~t x~3a/ ~3a total: ~3a~&"
           (object-id place)
-          (place-name place)
+          (name place)
           (length (place-books place))
           (reduce #'+ (mapcar #'quantity (place-books place)))
           (price place))
@@ -388,7 +388,7 @@ Usage:
           (mapc (lambda (it)
                   (format t "~2a - ~40a ~t x~a~&"
                           (object-id (place-copies-place it))
-                          (place-name (place-copies-place it))
+                          (name (place-copies-place it))
                           (print-quantity-red-green (quantity it))))
                 bk-places))
         (format t "~%This book is not registered in any place.~&"))))
@@ -547,13 +547,13 @@ Usage:
   (log:info from (object-id from)
             to (object-id to))
   (if (= (object-id from) (object-id to))
-      (format t (_ "No need to move this book from and to the same place (~a).~&") (place-name to))
+      (format t (_ "No need to move this book from and to the same place (~a).~&") (name to))
       (progn
         (if (remove-from from bk :quantity quantity)
             (progn
               (add-to to bk :quantity quantity)
               (format t "Moved ~a copy(ies) of '~a' from ~a to ~a.~&"
-                      quantity (title bk) (place-name from) (place-name to)))))))
+                      quantity (title bk) (name from) (name to)))))))
 
 ;;
 ;; Some stats, observing the stock.
