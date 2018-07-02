@@ -87,13 +87,17 @@ Usage:
 (defun ensure-tables-exist ()
   (mapcar #'ensure-table-exists '(book
                                   place
-                                  place-copies)))
+                                  place-copies
+                                  contact
+                                  contact-copies)))
 
 (defun migrate-all ()
   "Migrate the Book table after we changed the class definition."
   (mapcar #'mito:migrate-table '(book
                                  place
-                                 place-copies)))
+                                 place-copies
+                                 contact
+                                 contact-copies)))
 
 ;;
 ;; DB tables definition.
@@ -489,8 +493,8 @@ Usage:
 (defmethod quantity ((pc place-copies))
   (place-copies-quantity pc))
 
-(defmethod (setf quantity) (val (pc place-copies))
-  (setf (place-copies-quantity pc) val))
+;; (defmethod (setf quantity) (val (pc place-copies))
+;;   (setf (place-copies-quantity pc) val))
 
 (defun set-quantity (book nb)
   "Set the quantity of this book into the default place."

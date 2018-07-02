@@ -25,6 +25,7 @@
                 :components
                 ((:file "utils")
                  (:file "models")
+                 (:file "contacts")
                  (:file "bookshops")
                  (:file "commands"))))
 

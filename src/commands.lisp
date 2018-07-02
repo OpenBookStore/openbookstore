@@ -35,6 +35,9 @@
                 :find-place-by
                 :default-place
                 :*current-place*
+                ;; contacts
+                :find-contacts
+                :contacts
                 ;; utils
                 :print-quantity-red-green
                 )
@@ -50,6 +53,7 @@
            :delete
            :places
            :move
+           :lend
            :inside
            :fortune
            :*page-size*))
@@ -168,12 +172,14 @@
     (setf pk (parse-integer pk)))
   (print-book-details pk))
 
+(defun last-page-book-ids ()
+  (mapcar (lambda (it)
+            (prin1-to-string (object-id it)))
+          *last-page*))
+
 ;; Get a list of ids of the last search.
 ;; Specially handy when we have filtered the search.
-(replic.completion:add-completion "details" (lambda ()
-                                              (mapcar (lambda (it)
-                                                        (prin1-to-string (object-id it)))
-                                                      *last-page*)))
+(replic.completion:add-completion "details" #'last-page-book-ids)
 
 (defun stats (&optional arg)
   "Print some numbers about the stock.
@@ -302,6 +308,9 @@
 (defun place-names ()
   (mapcar #'name (bookshops.models:find-places)))
 
+(defun contact-names ()
+  (mapcar #'name (bookshops.models:find-contacts)))
+
 (defun parse-quantity (rest)
   "Given a list of strings, extract the integer if the last element starts with an x.
    For example, '(\"rst\" \"x3\") will return a quantity of 3."
@@ -325,6 +334,31 @@
     (bookshops.models:move book place :quantity quantity)))
 
 (replic.completion:add-completion "move" #'place-names)
+
+(defun contacts ()
+  "Show our contacts and the books they borrowed."
+  (let ((*print-details* t))
+    ;; ;TODO: montrer durée du prêt.
+    (mapcar #'print-place (find-contacts))))
+
+(defun lend (bk name)
+  "Lend a book to a contact.
+
+   We expect the book to come back. When it exceeds some time (2 months by default), show an alert."
+  (when (stringp bk)
+    (setf bk (parse-integer bk)))
+  (let* ((book (find-by :id bk))
+         (contacts-match (find-contacts name))
+         (contact))
+    (if (> 1 (length contacts-match))
+        (format t (_ "We found more than one contact matching this query. Please adjust it."))
+        (progn
+          (setf contact (first contacts-match))
+          (format t "Lending ~a to ~a~&" book contact)))))
+
+(replic.completion:add-completion "lend" (lambda ()
+                                           (append (last-page-book-ids)
+                                                   (contact-names))))
 
 (defun inside (&rest rest)
   "Print the current place, or change it."
