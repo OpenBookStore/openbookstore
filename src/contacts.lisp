@@ -47,15 +47,20 @@
   (name (contact-copies-contact it)))
 
 (defun contact-books (contact)
-  (mapcar #'place-copies-book (select-dao 'contact-copies
-                                (where (:= :place contact)))))
+  (contact-copies-book contact))
 
 (defmethod print-object ((contact contact) stream)
   (print-unreadable-object (contact stream :type t)
       (format stream "~a" (name contact))))
 
+(defun print-borrowed-book (book)
+  (format t "~2a- ~40a borrowed on ~a~&"
+          (object-id book)
+          (title book)
+          (object-created-at book)))
+
 (defmethod name ((it contact-copies))
-   (place-copies-place it))
+   (contact-copies-contact it))
 
 (defmethod print-object ((it contact-copies) stream)
   (print-unreadable-object (it stream :type t)
@@ -84,16 +89,25 @@
           (where (:like :name (str:concat "%" (str:join "%" query) "%")))))
       (select-dao 'contact)))
 
+(defun print-borrowed-books (contact)
+  (mapcar (lambda (it)
+            (format t "~t~2a- ~40a since ~a~&"
+                    (object-id (contact-copies-book it))
+                    (title it)
+                    (object-created-at it)))
+          (select-dao 'contact-copies
+            (where (:= :contact contact)))))
+
 (defun print-contact (contact &key (stream t) (details *print-details*))
   "Print the given contact, the books she borrowed and if it's been too long."
   ;; format-object method ?
-  (format stream "~2a - ~40a~t x~3a/ ~3a~&"
+  (format stream "~2a - ~40a~t ~&"
           (object-id contact)
           (name contact)
-          (length (place-books contact))
-          (reduce #'+ (mapcar #'quantity (place-books contact))))
+          ;; (length (contact-books contact))
+          )
   (when details
-    (format stream "~a~&" (mapcar #'print-book (place-books contact)))))
+    (print-borrowed-books contact)))
 ;;
 ;; Commands
 ;;
@@ -121,11 +135,12 @@
           (insert-dao contact-copy)
           (quantity contact-copy)))))
 
-
 ;;
 ;; Export
 ;;
 (export '(make-contact
           create-contact
           find-contacts
+          print-contact
+          lend
           ))

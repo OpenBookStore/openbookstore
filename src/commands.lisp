@@ -37,7 +37,7 @@
                 :*current-place*
                 ;; contacts
                 :find-contacts
-                :contacts
+                :print-contact
                 ;; utils
                 :print-quantity-red-green
                 )
@@ -54,6 +54,8 @@
            :places
            :move
            :lend
+           :contacts
+           :loans
            :inside
            :fortune
            :*page-size*))
@@ -337,9 +339,14 @@
 
 (defun contacts ()
   "Show our contacts and the books they borrowed."
-  (let ((*print-details* t))
-    ;; ;TODO: montrer durée du prêt.
-    (mapcar #'print-place (find-contacts))))
+  (let ((bookshops.models::*print-details* t))
+    (mapcar #'print-contact (find-contacts))))
+
+(defun loans ()
+  (contacts))
+
+(replic.completion:add-completion "contacts" #'contact-names)
+(replic.completion:add-completion "loans" #'contact-names)
 
 (defun lend (bk name)
   "Lend a book to a contact.
@@ -348,17 +355,26 @@
   (when (stringp bk)
     (setf bk (parse-integer bk)))
   (let* ((book (find-by :id bk))
+         ;; xxx: if "michel" and "michelle", won't complete. Find by exact name.
          (contacts-match (find-contacts name))
          (contact))
-    (if (> 1 (length contacts-match))
+    (if (> (length contacts-match)
+           1)
         (format t (_ "We found more than one contact matching this query. Please adjust it."))
         (progn
           (setf contact (first contacts-match))
-          (format t "Lending ~a to ~a~&" book contact)))))
+          (bookshops.models:lend book contact)
+          (format t "Lended ~a to ~a~&" (title book) (name contact))))))
 
 (replic.completion:add-completion "lend" (lambda ()
                                            (append (last-page-book-ids)
                                                    (contact-names))))
+
+
+
+;;
+;; Others
+;;
 
 (defun inside (&rest rest)
   "Print the current place, or change it."
