@@ -361,7 +361,7 @@
          (contact))
     (if (> (length contacts-match)
            1)
-        (format t (_ "We found more than one contact matching this query. Please adjust it."))
+        (format t "We found more than one contact matching this query. Please adjust it.")
         (progn
           (setf contact (first contacts-match))
           (bookshops.models:lend book contact)
