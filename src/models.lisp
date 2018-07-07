@@ -501,6 +501,13 @@ Usage:
   (assert (numberp nb))
   (add-to (default-place) book :quantity nb))
 
+(defun (setf quantity) (val obj)
+  ;TODO: TEST !! just wrote it to remove a compiler warning. see line
+  ; see           (setf (quantity existing) (decf qty quantity))
+  ;; in remove-from
+  (assert (numberp val))
+  (add-to (default-place) obj :quantity val))
+
 ;;
 ;; Authors
 ;;
