@@ -91,6 +91,21 @@ See the list of places:
 
 - `places`: lists the existing places with their number of books and their total cost.
 
+### Lending books to contacts
+
+Lend a book to someone:
+
+- `lend <id> <contact name>`
+
+See your contacts, their books and since how long they borrowed them:
+
+- `contacts`
+
+The same information, but a list of books sorted by date (oldest first):
+
+- `loans`
+
+
 ### Stats
 
 Get some numbers about your stock:

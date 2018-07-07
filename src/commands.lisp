@@ -343,7 +343,8 @@
     (mapcar #'print-contact (find-contacts))))
 
 (defun loans ()
-  (contacts))
+  "Print who borrowed what book and since when, ordered by date (oldest first)."
+  (bookshops.models:loans))
 
 (replic.completion:add-completion "contacts" #'contact-names)
 (replic.completion:add-completion "loans" #'contact-names)

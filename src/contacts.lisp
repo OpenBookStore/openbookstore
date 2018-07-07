@@ -89,6 +89,11 @@
           (where (:like :name (str:concat "%" (str:join "%" query) "%")))))
       (select-dao 'contact)))
 
+(defun find-contacts-copies ()
+  "Return the list of borrowed books, most recent last."
+  (select-dao 'contact-copies
+    (order-by :object-created)))
+
 (defun print-borrowed-books (contact)
   (mapcar (lambda (it)
             (format t "~t~2a- ~40a since ~a~&"
@@ -135,6 +140,17 @@
           (insert-dao contact-copy)
           (quantity contact-copy)))))
 
+(defun loans ()
+  "Print who borrowed what book and since when (most recent last)."
+  (let ((copies (find-contacts-copies)))
+    (mapcar (lambda (copy)
+              (format t "~2a- ~30a since ~a by ~a~&"
+                      (object-id (contact-copies-book copy))
+                      (blue (str:prune 30 (title copy)))
+                      (object-created-at copy)
+                      (name copy)))
+            copies)))
+
 ;;
 ;; Export
 ;;
@@ -143,4 +159,5 @@
           find-contacts
           print-contact
           lend
+          loans
           ))
