@@ -19,6 +19,8 @@
                :replic ;; XXX not in QL
                ;; utils
                :str
+               :local-time
+               :local-time-duration
                :log4cl
                :cl-i18n)
   :components ((:module "src"

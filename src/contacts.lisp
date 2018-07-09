@@ -94,12 +94,26 @@
   (select-dao 'contact-copies
     (order-by :object-created)))
 
+(defgeneric loan-too-long-p (obj)
+  (:documentation "Return t if this loan bypasses the number of days allowed."))
+
+(defmethod loan-too-long-p ((obj contact-copies))
+  (let* ((now (local-time:now))
+         (time-difference (ltd:timestamp-difference (object-created-at obj) now)))
+    (log:info "time-difference" time-difference)
+    (log:info (ltd:duration-as time-difference :day))
+    (> (abs (ltd:duration-as time-difference :day))
+       (max-time obj))))
+
 (defun print-borrowed-books (contact)
   (mapcar (lambda (it)
-            (format t "~t~2a- ~40a since ~a~&"
-                    (object-id (contact-copies-book it))
-                    (title it)
-                    (object-created-at it)))
+            (let ((color-fn (if (loan-too-long-p it)
+                                #'red
+                                #'green)))
+              (format t "~t~2a- ~40a since ~a~&"
+                      (object-id (contact-copies-book it))
+                      (title it)
+                      (funcall color-fn (format nil "~a" (object-created-at it))))))
           (select-dao 'contact-copies
             (where (:= :contact contact)))))
 
@@ -150,6 +164,16 @@
                       (object-created-at copy)
                       (name copy)))
             copies)))
+
+;;
+;; Interactive, development stuff
+;;
+
+#|
+
+(defvar *contact* (find-dao 'contact))
+
+|#
 
 ;;
 ;; Export
