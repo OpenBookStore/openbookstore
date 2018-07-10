@@ -100,20 +100,36 @@
 (defmethod loan-too-long-p ((obj contact-copies))
   (let* ((now (local-time:now))
          (time-difference (ltd:timestamp-difference (object-created-at obj) now)))
-    (log:info "time-difference" time-difference)
-    (log:info (ltd:duration-as time-difference :day))
     (> (abs (ltd:duration-as time-difference :day))
        (max-time obj))))
 
+(defgeneric loan-danger-p (obj)
+  (:documentation "Return t if the loan is approching the maximum time allowed."))
+
+(defmethod loan-danger-p ((obj contact-copies))
+  (let* ((now (local-time:now))
+         (danger-days 10)
+         (diff (ltd:timestamp-difference (object-created-at obj) now)))
+    (> (abs (ltd:duration-as diff :day))
+       (- (max-time obj)
+          danger-days))))
+
+(defun princ-color-flags (what loan)
+  "Return `what` (a string) with red ansi colors if the loan is too long, yellow if danger. To print with `format t`."
+  (if (loan-too-long-p loan)
+      (red (princ-to-string what))
+      (progn
+        (if (loan-danger-p loan)
+            (yellow (princ-to-string what))
+            what))))
+
+
 (defun print-borrowed-books (contact)
   (mapcar (lambda (it)
-            (let ((color-fn (if (loan-too-long-p it)
-                                #'red
-                                #'green)))
-              (format t "~t~2a- ~40a since ~a~&"
-                      (object-id (contact-copies-book it))
-                      (title it)
-                      (funcall color-fn (format nil "~a" (object-created-at it))))))
+            (format t "~t~2a- ~40a since ~a~&"
+                    (object-id (contact-copies-book it))
+                    (title it)
+                    (princ-color-flags (object-created-at it) it)))
           (select-dao 'contact-copies
             (where (:= :contact contact)))))
 
@@ -154,6 +170,7 @@
           (insert-dao contact-copy)
           (quantity contact-copy)))))
 
+
 (defun loans ()
   "Print who borrowed what book and since when (most recent last)."
   (let ((copies (find-contacts-copies)))
@@ -161,7 +178,8 @@
               (format t "~2a- ~30a since ~a by ~a~&"
                       (object-id (contact-copies-book copy))
                       (blue (str:prune 30 (title copy)))
-                      (object-created-at copy)
+                      (princ-color-flags (object-created-at copy)
+                                         copy)
                       (name copy)))
             copies)))
 
