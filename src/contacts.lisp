@@ -89,6 +89,11 @@
           (where (:like :name (str:concat "%" (str:join "%" query) "%")))))
       (select-dao 'contact)))
 
+(defun find-contact-by (key val)
+  (when val
+    (select-dao 'contact
+      (where (:= key val)))))
+
 (defun find-contacts-copies ()
   "Return the list of borrowed books, most recent last."
   (select-dao 'contact-copies
@@ -138,7 +143,7 @@
   ;; format-object method ?
   (format stream "~2a - ~40a~t ~&"
           (object-id contact)
-          (name contact)
+          (cyan (name contact))
           ;; (length (contact-books contact))
           )
   (when details
@@ -199,6 +204,7 @@
 (export '(make-contact
           create-contact
           find-contacts
+          find-contact-by
           print-contact
           lend
           loans

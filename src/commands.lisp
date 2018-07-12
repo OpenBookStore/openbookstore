@@ -36,7 +36,9 @@
                 :default-place
                 :*current-place*
                 ;; contacts
+                :create-contact
                 :find-contacts
+                :find-contact-by
                 :print-contact
                 ;; utils
                 :print-quantity-red-green
@@ -349,21 +351,31 @@
 (replic.completion:add-completion "contacts" #'contact-names)
 (replic.completion:add-completion "loans" #'contact-names)
 
-(defun lend (bk name)
+(defvar *yes-p* nil
+  "For development: set to t and bypass some confirmation questions.")
+
+(defun lend (bk name &rest rest)
   "Lend a book to a contact.
 
    We expect the book to come back. When it exceeds some time (2 months by default), show an alert."
   (when (stringp bk)
     (setf bk (parse-integer bk)))
+  (when rest
+    (setf name (str:unwords (cons name rest))))
   (let* ((book (find-by :id bk))
-         ;; xxx: if "michel" and "michelle", won't complete. Find by exact name.
-         (contacts-match (find-contacts name))
-         (contact))
-    (if (> (length contacts-match)
-           1)
+         (res (find-contact-by :name name))
+         contact)
+    (if res
+        (setf contact (first res))
+        ;; Create a new contact on the fly.
+        (when (or *yes-p*
+                  (replic:confirm (format nil "Create the new contact ~a ?~&" name)))
+          (log:info "Creating new contact: ~a~&" name)
+          (push (create-contact name) res)))
+    (if (> (length res) 1)
         (format t "We found more than one contact matching this query. Please adjust it.")
         (progn
-          (setf contact (first contacts-match))
+          (setf contact (first res))
           (bookshops.models:lend book contact)
           (format t "Lended ~a to ~a~&" (title book) (name contact))))))
 
