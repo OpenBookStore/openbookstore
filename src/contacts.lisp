@@ -192,11 +192,14 @@
 ;; Interactive, development stuff
 ;;
 
-#|
 
+;; We can compile the following but it isn't evaluated at compile time.
+#+nil
 (defvar *contact* (find-dao 'contact))
 
-|#
+#+nil
+(defvar *thule* (first (find-book "thule")))
+
 
 ;;
 ;; Export
