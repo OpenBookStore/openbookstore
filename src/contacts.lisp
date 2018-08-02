@@ -40,6 +40,9 @@
 (defmethod quantity ((it contact-copies))
   (contact-copies-quantity it))
 
+(defmethod (setf quantity) (val (it contact-copies))
+  (setf (contact-copies-quantity it) val))
+
 (defmethod title ((it contact-copies))
   (title (contact-copies-book it)))
 
@@ -96,6 +99,7 @@
 
 (defun find-contacts-copies ()
   "Return the list of borrowed books, most recent last."
+  (warn "Exclude loans with a quantity at 0 ?")
   (select-dao 'contact-copies
     (order-by :object-created)))
 
@@ -188,12 +192,38 @@
                       (name copy)))
             copies)))
 
+(defun receive (book &optional contact)
+  "Return this book.
+   In case of ambiguity, give the contact as optional argument."
+  (declare (ignorable contact))
+  (let ((copies (select-dao 'contact-copies
+                  ;; How to chain queries, to filter on contact only if given ?
+                  (where (:= :book book)))))
+    (case (length copies)
+      (0
+       (format t "It seems that this book was not lended to anyone.~&"))
+      (1
+       (let* ((copy (first copies))
+              (quantity (quantity copy)))
+         (decf (quantity copy))
+         (save-dao copy)
+         ;; Delete records back to 0 ? We're not handling history yet, but rather no.
+         (if (> quantity 1)
+             (format t "~a still has ~a cop~@:p of this book.~&"
+                     (name copy)
+                     (quantity copy))
+             (format t "We got '~a' back from ~a, ok.~&."
+                     (str:prune 30 (title copy))
+                     (name copy)))
+         (quantity copy)))
+      (t
+       (error "This book was borrowed by more than one contact at the same time. Not implemented yet. But it should be.")))))
+
 ;;
 ;; Interactive, development stuff
 ;;
 
-
-;; We can compile the following but it isn't evaluated at compile time.
+;; We can compile the following ourselves, it is ignored at compile time.
 #+nil
 (defvar *contact* (find-dao 'contact))
 
