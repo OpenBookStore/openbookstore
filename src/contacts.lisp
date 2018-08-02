@@ -62,9 +62,6 @@
           (title book)
           (object-created-at book)))
 
-(defmethod name ((it contact-copies))
-   (contact-copies-contact it))
-
 (defmethod print-object ((it contact-copies) stream)
   (print-unreadable-object (it stream :type t)
     (format stream "~a lended to ~a on ~a"
@@ -99,7 +96,7 @@
 
 (defun find-contacts-copies ()
   "Return the list of borrowed books, most recent last."
-  (warn "Exclude loans with a quantity at 0 ?")
+  ;; (warn "Exclude loans with a quantity at 0 ?")
   (select-dao 'contact-copies
     (order-by :object-created)))
 
@@ -190,7 +187,10 @@
                       (princ-color-flags (object-created-at copy)
                                          copy)
                       (name copy)))
-            copies)))
+            copies)
+    ;; We return a list of copies, not contact-copies, for the command level,
+    ;; to get pagination completion right.
+    (mapcar #'contact-copies-book copies)))
 
 (defun receive (book &optional contact)
   "Return this book.
@@ -241,4 +241,5 @@
           print-contact
           lend
           loans
+          receive
           ))

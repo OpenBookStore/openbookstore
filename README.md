@@ -97,13 +97,17 @@ Lend a book to someone:
 
 - `lend <id> <contact name>`
 
-See your contacts, their books and since how long they borrowed them:
+See your contacts, their books and the date they borrowed them:
 
 - `contacts`
 
 The same information, but a list of books sorted by date (oldest first):
 
 - `loans`
+
+and when your friend returns a book back:
+
+- `receive <book id> [optional contact name]`
 
 
 ### Stats

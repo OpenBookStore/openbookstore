@@ -58,6 +58,7 @@
            :lend
            :contacts
            :loans
+           :receive
            :inside
            :fortune
            :*page-size*))
@@ -346,10 +347,25 @@
 
 (defun loans ()
   "Print who borrowed what book and since when, ordered by date (oldest first)."
-  (bookshops.models:loans))
+  (setf *last-page* (bookshops.models:loans)))
 
 (replic.completion:add-completion "contacts" #'contact-names)
 (replic.completion:add-completion "loans" #'contact-names)
+
+(defun receive (bk &optional contact)
+  "Mark this book as returned. Give an optional contact as second parameter."
+  (when (stringp bk)
+    (setf bk (parse-integer bk)))
+  (when (and contact
+             (stringp contact))
+    (warn "this is actually untested :D")
+    (setf contact (first (find-contact-by :name contact))))
+  (let ((book (find-by :id bk)))
+    (bookshops.models:receive book contact)))
+
+(replic.completion:add-completion "receive" (lambda ()
+                                              (append (last-page-book-ids)
+                                                      (contact-names))))
 
 (defvar *yes-p* nil
   "For development: set to t and bypass some confirmation questions.")
