@@ -565,7 +565,7 @@ Usage:
         (if (remove-from from bk :quantity quantity)
             (progn
               (add-to to bk :quantity quantity)
-              (format t "Moved ~a copy(ies) of '~a' from ~a to ~a.~&"
+              (format t "Moved ~a cop~:@p of '~a' from ~a to ~a.~&"
                       quantity (title bk) (name from) (name to)))))))
 
 ;;
