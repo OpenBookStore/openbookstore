@@ -160,7 +160,11 @@ Usage:
     :col-type (or (:varchar 1024) :null)))
   (:metaclass dao-table-class))
 
-(defgeneric title (obj))
+(defgeneric title (obj)
+  (:documentation "Title of a book.")
+  (:method (obj)
+    ;; nothing (for erronous print-objects to work).
+    ))
 
 (defmethod title ((book book))
   (slot-value book 'title))
@@ -188,7 +192,11 @@ Usage:
     :col-type (:varchar 128)))
   (:metaclass dao-table-class))
 
-(defgeneric name (obj))
+(defgeneric name (obj)
+  (:documentation "Name of this object.")
+  (:method (obj)
+    ;; nothing
+    ))
 
 (defmethod name ((place place))
   (slot-value place 'name))
