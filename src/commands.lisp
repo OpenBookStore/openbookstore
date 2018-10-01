@@ -228,11 +228,11 @@
     (t
      (format t "Unrecognized command. Nothing to do."))))
 
-(defun create-book ()
-  "Create a new book."
-  ;; next step: class and column introspection, data validation,
-  ;; completion of fields etc.
-  (let (bk title authors price quantity)
+(defun create-book-form ()
+  "Ask for data, return a book object, but don't save it on DB yet.
+   Function used for book creation and edition."
+  ;; Next, we want to create this form with class introspection and additional model fields (required, etc).
+  (let (title authors price quantity)
     (setf title (rl:readline :prompt (format nil (str:concat "Title"
                                                   (cl-ansi-text:red "*")
                                                   " ? "))))
@@ -247,9 +247,14 @@
     (if (str:blank? quantity)
         (setf quantity 0)
         (setf quantity (parse-integer quantity)))
+    (make-book :title title :authors authors :price price)))
 
-    (setf bk (make-book :title title :authors authors :price price))
-    ;; xxx save-book increments quantity
+(defun create-book ()
+  "Create a new book."
+  ;; next step: class and column introspection, data validation,
+  ;; completion of fields etc.
+  (let (bk)
+    (setf bk (create-book-form))
     (save-book bk)
     (add-to (default-place) bk)
     ;; set this for completion of ids of other commands.
