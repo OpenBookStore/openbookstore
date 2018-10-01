@@ -39,11 +39,7 @@
 (defun get-url (url)
   "Http get this url.
    Function mocked in unit tests."
-  (handler-case
-      (dex:get url)
-    (error (c)
-      (progn
-        (format *error-output* c)))))
+  (dex:get url))
 
 (defun parse (request)
   "Parse with plump, return a plump node.

@@ -142,7 +142,7 @@ See the makefile and `i18n-load` in `utils.lisp`.
 We use (our) `replic` library to build quickly the readline interactive prompt:
 https://github.com/vindarel/replic (which builds on cl-readline).
 
-We use the [Mito](https://github.com/fukamachi/mito). See the [Cookbook tutorial](https://lispcookbook.github.io/cl-cookbook/databases.html).
+We use the [Mito](https://github.com/fukamachi/mito) ORM. See the [Cookbook tutorial](https://lispcookbook.github.io/cl-cookbook/databases.html).
 
 Model usage:
 
