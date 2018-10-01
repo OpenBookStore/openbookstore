@@ -50,19 +50,28 @@
   "Find nodes with CSS selector from a plump-parsed node."
   (lquery:$ selector parsed))
 
-(defun node-selector-to-text (selector node)
+(defun node-selector-to-text (selector node &key selector2)
   " Take a CSS selector (str), a plump node, extract and clean the result.
   "
   (let* ((nodes (clss:select selector node))
-         (res (aref nodes 0))
-         (txt (plump-dom:text res)))
-    (str:trim txt)))
+         res
+         txt)
+    (setf nodes (coerce nodes 'list))
+    (when (null nodes)
+      (log:info "trying again with " selector2)
+      (setf nodes (clss:select selector2 node))
+      (setf nodes (coerce nodes 'list)))
+    (when (not (null (coerce nodes 'list)))
+      (log:info "node" nodes)
+      (setf res (first nodes))
+      (setf txt (plump:text res))
+      (str:trim txt))))
 
 (defun book-info (it)
   "Takes a plump node and returns a list of book objects with: title, authors, price, publisher, date of publication, etc.
   "
-  (let ((titre (node-selector-to-text  ".titre" it))
-        (auteurs (node-selector-to-text ".auteurs" it))
+  (let ((titre (node-selector-to-text  ".livre_titre" it))
+        (auteurs (node-selector-to-text ".livre_auteur" it))
         (prix  (node-selector-to-text ".prix_indicatif" it))
         (editeur  (node-selector-to-text ".editeur" it))
         (date-parution  (node-selector-to-text ".date_parution" it))
@@ -102,7 +111,7 @@
          (req (get-url url))
          (parsed (parse req))
          ;; one node
-         (node (clss:select ".tab_listlivre" parsed))
+         (node (clss:select ".resultsList" parsed))
          ;; many modes ;; vector, iterate with map
          (res (clss:select "tr" node)))
     (setf *last-results* (map 'list #'book-info res))))
