@@ -151,6 +151,8 @@
     (if (getf options :interactive)
         (progn
 
+          (log:info "initializing...~&")
+          (force-output)
           (init)
 
           (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))

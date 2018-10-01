@@ -82,6 +82,7 @@ Usage:
 (defun connect ()
   "Connect to the DB."
   ;; also use mito:*connection*
+  (log:debug "connecting to ~a~&" *db-name*) (force-output)
   (setf *db* (connect-toplevel :sqlite3 :database-name *db-name*)))
 
 (defun ensure-tables-exist ()
