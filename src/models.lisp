@@ -138,6 +138,7 @@ Usage:
     ;; We'll use a generic price accessor because some existing objects won't have the price slot initialized,
     ;; we don't default it to 0 (nil denotes a missing field),
     ;; and it might be useful for other objects.
+    ;; => the accessor actually creates a generic function.
     :col-type (or :integer :null))
 
    (date-publication

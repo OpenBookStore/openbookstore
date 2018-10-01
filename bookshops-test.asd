@@ -13,7 +13,8 @@
   :components ((:module "tests"
                 :components
                 ((:file "test-utils")
-                 (:file "test-bookshops"))))
+                 (:file "test-bookshops")
+                 (:file "test-contacts"))))
   :description "Test system for bookshops"
 
   ;; :perform (test-op (op c) (symbol-call :prove-asdf :run-test-system c))

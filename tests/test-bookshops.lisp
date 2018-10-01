@@ -25,10 +25,13 @@
   `(progn
      (defvar *books* nil)
      (defvar *places* nil)
+     (defvar *contacts* nil)
      (setf *books* (list (create-book :title "test"
                                       :isbn "9782710381419")
                          (create-book :title "book 2"
                                       :isbn "978xxxxxxxxxx")))
+     ;; contacts
+     (setf *contacts* (list (create-contact "first contact")))
      ;; places
      (setf *places* (list (create-place "place 1")
                           (create-place "place 2")))
@@ -106,6 +109,7 @@
             "deleting a list of objects"))))
 
 
+
 ;; With Parachute: interactive reports on errors.
 #|
 (define-test delete
@@ -132,4 +136,4 @@
 (test 'delete)
 |#
 
-(finalize)
+;; (finalize) ;; done in the last test file (test-contacts).
