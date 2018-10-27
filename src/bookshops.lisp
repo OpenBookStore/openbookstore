@@ -161,10 +161,10 @@
           (format t "Initializing...~&")
 
           ;; create commands from the exported functions and variables.
-          (replic:functions-to-commands :replic.base)
+          (replic.completion:functions-to-commands :replic.base)
 
           (setf replic:*help-preamble* "With cl-bookshops you can search for books by keywords or isbn, add some to your stock and explore it.")
-          (replic:functions-to-commands :bookshops.commands)
+          (replic.completion:functions-to-commands :bookshops.commands)
 
           ;; define completions.
           ;; (push '("add" . *results*) replic:*args-completions*)
