@@ -9,6 +9,7 @@
   :depends-on (
                ;; web
                :dexador
+               :drakma  ;; dexador bug 61
                :plump
                :lquery
                :clss ;; might do with lquery only
