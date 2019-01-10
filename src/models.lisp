@@ -121,7 +121,8 @@ Usage:
     :initarg :datasource
     ;; how to use a variable for 128 ?
     ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
-    :col-type (or (:varchar 128) :null))
+    :col-type (or (:varchar 128) :null)
+    :documentation "The source (website) we took bibliographic information from.")
 
    (title
     ;; accessor is defined with generic methods, to manipulate the intermediate table too.
@@ -159,7 +160,10 @@ Usage:
     :accessor cover-url
     :initarg :cover-url
     :col-type (or (:varchar 1024) :null)))
-  (:metaclass dao-table-class))
+  (:metaclass dao-table-class)
+  (:documentation "A book represents the book entity, not the physical object.
+     It may not have an isbn.
+     A book is stored in one or many places."))
 
 (defgeneric title (obj)
   (:documentation "Title of a book.")
@@ -191,7 +195,10 @@ Usage:
     ;; accessor as generic, for the intermediate class too.
     :initarg :name
     :col-type (:varchar 128)))
-  (:metaclass dao-table-class))
+  (:metaclass dao-table-class)
+  (:documentation "Where the books are stored.
+    It could be a temporary place, like a stand, or a friend's. We are allowed to sell from certain
+    places, not from others."))
 
 (defgeneric name (obj)
   (:documentation "Name of this object.")
@@ -219,7 +226,9 @@ Usage:
     :accessor place-copies-quantity
     :initform 0
     :col-type (or (:integer) :null)))
-  (:metaclass dao-table-class))
+  (:metaclass dao-table-class)
+  (:documentation "Intermediate table between books and places.
+    Specifies the quantity in the given place."))
 
 (defmethod print-object ((pc place-copies) stream)
   (print-unreadable-object (pc stream :type t)
