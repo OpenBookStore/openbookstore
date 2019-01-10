@@ -22,7 +22,7 @@
            :authors
            :price
            ;; functions
-           :search))
+           :books))
 (in-package :bookshops)
 
 
@@ -53,29 +53,27 @@
 (defun node-selector-to-text (selector node &key selector2)
   " Take a CSS selector (str), a plump node, extract and clean the result.
   "
+  (declare (ignorable selector2))
   (let* ((nodes (clss:select selector node))
          res
          txt)
     (setf nodes (coerce nodes 'list))
-    (when (null nodes)
-      (log:info "trying again with " selector2)
-      (setf nodes (clss:select selector2 node))
-      (setf nodes (coerce nodes 'list)))
-    (when (not (null (coerce nodes 'list)))
-      (log:info "node" nodes)
+    (when (not (null nodes))
       (setf res (first nodes))
       (setf txt (plump:text res))
-      (str:trim txt))))
+      (str:trim txt))
+    ))
 
 (defun book-info (it)
   "Takes a plump node and returns a list of book objects with: title, authors, price, publisher, date of publication, etc.
   "
   (let ((titre (node-selector-to-text  ".livre_titre" it))
         (auteurs (node-selector-to-text ".livre_auteur" it))
-        (prix  (node-selector-to-text ".prix_indicatif" it))
+        (prix  (node-selector-to-text ".prix_indicatif" it)) ;; .item_prix ?
         (editeur  (node-selector-to-text ".editeur" it))
         (date-parution  (node-selector-to-text ".date_parution" it))
-        (isbn (node-selector-to-text ".gencod" it))
+        (isbn (str:trim (first (last (str:lines
+                                      (node-selector-to-text ".editeur-collection-parution" it))))))
         (cover-url (aref (lquery-funcs:attr (clss:select "img" it)
                                             "src")
                          0))
@@ -113,7 +111,8 @@
          ;; one node
          (node (clss:select ".resultsList" parsed))
          ;; many modes ;; vector, iterate with map
-         (res (clss:select "tr" node)))
+         ;; direct children:
+         (res (clss:select "> li" node)))
     (setf *last-results* (map 'list #'book-info res))))
 
 (defun init ()
@@ -150,9 +149,6 @@
 
     (if (getf options :interactive)
         (progn
-
-          (log:info "initializing...~&")
-          (force-output)
           (init)
 
           (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
