@@ -201,6 +201,11 @@ To test DB operations, use our macro `with-empty-db`.
 
 # Lisp ?!
 
+- http://common-lisp.net/
 - http://lisp-lang.org/
 - https://github.com/CodyReichert/awesome-cl (and [companies](https://github.com/azzamsa/awesome-lisp-companies))
 - https://lispcookbook.github.io
+
+# See also
+
+- https://github.com/jl2/bookdb/, which searches on isbndb.com (not good enough for us and lacking prices)
