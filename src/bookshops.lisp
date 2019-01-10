@@ -39,7 +39,7 @@
 (defun get-url (url)
   "Http get this url.
    Function mocked in unit tests."
-  (drakma:http-request url))
+  (dex:get url))
 
 (defun parse (request)
   "Parse with plump, return a plump node.
