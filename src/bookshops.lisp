@@ -103,6 +103,7 @@
 
 (defun books (query &key (datasource *datasource*))
   "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...).
+   The db must be connected.
   "
   (declare (ignorable datasource))
   (let* ((url (build-url query))

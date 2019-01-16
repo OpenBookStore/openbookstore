@@ -29,7 +29,8 @@
                  (:file "models")
                  (:file "contacts")
                  (:file "bookshops")
-                 (:file "commands"))))
+                 (:file "commands")
+                 (:file "management"))))
 
   :build-operation "program-op"
   :build-pathname "bookshops"

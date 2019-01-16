@@ -184,6 +184,10 @@ Usage:
      0)
     (t (slot-value book 'price))))
 
+(defmethod (setf price) (price (book book))
+  "Set the price of this book."
+  (setf (slot-value book 'price) price))
+
 (defmethod print-object ((book book) stream)
   (print-unreadable-object (book stream :type t)
     (with-accessors ((title title))
