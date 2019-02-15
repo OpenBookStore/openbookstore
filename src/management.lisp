@@ -10,9 +10,6 @@
 
 (in-package :bookshops.management)
 
-;; rename ppcre to re
-;; (rename-package :cl-ppcre :cl-ppcre '(re))
-
 
 (defun parse-prices (&key dry-run)
   "For all books, if its price is a string, extract a number from it
@@ -27,7 +24,7 @@
       (if (numberp (price bk))
           (format t "price is a number: ~a~&" (price bk))
           (progn
-            (let ((new-price (re:scan-to-strings "[0-9]+.[0-9]+" (price bk))))
+            (let ((new-price (ppcre:scan-to-strings "[0-9]+.[0-9]+" (price bk))))
               (format t "scan: ~a~&" new-price)
               (unless dry-run
                 (setf (price bk) new-price)
