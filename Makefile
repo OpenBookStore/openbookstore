@@ -9,6 +9,13 @@ build:
 		--eval '(ql:quickload :bookshops)' \
 		--eval '(asdf:make :bookshops)'
 
+build-gui:
+	$(LISP)	--non-interactive \
+		--load bookshops.asd \
+		--eval '(ql:quickload :bookshops/gui)' \
+		--eval '(asdf:make :bookshops/gui)'
+
+
 test:
 	$(LISP) --non-interactive \
 		--load bookshops.asd \

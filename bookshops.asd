@@ -5,7 +5,7 @@
 (asdf:defsystem "bookshops"
   :version "0.1.0"
   :author "vindarel"
-  :license "MIT"
+  :license "GPL3"
   :depends-on (
                ;; web
                :dexador
@@ -37,6 +37,26 @@
   :entry-point "bookshops:main"
 
   :description ""
+  ;; :long-description
+  ;; #.(read-file-string
+  ;;    (subpathname *load-pathname* "README.md"))
+  :in-order-to ((test-op (test-op "bookshops-test"))))
+
+(asdf:defsystem "bookshops/gui"
+  :version "0.1.0"
+  :author "vindarel"
+  :license "GPL3"
+  :depends-on (:bookshops
+               :nodgui)
+  :components ((:module "src/gui"
+                :components
+                ((:file "gui"))))
+
+  :build-operation "program-op"
+  :build-pathname "bookshops-gui"
+  :entry-point "bookshops.gui:main"
+
+  :description "Simple graphical user interface to manage one's books."
   ;; :long-description
   ;; #.(read-file-string
   ;;    (subpathname *load-pathname* "README.md"))

@@ -6,6 +6,8 @@ In development, don't look.
 
 ## Usage
 
+### Command line
+
     make build
 
     ./bookshops search terms
@@ -22,6 +24,19 @@ At any moment, quit the current prompt with `C-d` (control-d) or use:
 - `quit`
 
 ![](img.png)
+
+### GUI
+
+A simple Tk GUI.
+
+    make build-gui
+
+    ./bookshops-gui &
+
+or from the REPL: load `bookshops/gui` and run `bookshops.gui:main`.
+
+You can't do much !
+
 
 ### Bibliographic search, adding books to your stock
 
