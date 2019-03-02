@@ -32,6 +32,7 @@
                                              (insert-results tree
                                                              (books (text searchbox)))))))
 
+      (minsize *tk* 500 170)
       ;; Name the first column:
       (treeview-heading tree +treeview-first-column-id+ :text "title")
       ;; For resizing to do something: weight > 0
