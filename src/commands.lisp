@@ -297,7 +297,7 @@
           (print-page objlist)
           (finish-output)
           ;TODO: confirm: use eval in the repl, readline in terminal.
-          (when (replic:confirm (_ "Do you want to delete all of these ?"))
+          (when (replic:confirm :prompt (_ "Do you want to delete all of these ?"))
             (delete-objects objlist)))
         (format t (_ "~&No results, nothing to do.~&")))))
 
@@ -393,7 +393,7 @@
         (setf contact (first res))
         ;; Create a new contact on the fly.
         (when (or *yes-p*
-                  (replic:confirm (format nil "Create the new contact ~a ?~&" name)))
+                  (replic:confirm :prompt (format nil "Create the new contact ~a ?~&" name)))
           (log:info "Creating new contact: ~a~&" name)
           (push (create-contact name) res)))
     (if (> (length res) 1)
