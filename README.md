@@ -145,6 +145,23 @@ The follownig settings currently exist:
 - `*page-size*`
 
 
+## High-level goals
+
+Be more useful and easier to install and use than our Abelujo web app.
+
+- [X] single-file binaries: DONE. Thanks, Common Lisp.
+- GUI
+  - [X] proof of concept
+- connect to a remote DB
+- use a GUI running on a remote server (see [ltk-remote](http://www.peter-herth.de/ltk/ltkdoc/node46.html))
+- searching one's stock from a web interface (for clients) (with Weblocks)
+- sells, several places, list of commands, etc.
+- download a pdf of the stock, with barcodes
+- invoices
+- clients
+- etc
+
+
 ## i18n
 
 This software is available in other languages than english.
