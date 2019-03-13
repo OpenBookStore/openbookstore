@@ -5,6 +5,7 @@
         :sxql
         :cl-ansi-text
         :log4cl)
+
   (:export :connect
            :ensure-tables-exist
            ;; book accessors
@@ -37,6 +38,7 @@
            :place-copies
            :make-place
            :create-place
+           :current-place
            :save-place
            :print-place
            :find-places
@@ -50,6 +52,7 @@
            :print-quantity-red-green
            :negative-quantities
            :erase-metaclass-from))
+
 (in-package :bookshops.models)
 
 #|

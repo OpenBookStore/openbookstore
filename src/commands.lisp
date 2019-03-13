@@ -7,6 +7,7 @@
            :delete)
   (:import-from :bookshops
                 :books)
+
   (:import-from :bookshops.models
                 :book
                 :make-book
@@ -27,6 +28,7 @@
                 :delete-objects
                 :price
                 ;; places
+                :current-place
                 :place-copies-book
                 :place-copies-place
                 :print-place
@@ -43,6 +45,7 @@
                 ;; utils
                 :print-quantity-red-green
                 )
+
   (:export :main
            :search
            :add
