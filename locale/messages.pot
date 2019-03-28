@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-13 16:42+0200\n"
+"POT-Creation-Date: 2019-03-28 16:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,21 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/commands.lisp:138
+#: src/commands.lisp:161
 #, lisp-format
 msgid "Results: ~a. Page: ~a/~a~&"
 msgstr ""
 
-#: src/models.lisp:465
+#: src/commands.lisp:301
+msgid "Do you want to delete all of these ?"
+msgstr ""
+
+#: src/commands.lisp:303
+#, lisp-format
+msgid "~&No results, nothing to do.~&"
+msgstr ""
+
+#: src/models.lisp:589
 #, lisp-format
 msgid "No need to move this book from and to the same place (~a).~&"
 msgstr ""

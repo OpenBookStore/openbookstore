@@ -15,4 +15,11 @@
               (cl-i18n:load-language "locale/mo/fr_FR/messages.mo"
                                      :store-hashtable nil
                                      :store-plural-function t
-                                     :update-translation-table nil)))))
+                                     :update-translation-table nil))
+        (progn
+          ;; Default locale.
+          (setf cl-i18n::*translation-table*
+                (cl-i18n:load-language "locale/mo/en_GB/messages.mo"
+                                       :store-hashtable nil
+                                       :store-plural-function t
+                                       :update-translation-table nil))))))

@@ -39,10 +39,15 @@ translation-base:
 translation-init-locales:
 	mkdir -p locale/po/fr_FR/
 	mkdir -p locale/mo/fr_FR/
+	mkdir -p locale/po/en_GB/
+	mkdir -p locale/mo/en_GB/
 	msginit --input=locale/messages.pot --locale=fr_FR -o locale/po/fr_FR/messages.po
+	msginit --input=locale/messages.pot --locale=en_GB -o locale/po/en_GB/messages.po
 
 translation-update: translation-base
 	msgmerge --update locale/po/fr_FR/messages.po locale/messages.pot
+	msgmerge --update locale/po/en_GB/messages.po locale/messages.pot
 
 translation-compile:
 	msgfmt -o locale/mo/fr_FR/messages.mo locale/po/fr_FR/messages.po
+	msgfmt -o locale/mo/en_GB/messages.mo locale/po/en_GB/messages.po
