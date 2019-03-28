@@ -5,7 +5,6 @@ all: test
 build:
 	$(LISP)	--non-interactive \
 		--load bookshops.asd \
-                --load ../replic/replic.asd \
 		--eval '(ql:quickload :bookshops)' \
 		--eval '(asdf:make :bookshops)'
 

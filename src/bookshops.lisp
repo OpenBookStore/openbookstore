@@ -150,12 +150,12 @@
 
     (if (getf options :interactive)
         (progn
+          (format t "Initializing...~&")
           (init)
 
           (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
-          (setf replic:*prompt-prefix* (format nil "(~a) " (name (default-place))))
 
-          (format t "Initializing...~&")
+          (setf replic:*prompt-prefix* (format nil "(~a) " (name (default-place))))
 
           ;; create commands from the exported functions and variables.
           (replic.completion:functions-to-commands :replic.base)

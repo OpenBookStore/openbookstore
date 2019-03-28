@@ -202,7 +202,6 @@ Slots: `title`... `quantity`, etc.
 
 To test DB operations, use our macro `with-empty-db`.
 
-(a clue it is working is that it should output migrations)
 
 ```lisp
 (use-package :bookshops.models)
