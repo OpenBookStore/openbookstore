@@ -4,11 +4,55 @@ In development, don't look.
 
 ![](https://gitlab.com/vindarel/cl-bookshops/badges/master/pipeline.svg)
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+
+**Table of Contents**
+
+- [Bookshops](#bookshops)
+    - [Installation](#installation)
+    - [Usage](#usage)
+        - [Command line](#command-line)
+        - [GUI](#gui)
+        - [Lisp REPL](#lisp-repl)
+        - [Bibliographic search, adding books to your stock](#bibliographic-search-adding-books-to-your-stock)
+        - [Seeing the stock, pagination](#seeing-the-stock-pagination)
+        - [Places](#places)
+        - [Lending books to contacts](#lending-books-to-contacts)
+        - [Stats](#stats)
+        - [Settings](#settings)
+    - [High-level goals](#high-level-goals)
+    - [i18n](#i18n)
+    - [Dev](#dev)
+        - [Testing](#testing)
+        - [Troubleshooting](#troubleshooting)
+- [Lisp ?!](#lisp-)
+- [See also](#see-also)
+
+<!-- markdown-toc end -->
+
+
+## Installation
+
+Build the executable:
+
+    make build
+
+To build the Tk GUI, make sure you have Tcl and Tk installed:
+
+    wish
+
+this should open a little Tk window. Otherwise, install them:
+
+    apt install tcl tk
+
+then build the GUI:
+
+    make build-gui
+
+
 ## Usage
 
 ### Command line
-
-    make build
 
     ./bookshops search terms
 
@@ -29,13 +73,20 @@ At any moment, quit the current prompt with `C-d` (control-d) or use:
 
 A simple Tk GUI.
 
-    make build-gui
-
     ./bookshops-gui &
 
 or from the REPL: load `bookshops/gui` and run `bookshops.gui:main`.
 
 You can't do much !
+
+### Lisp REPL
+
+Load `bookshops.asd` (C-c C-k in Slime), Quickload the system
+(`(ql:quickload "bookshops")`), then initialize the DB connection and
+the translations with `(bookshops:init)`, then explore commands in
+`bookshops.commands`, like `stock`.
+
+You might need to enable terminal colors with `M-x slime-repl-ansi-on` ([see here](https://github.com/enriquefernandez/slime-repl-ansi-color)).
 
 
 ### Bibliographic search, adding books to your stock

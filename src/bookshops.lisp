@@ -16,6 +16,7 @@
                 :name)
   (:export :main
            :i18n-load
+           :init
            ;; book accessors
            :editor
            :title
