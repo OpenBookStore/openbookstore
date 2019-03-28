@@ -27,6 +27,7 @@ In development, don't look.
         - [Troubleshooting](#troubleshooting)
 - [Lisp ?!](#lisp-)
 - [See also](#see-also)
+- [Licence](#licence)
 
 <!-- markdown-toc end -->
 
@@ -291,3 +292,7 @@ To test DB operations, use our macro `with-empty-db`.
 # See also
 
 - https://github.com/jl2/bookdb/, which searches on isbndb.com (not good enough for us and lacking prices)
+
+# Licence
+
+GPLv3
