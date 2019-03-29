@@ -12,42 +12,39 @@
 
 
 (defun search-tree ()
-  (with-nodgui ()
-    (wm-title *tk* "OpenBookStore")
-    (let* ((tree (make-instance 'scrolled-treeview
-                                ;; These are the second and third columns.
-                                :columns (list "authors"
-                                               "editor"
-                                               "price")))
-           (searchbox (grid (make-instance 'entry :width 7)
-                            0 0 :sticky "we" :padx 5 :pady 5))
-           (button (make-instance 'button
-                                  :text "OK"
-                                  :command (lambda ()
-                                             (format t "the treeview selection is: ~a~&"
-                                                     (treeview-get-selection tree))
-                                             (format t "text is: ~a~&" (text searchbox))
-                                             ;; There is an error with "latin capital letters"
-                                             ;; when searching "tears of steel".
-                                             (insert-results tree
-                                                             (books (text searchbox)))))))
+  "Search input and display search results in a scrollable tree."
+  (let* ((searchbox (grid (make-instance 'entry :width 7)
+                          0 0 :sticky "we" :padx 5 :pady 5))
+         (tree (make-instance 'scrolled-treeview
+                              ;; These are the second and third columns.
+                              :columns (list "authors"
+                                             "editor"
+                                             "price")))
+         (button (make-instance 'button
+                                :text "OK"
+                                :command (lambda ()
+                                           (format t "the treeview selection is: ~a~&"
+                                                   (treeview-get-selection tree))
+                                           (format t "text is: ~a~&" (text searchbox))
+                                           ;; There is an error with "latin capital letters"
+                                           ;; when searching "tears of steel".
+                                           ;; => escape tildes in title. Fixed in nodgui.
+                                           (insert-results tree
+                                                           (books (text searchbox)))))))
 
-      (minsize *tk* 500 170)
-      ;; Name the first column:
-      (treeview-heading tree +treeview-first-column-id+ :text "title")
-      ;; For resizing to do something: weight > 0
-      (grid-columnconfigure *tk* 0 :weight 1)
-      (grid searchbox 0 0
-            ;; it goes below the button :S
-            :columnspan 2)
-      (grid button 0 1
-            ;; stick to the right (east).
-            :sticky "e")
-      (grid tree 1 0
-            ;; so the button doesn't have a column by itself.
-            :columnspan 2
-            ;; sticky by all sides, for resizing to do something.
-            :sticky "nsew"))))
+    ;; Name the first column:
+    (treeview-heading tree +treeview-first-column-id+ :text "title")
+    (grid searchbox 0 0
+          ;; it goes below the button :S todo:
+          :columnspan 2)
+    (grid button 0 1
+          ;; stick to the right (east).
+          :sticky "e")
+    (grid tree 1 0
+          ;; so the button doesn't have a column by itself.
+          :columnspan 2
+          ;; sticky by all sides, for resizing to do something.
+          :sticky "nsew")))
 
 (defun insert-results (tree results)
   "Insert torrents last results into that treeview."
@@ -68,4 +65,10 @@
 (defun main ()
   "Connect to the database and start the main GUI."
   (bookshops.models:connect)
-  (search-tree))
+  (with-nodgui ()
+    (wm-title *tk* "OpenBookStore")
+    (minsize *tk* 500 170)
+    ;; For resizing to do something: weight > 0
+    (grid-columnconfigure *tk* 0 :weight 1)
+
+    (search-tree)))
