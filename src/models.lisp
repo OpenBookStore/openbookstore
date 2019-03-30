@@ -16,6 +16,7 @@
            :find-by
            :find-existing
            :find-book-noisbn
+           :last-books
            :title
            :authors
            :cover-url
@@ -490,6 +491,12 @@ Usage:
       (select-dao 'book
         (where (:like :title (str:concat "%" query "%"))))
       (select-dao 'book)))
+
+(defun last-books ()
+  "Newest first."
+  (reverse
+   (select-dao 'book
+     (order-by :created-at))))
 
 (defun find-book-noisbn ()
   (select-dao 'book

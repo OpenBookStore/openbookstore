@@ -6,21 +6,50 @@
                 :authors
                 :editor
                 :price)
+  (:import-from :bookshops.models
+                :find-book
+                :last-books)
   (:export :main))
 
 (in-package :bookshops.gui)
 
+(defun side-menu ()
+  "Side menu: buttons to switch to Stock, Search,…"
+  (let* ((frame (make-instance 'frame))
+         (btn-stock (make-instance 'button
+                                   :master frame
+                                   :text "Stock"
+                                   :command (lambda ()
+                                              ;; Searching our stock should have more inputs
+                                              ;; (author, sorting,...)
+                                              (setf *search-function* #'find-book))))
+         (btn-search (make-instance 'button
+                                    :master frame
+                                    :text "Search"
+                                    :command (lambda ()
+                                               (setf *search-function* #'books))))
+         (row 0))
+    (grid btn-stock row 0
+          :sticky "w")
+    (grid btn-search (incf row) 0
+          :sticky "w")
+    frame))
 
 (defun search-tree ()
   "Search input and display search results in a scrollable tree."
-  (let* ((searchbox (grid (make-instance 'entry :width 7)
+  (let* ((frame (make-instance 'frame))
+         (searchbox (grid (make-instance 'entry :width 50
+                                         :master frame)
                           0 0 :sticky "we" :padx 5 :pady 5))
          (tree (make-instance 'scrolled-treeview
+                              :master frame
                               ;; These are the second and third columns.
                               :columns (list "authors"
                                              "editor"
-                                             "price")))
+                                             "price")
+                              :columns-width +results-columns-width+))
          (button (make-instance 'button
+                                :master frame
                                 :text "OK"
                                 :command (lambda ()
                                            (format t "the treeview selection is: ~a~&"
@@ -30,13 +59,16 @@
                                            ;; when searching "tears of steel".
                                            ;; => escape tildes in title. Fixed in nodgui.
                                            (insert-results tree
-                                                           (books (text searchbox)))))))
+                                                           (funcall *search-function*
+                                                                    (text searchbox)))))))
+
+    (insert-results tree (last-books))
 
     ;; Name the first column:
     (treeview-heading tree +treeview-first-column-id+ :text "title")
+    (print :RST)
     (grid searchbox 0 0
-          ;; it goes below the button :S todo:
-          :columnspan 2)
+          :sticky "we")
     (grid button 0 1
           ;; stick to the right (east).
           :sticky "e")
@@ -44,7 +76,9 @@
           ;; so the button doesn't have a column by itself.
           :columnspan 2
           ;; sticky by all sides, for resizing to do something.
-          :sticky "nsew")))
+          :sticky "nsew")
+    (format t "returning frame ~a~&" frame)
+    frame))
 
 (defun insert-results (tree results)
   "Insert torrents last results into that treeview."
@@ -71,4 +105,10 @@
     ;; For resizing to do something: weight > 0
     (grid-columnconfigure *tk* 0 :weight 1)
 
-    (search-tree)))
+    (let ((row 0)
+          (col 0))
+      (declare (ignorable row))
+      (grid (side-menu) 0 col
+            :sticky "nsew")
+      (grid (search-tree) 0 (incf col)
+            :sticky "nsew"))))
