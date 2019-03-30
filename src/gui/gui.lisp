@@ -13,6 +13,14 @@
 
 (in-package :bookshops.gui)
 
+(defparameter +results-columns-width+ nil
+  "Width of the treeview columns. List of integers.")
+
+(setf +results-columns-width+ '(300 200 200 80))
+
+(defparameter *search-function* #'books
+  "Function that accepts one argument, the text of the search input. Results are displayed in the tree. For now clicking on the side menu doesn't change widgets but only this function.")
+
 (defun side-menu ()
   "Side menu: buttons to switch to Stock, Search,…"
   (let* ((frame (make-instance 'frame))
