@@ -16,7 +16,7 @@
                :mito
                ;; readline
                :unix-opts
-               :replic ;; XXX not in QL
+               :replic
                ;; utils
                :str
                :local-time
