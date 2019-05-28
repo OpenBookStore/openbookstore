@@ -70,7 +70,7 @@
   "
   (let ((titre (node-selector-to-text  ".livre_titre" it))
         (auteurs (node-selector-to-text ".livre_auteur" it))
-        (prix  (node-selector-to-text ".prix_indicatif" it)) ;; .item_prix ?
+        (prix  (node-selector-to-text ".item_prix" it)) ;; .item_prix ?
         (editeur  (node-selector-to-text ".editeur" it))
         (date-parution  (node-selector-to-text ".date_parution" it))
         (isbn (str:trim (first (last (str:lines
@@ -109,6 +109,7 @@
   (declare (ignorable datasource))
   (restart-case
       (let* ((url (build-url query))
+             (_ (log:info url))
              (req (get-url url))
              (parsed (parse req))
              ;; one node
@@ -116,6 +117,7 @@
              ;; many modes ;; vector, iterate with map
              ;; direct children:
              (res (clss:select "> li" node)))
+        (declare (ignore _))
         (setf *last-results* (map 'list #'book-info res)))
     (connect-to-db ()
       :report "Connect to the database"

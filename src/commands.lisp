@@ -19,6 +19,8 @@
                 :print-book-details
                 :count-book
                 :title
+                :isbn
+                :date-publication
                 :editor
                 :authors
                 :quantity
@@ -106,7 +108,8 @@
          (results (books query))
          (i (length results)))
     (mapcar (lambda (it)
-              (format t "~2@a- ~a, ~a~t~a stock ? x~a~&" i
+              (format t "~2@a- ~a, ~a~t~a ~tstock: x~a~&"
+                      i
                       (blue (title it))
                       (authors it)
                       (price it)
