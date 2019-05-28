@@ -107,15 +107,20 @@
    The db must be connected.
   "
   (declare (ignorable datasource))
-  (let* ((url (build-url query))
-         (req (get-url url))
-         (parsed (parse req))
-         ;; one node
-         (node (clss:select ".resultsList" parsed))
-         ;; many modes ;; vector, iterate with map
-         ;; direct children:
-         (res (clss:select "> li" node)))
-    (setf *last-results* (map 'list #'book-info res))))
+  (restart-case
+      (let* ((url (build-url query))
+             (req (get-url url))
+             (parsed (parse req))
+             ;; one node
+             (node (clss:select ".resultsList" parsed))
+             ;; many modes ;; vector, iterate with map
+             ;; direct children:
+             (res (clss:select "> li" node)))
+        (setf *last-results* (map 'list #'book-info res)))
+    (connect-to-db ()
+      :report "Connect to the database"
+      (bookshops.models:connect)
+      (books query :datasource *datasource*))))
 
 (defun init ()
   "Init i18n, connect to the DB,..."
