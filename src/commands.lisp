@@ -114,6 +114,9 @@
                       (authors it)
                       (price it)
                       (print-quantity-red-green (quantity it)))
+              (format t "~t ed: ~a, ~a~&"
+                      (editor it)
+                      (isbn it))
               (decf i))
             (reverse results))))
 
@@ -127,9 +130,9 @@
     (format t "Please do a search before."))
   (when bookshops::*last-results*
     (let* ((bk (nth index bookshops::*last-results*)))
-      (format t "Gonna register ~a~&" (title bk))
+      (format t "Registering ~a..." (title bk))
       (save-book bk)
-      (print "done."))))
+      (format t "done.~&"))))
 
 (defun total-pages (total)
   "Compute the number of pages given this total quantity."

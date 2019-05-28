@@ -68,7 +68,7 @@ At any moment, quit the current prompt with `C-d` (control-d) or use:
 
 - `quit`
 
-![](img.png)
+![](search-add.png)
 
 ### GUI
 
