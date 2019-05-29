@@ -131,8 +131,8 @@
   (when bookshops::*last-results*
     (let* ((bk (nth index bookshops::*last-results*)))
       (format t "Registering ~a..." (title bk))
-      (save-book bk)
-      (format t "done.~&"))))
+      (let ((new (save-book bk)))
+        (format t "done. id: ~a~&" (object-id new))))))
 
 (defun total-pages (total)
   "Compute the number of pages given this total quantity."

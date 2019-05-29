@@ -458,7 +458,7 @@ Usage:
               :isbn isbn))
 
 (defun save-book (book)
-  "Save this book in DB."
+  "Save this book in DB. If it already exists, return the existing book. Otherwise, return the new one."
   ;; logging
   (let ((existing (find-by :isbn (isbn book))))
     (if existing
