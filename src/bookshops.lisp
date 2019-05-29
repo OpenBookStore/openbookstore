@@ -92,15 +92,20 @@
                         :date-publication date-parution))
     (find-existing bk)))
 
-(defun build-url (query &key (source *datasource*))
+(defun build-url (query &key (source *datasource*) (encode t))
   "Build the search url with the query terms in it.
+  Encode the search terms (if `:encode' is true, the default).
 
   - query: a str (possibly many words).
 
   Return the url (a str).
   "
-  (let ((words (str:words query)))
-    (str:replace-all "{QUERY}" (str:join "+" words) source)))
+  (let* ((words (str:words query))
+         (joined (str:join "+" words))
+         (encoded? (if encode
+                       (quri:url-encode joined)
+                       joined)))
+    (str:replace-all "{QUERY}" encoded? source)))
 
 (defun books (query &key (datasource *datasource*))
   "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...).
