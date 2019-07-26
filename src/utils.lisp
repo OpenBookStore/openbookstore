@@ -1,9 +1,19 @@
 (defpackage bookshops.utils
   (:use :cl)
   (:export :i18n-load
+           :isbn-p
            :_))
 
 (in-package :bookshops.utils)
+
+
+(defparameter *isbn-accepted-lengths* '(13))
+
+(defun isbn-p (code)
+  "Return `t' if the given code (a string) looks like an ISBN (13 digits)."
+  (and (member (length code)
+               *isbn-accepted-lengths*)
+       (str:digitp code)))
 
 (defun _ (a) (cl-i18n:translate a))
 
