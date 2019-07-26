@@ -1,6 +1,7 @@
 (defpackage bookshops
   (:use :cl
         :cl-ansi-text
+        :parse-float
         :log4cl)
   (:shadow :search)
   (:import-from :bookshops.models

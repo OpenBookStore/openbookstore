@@ -1,6 +1,7 @@
 (in-package :bookshops)
 
 (export '(isbn-p
+          extract-float
           i18n-load
           _))
 
@@ -11,6 +12,13 @@
   (and (member (length code)
                *isbn-accepted-lengths*)
        (str:digitp code)))
+
+(defun extract-float (s)
+  "Extract a float from the given string."
+  (check-type s string)
+  (ignore-errors
+    ;; the regexp should be enough, given we parse a known html beforehand.
+    (parse-float (ppcre:scan-to-strings "-?\\d+.?\\d*" s))))
 
 (defun _ (a) (cl-i18n:translate a))
 

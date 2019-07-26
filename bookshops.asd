@@ -7,7 +7,7 @@
   :author "vindarel"
   :license "GPL3"
   :depends-on (
-               ;; web
+               ;; web client
                :dexador
                :plump
                :lquery
@@ -21,6 +21,8 @@
                :str
                :local-time
                :local-time-duration
+               :cl-ppcre
+               :parse-float
                :log4cl
                :cl-i18n)
   :components ((:module "src"
