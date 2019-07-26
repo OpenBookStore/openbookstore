@@ -52,8 +52,7 @@
   (lquery:$ selector parsed))
 
 (defun node-selector-to-text (selector node &key selector2)
-  " Take a CSS selector (str), a plump node, extract and clean the result.
-  "
+  " Take a CSS selector (str), a plump node, extract and clean the result."
   (declare (ignorable selector2))
   (let* ((nodes (clss:select selector node))
          res
@@ -62,8 +61,7 @@
     (when (not (null nodes))
       (setf res (first nodes))
       (setf txt (plump:text res))
-      (str:trim txt))
-    ))
+      (str:trim txt))))
 
 (defmacro with-log-error ((name) &body body)
   `(handler-case
@@ -123,6 +121,8 @@
                        joined)))
     (str:replace-all "{QUERY}" encoded? source)))
 
+(defparameter *last-parsing-res* nil "for debug pursposes.")
+
 (defun books (query &key (datasource *datasource*))
   "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...).
    The db must be connected.
@@ -139,6 +139,7 @@
              ;; direct children:
              (res (clss:select "> li" node)))
         (declare (ignore _))
+        (setf *last-parsing-res* (coerce res 'list))
         (setf *last-results* (map 'list #'book-info res)))
     (connect-to-db ()
       :report "Connect to the database"
