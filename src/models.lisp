@@ -128,8 +128,8 @@ Usage:
     :documentation "The source (website) we took bibliographic information from.")
 
    (title
-    ;; accessor is defined with generic methods, to manipulate the intermediate table too.
     :initarg :title
+    :accessor title
     :col-type (:varchar 128))
 
    (isbn
@@ -139,10 +139,9 @@ Usage:
 
    (price
     :initarg :price
-    ;; We'll use a generic price accessor because some existing objects won't have the price slot initialized,
+    :accessor price
     ;; we don't default it to 0 (nil denotes a missing field),
     ;; and it might be useful for other objects.
-    ;; => the accessor actually creates a generic function.
     :col-type (or :integer :null))
 
    (date-publication

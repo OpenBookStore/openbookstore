@@ -80,7 +80,6 @@
         bk
         ;; (href (node-selector-to-text ".titre[href]"))
         )
-    ;; lesson learned: don't use make-instance 'book here, object will be different.
     (setf bk (make-book :title titre
                         :isbn isbn
                         :datasource "fr"
