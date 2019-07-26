@@ -1,6 +1,5 @@
 (defpackage bookshops
   (:use :cl
-        :bookshops.utils
         :cl-ansi-text
         :log4cl)
   (:shadow :search)

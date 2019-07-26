@@ -25,12 +25,12 @@
                :cl-i18n)
   :components ((:module "src"
                 :components
-                ((:file "utils")
-                 (:file "models")
+                ((:file "models")
                  (:file "contacts")
                  (:file "bookshops")
                  (:file "commands")
-                 (:file "management"))))
+                 (:file "management")
+                 (:file "utils"))))
 
   :build-operation "program-op"
   :build-pathname "bookshops"

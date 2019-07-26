@@ -1,6 +1,5 @@
 (defpackage bookshops.management
   (:use :cl
-        :bookshops.utils
         :mito)
   (:import-from :bookshops.models
                 :find-book

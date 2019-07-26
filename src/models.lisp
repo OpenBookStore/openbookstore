@@ -1,6 +1,5 @@
 (defpackage bookshops.models
   (:use :cl
-        :bookshops.utils
         :mito
         :sxql
         :cl-ansi-text

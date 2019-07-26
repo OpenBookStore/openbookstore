@@ -1,6 +1,5 @@
 (defpackage bookshops.commands
   (:use :cl
-        :bookshops.utils
         :mito
         :cl-ansi-text)
   (:shadow :search

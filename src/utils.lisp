@@ -1,11 +1,8 @@
-(defpackage bookshops.utils
-  (:use :cl)
-  (:export :i18n-load
-           :isbn-p
-           :_))
+(in-package :bookshops)
 
-(in-package :bookshops.utils)
-
+(export '(isbn-p
+          i18n-load
+          _))
 
 (defparameter *isbn-accepted-lengths* '(13))
 
