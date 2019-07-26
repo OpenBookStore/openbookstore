@@ -122,26 +122,30 @@ Usage:
   ((datasource
     :accessor datasource
     :initarg :datasource
+    :type string
     ;; how to use a variable for 128 ?
     ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
     :col-type (or (:varchar 128) :null)
     :documentation "The source (website) we took bibliographic information from.")
 
    (title
-    :initarg :title
     :accessor title
+    :initarg :title
+    :type string
     :col-type (:varchar 128))
 
    (isbn
     :accessor isbn
     :initarg :isbn
+    :type string
     :col-type (or (:varchar 128) :null))
 
    (price
-    :initarg :price
     :accessor price
+    :initarg :price
     ;; we don't default it to 0 (nil denotes a missing field),
     ;; and it might be useful for other objects.
+    :type float
     :col-type (or :integer :null))
 
    (date-publication
@@ -150,7 +154,9 @@ Usage:
     :col-type (or (:varchar 128) :null))
 
    (editor
-    :accessor editor :initarg :editor
+    :accessor editor
+    :initarg :editor
+    :type string
     :col-type (or (:varchar 128) :null))
 
    (authors
@@ -161,6 +167,7 @@ Usage:
    (cover-url
     :accessor cover-url
     :initarg :cover-url
+    :type string
     :col-type (or (:varchar 1024) :null)))
   (:metaclass dao-table-class)
   (:documentation "A book represents the book entity, not the physical object.
