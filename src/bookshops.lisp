@@ -65,27 +65,39 @@
       (str:trim txt))
     ))
 
-(defun parse-price (it)
-  "Extract the price. `it': plump node."
-  (extract-float (node-selector-to-text ".item_prix" it)))
+(defmacro with-log-error ((name) &body body)
+  `(handler-case
+       (progn
+         ,@body)
+     (error (c) (format *error-output* "could not parse ~a: ~a." ,name c))))
 
-(defun book-info (it)
+(defun parse-price (node)
+  "Extract the price. `node': plump node."
+  (extract-float (node-selector-to-text ".item_prix" node)))
+
+(defun parse-isbn (node)
+  (str:trim (first (last (str:lines
+                          (node-selector-to-text ".editeur-collection-parution" node))))))
+
+(defun parse-cover-url (node)
+  (with-log-error (:cover)
+    (aref (lquery-funcs:attr (clss:select "img" node)
+                             "src")
+          0)))
+
+(defun book-info (node)
   "Takes a plump node and returns a list of book objects with: title, authors, price, publisher, date of publication, etc.
   "
-  (let ((titre (node-selector-to-text  ".livre_titre" it))
-        (auteurs (node-selector-to-text ".livre_auteur" it))
-        (price (parse-price it))
-        (editeur  (node-selector-to-text ".editeur" it))
-        (date-parution  (node-selector-to-text ".date_parution" it))
-        (isbn (str:trim (first (last (str:lines
-                                      (node-selector-to-text ".editeur-collection-parution" it))))))
-        (cover-url (aref (lquery-funcs:attr (clss:select "img" it)
-                                            "src")
-                         0))
+  (let ((titre (node-selector-to-text  ".livre_titre" node))
+        (auteurs (node-selector-to-text ".livre_auteur" node))
+        (price (parse-price node))
+        (editeur  (node-selector-to-text ".editeur" node))
+        (date-parution  (node-selector-to-text ".date_parution" node))
+        (isbn (parse-isbn node))
+        (cover-url (parse-cover-url node))
         bk
         ;; (href (node-selector-to-text ".titre[href]"))
         )
-    (log:info price (type-of price))
     (setf bk (make-book :title titre
                         :isbn isbn
                         :datasource "fr"
