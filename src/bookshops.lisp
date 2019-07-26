@@ -65,12 +65,16 @@
       (str:trim txt))
     ))
 
+(defun parse-price (it)
+  "Extract the price. `it': plump node."
+  (extract-float (node-selector-to-text ".item_prix" it)))
+
 (defun book-info (it)
   "Takes a plump node and returns a list of book objects with: title, authors, price, publisher, date of publication, etc.
   "
   (let ((titre (node-selector-to-text  ".livre_titre" it))
         (auteurs (node-selector-to-text ".livre_auteur" it))
-        (prix  (node-selector-to-text ".item_prix" it)) ;; .item_prix ?
+        (price (parse-price it))
         (editeur  (node-selector-to-text ".editeur" it))
         (date-parution  (node-selector-to-text ".date_parution" it))
         (isbn (str:trim (first (last (str:lines
@@ -81,12 +85,13 @@
         bk
         ;; (href (node-selector-to-text ".titre[href]"))
         )
+    (log:info price (type-of price))
     (setf bk (make-book :title titre
                         :isbn isbn
                         :datasource "fr"
                         :cover-url cover-url
                         :authors auteurs
-                        :price prix
+                        :price price
                         :editor editeur
                         :date-publication date-parution))
     (find-existing bk)))
