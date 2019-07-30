@@ -73,13 +73,29 @@
          ,@body)
      (error (c) (format *error-output* "could not parse ~a: ~a." ,name c))))
 
+(defun parse-title (node)
+  (with-log-error (:title)
+    (node-selector-to-text  ".livre_titre" node)))
+
+(defun parse-authors (node)
+  (with-log-error (:authors)
+    (node-selector-to-text ".livre_auteur" node)))
+
 (defun parse-price (node)
   "Extract the price. `node': plump node."
   (extract-float (node-selector-to-text ".item_prix" node)))
 
+(defun parse-editor (node)
+  (with-log-error (:editor)
+    (node-selector-to-text ".editeur" node)))
+
 (defun parse-isbn (node)
   (str:trim (first (last (str:lines
                           (node-selector-to-text ".editeur-collection-parution" node))))))
+
+(defun parse-parution-date (node)
+  (with-log-error (:parution-date)
+    (node-selector-to-text ".date_parution" node)))
 
 (defun parse-cover-url (node)
   (with-log-error (:cover)
@@ -97,17 +113,15 @@
 (defun book-info (node)
   "Takes a plump node and returns a list of book objects with: title, authors, price, publisher, date of publication, etc.
   "
-  (let ((titre (node-selector-to-text  ".livre_titre" node))
-        (auteurs (node-selector-to-text ".livre_auteur" node))
+  (let ((titre (parse-title node))
+        (auteurs (parse-authors node))
         (price (parse-price node))
-        (editeur  (node-selector-to-text ".editeur" node))
-        (date-parution  (node-selector-to-text ".date_parution" node))
+        (editor  (parse-editor node))
+        (parution-date (parse-parution-date node))
         (isbn (parse-isbn node))
         (cover-url (parse-cover-url node))
         (details-url (parse-details-url node))
-        bk
-        ;; (href (node-selector-to-text ".titre[href]"))
-        )
+        bk)
     (setf bk (make-book :title titre
                         :isbn isbn
                         :datasource "fr"
@@ -115,8 +129,8 @@
                         :authors auteurs
                         :details-url details-url
                         :price price
-                        :editor editeur
-                        :date-publication date-parution))
+                        :editor editor
+                        :date-publication parution-date))
     (find-existing bk)))
 
 (defun build-url (query &key (source *datasource*) (encode t))
