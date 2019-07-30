@@ -79,9 +79,8 @@
 
 (defun parse-cover-url (node)
   (with-log-error (:cover)
-    (aref (lquery-funcs:attr (clss:select "img" node)
-                             "data-original")
-          0)))
+    (aref  (lquery:$ node "img" (attr "data-original"))
+           0)))
 
 (defun book-info (node)
   "Takes a plump node and returns a list of book objects with: title, authors, price, publisher, date of publication, etc.
