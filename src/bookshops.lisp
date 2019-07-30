@@ -79,7 +79,8 @@
 
 (defun parse-authors (node)
   (with-log-error (:authors)
-    (node-selector-to-text ".livre_auteur" node)))
+    (aref (lquery:$ node ".list_authors" (attr :title))
+          0)))
 
 (defun parse-price (node)
   "Extract the price. `node': plump node."
