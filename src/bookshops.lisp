@@ -80,7 +80,7 @@
 (defun parse-cover-url (node)
   (with-log-error (:cover)
     (aref (lquery-funcs:attr (clss:select "img" node)
-                             "src")
+                             "data-original")
           0)))
 
 (defun book-info (node)
