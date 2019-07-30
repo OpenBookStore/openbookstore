@@ -23,6 +23,12 @@
                :local-time-duration
                :cl-ppcre
                :parse-float
+
+               ;; web app
+               :hunchentoot
+               :easy-routes
+               :spinneret
+
                :log4cl
                :cl-i18n)
   :components ((:module "src"
