@@ -31,6 +31,10 @@
   "French source of books. The {query} string will be replaced by the list
   of '+' separated search keywords.")
 
+(defparameter *url-base* "http://www.librairie-de-paris.fr"
+  ;; no trailing / for now plz.
+  "Base url.")
+
 (defparameter *datasource* *french-search*
   "The default data source.")
 
@@ -82,6 +86,14 @@
     (aref  (lquery:$ node "img" (attr "data-original"))
            0)))
 
+(defun parse-details-url (node)
+  "Extract the url to the book online information.
+  https://www.librairie-de-paris.fr/livre/9782742720682-antigone-henry-bauchau/"
+  (with-log-error (:details-url)
+    (str:concat *url-base*
+                 (aref (lquery:$ node ".livre_titre a" (attr :href))
+                       0))))
+
 (defun book-info (node)
   "Takes a plump node and returns a list of book objects with: title, authors, price, publisher, date of publication, etc.
   "
@@ -92,6 +104,7 @@
         (date-parution  (node-selector-to-text ".date_parution" node))
         (isbn (parse-isbn node))
         (cover-url (parse-cover-url node))
+        (details-url (parse-details-url node))
         bk
         ;; (href (node-selector-to-text ".titre[href]"))
         )
@@ -100,6 +113,7 @@
                         :datasource "fr"
                         :cover-url cover-url
                         :authors auteurs
+                        :details-url details-url
                         :price price
                         :editor editeur
                         :date-publication date-parution))

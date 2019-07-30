@@ -102,7 +102,15 @@ Usage:
     ;; how to use a variable for 128 ?
     ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
     :col-type (or (:varchar 128) :null)
-    :documentation "The source (website) we took bibliographic information from.")
+    :documentation "The source name (website) we took bibliographic information from.")
+
+   (details-url
+    :accessor details-url
+    :initarg :details-url
+    :initform nil
+    :type string
+    :col-type (or (:varchar 128) :null)
+    :documentation "Link to the book's page on its datasource.")
 
    (title
     :accessor title
@@ -419,12 +427,13 @@ Usage:
         (print-book-repartition bk))
       (format t "There is no such book with id ~a~&" bk)))
 
-(defun make-book (&key title isbn authors cover-url editor date-publication price datasource)
+(defun make-book (&key title isbn authors details-url cover-url editor
+                    date-publication price datasource)
   "Create a Book instance. If given author or authors, create Author
-  instance(s) if they don't already exist in DB.
-  "
+  instance(s) if they don't already exist in DB. "
   (make-instance 'book
                  :datasource datasource
+                 :details-url details-url
                  :cover-url cover-url
                  :title title
                  :isbn isbn
