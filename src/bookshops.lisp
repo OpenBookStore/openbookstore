@@ -94,9 +94,9 @@
   (str:trim (first (last (str:lines
                           (node-selector-to-text ".editeur-collection-parution" node))))))
 
-(defun parse-parution-date (node)
-  (with-log-error (:parution-date)
-    (node-selector-to-text ".date_parution" node)))
+(defun parse-publication-date (node)
+  (with-log-error (:publication-date)
+    (node-selector-to-text ".MiseEnLigne" node)))
 
 (defun parse-cover-url (node)
   (with-log-error (:cover)
@@ -118,7 +118,7 @@
         (auteurs (parse-authors node))
         (price (parse-price node))
         (editor  (parse-editor node))
-        (parution-date (parse-parution-date node))
+        (parution-date (parse-publication-date node))
         (isbn (parse-isbn node))
         (cover-url (parse-cover-url node))
         (details-url (parse-details-url node))
