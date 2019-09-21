@@ -39,8 +39,11 @@
                  (:file "contacts")
                  (:file "bookshops")
                  (:file "commands")
-                 (:file "management")
-                 (:file "utils"))))
+                 (:file "utils")))
+
+               (:module "src/management"
+                :components
+                ((:file "management"))))
 
   :build-operation "program-op"
   :build-pathname "bookshops"
