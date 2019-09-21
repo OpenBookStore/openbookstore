@@ -1,33 +1,4 @@
-(defpackage bookshops.models
-  (:use :cl
-        :mito
-        :sxql
-        :cl-ansi-text
-        :log4cl)
 
-  (:export :connect
-           :ensure-tables-exist
-           ;; book accessors
-           :book :make-book
-           :editor
-           :find-book :find-by :find-existing :find-book-noisbn :last-books
-           :title :details-url :authors :cover-url :isbn :price
-           :print-book :print-book-details
-           :count-book
-           ;; book methods
-           :save-book :create-book
-           :quantity :set-quantity
-           :delete-books :delete-obj :delete-objects
-           ;; places
-           :place :place-copies
-           :make-place :create-place :current-place :save-place :print-place
-           :find-places :find-place-by
-           :default-place
-           :add-to :remove-from :move
-           :*current-place*
-           ;; utils
-           :print-quantity-red-green :negative-quantities
-           :erase-metaclass-from))
 
 (in-package :bookshops.models)
 
@@ -54,31 +25,6 @@ Usage:
   "The current place we manipulate the books from.")
 
 (setf str:*ellipsis* "(…)")
-;;
-;; DB connection, migrations.
-;;
-
-(defun connect ()
-  "Connect to the DB."
-  ;; also use mito:*connection*
-  (log:debug "connecting to ~a~&" *db-name*) (force-output)
-  (setf *db* (connect-toplevel :sqlite3 :database-name *db-name*)))
-
-(defun ensure-tables-exist ()
-  (mapcar #'ensure-table-exists '(book
-                                  place
-                                  place-copies
-                                  contact
-                                  contact-copies)))
-
-(defun migrate-all ()
-  "Migrate the Book table after we changed the class definition."
-  (mapcar #'mito:migrate-table '(book
-                                 place
-                                 place-copies
-                                 contact
-                                 contact-copies)))
-
 ;;
 ;; DB tables definition.
 ;;

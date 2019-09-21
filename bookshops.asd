@@ -33,7 +33,9 @@
                :cl-i18n)
   :components ((:module "src"
                 :components
-                ((:file "models")
+                ((:file "packages")
+                 (:file "database")
+                 (:file "models")
                  (:file "contacts")
                  (:file "bookshops")
                  (:file "commands")
