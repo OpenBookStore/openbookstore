@@ -192,13 +192,14 @@ Usage:
   (reduce #'+ (mapcar #'price (place-books place))))
 
 (defun make-place (name)
-  "Create a Place object in the DB."
+  "Create a Place object (don't save in the DB)."
   (make-instance 'place :name name))
 
 (defun save-place (place)
   (insert-dao place))
 
 (defun create-place (name)
+  "Create and save a `place' object in DB."
   (create-dao 'place :name name))
 
 (defun default-place ()

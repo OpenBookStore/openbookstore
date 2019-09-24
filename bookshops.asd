@@ -36,6 +36,7 @@
                 ((:file "packages")
                  (:file "database")
                  (:file "models")
+                 (:file "baskets")
                  (:file "contacts")
                  (:file "bookshops")
                  (:file "commands")
