@@ -5,7 +5,8 @@
   (:shadow :search
            :delete)
   (:import-from :bookshops
-                :books)
+                :books
+                :_)
 
   (:import-from :bookshops.models
                 :book

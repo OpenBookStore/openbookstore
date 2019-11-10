@@ -39,8 +39,8 @@
                  (:file "baskets")
                  (:file "contacts")
                  (:file "bookshops")
-                 (:file "commands")
-                 (:file "utils")))
+                 (:file "utils")
+                 (:file "commands")))
 
                (:module "src/management"
                 :components
