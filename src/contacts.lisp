@@ -184,8 +184,9 @@
               (format t "~2a- ~30a since ~a by ~a~&"
                       (object-id (contact-copies-book copy))
                       (blue (str:prune 30 (title copy)))
-                      (princ-color-flags (object-created-at copy)
-                                         copy)
+                      (princ-color-flags
+                       (local-time:format-timestring nil (object-created-at copy) :format +date-y-m-d+)
+                       copy)
                       (name copy)))
             copies)
     ;; We return a list of copies, not contact-copies, for the command level,
