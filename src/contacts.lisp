@@ -74,7 +74,7 @@
   (make-instance 'contact :name name))
 
 (defun create-contact (name)
-  "Create a new contact (with DB reistration)."
+  "Create a new contact (with DB registration)."
   (create-dao 'contact :name name))
 
 (defun find-contacts (&optional query)
@@ -135,7 +135,9 @@
             (format t "~t~2a- ~40a since ~a~&"
                     (object-id (contact-copies-book it))
                     (title it)
-                    (princ-color-flags (object-created-at it) it)))
+                    (princ-color-flags
+                     (format-date (object-created-at it))
+                     it)))
           (select-dao 'contact-copies
             (where (:= :contact contact)))))
 
@@ -185,7 +187,7 @@
                       (object-id (contact-copies-book copy))
                       (blue (str:prune 30 (title copy)))
                       (princ-color-flags
-                       (local-time:format-timestring nil (object-created-at copy) :format +date-y-m-d+)
+                       (format-date (object-created-at copy))
                        copy)
                       (name copy)))
             copies)

@@ -1,9 +1,14 @@
-(in-package :bookshops)
+(defpackage :bookshops.utils
+  (:use :cl
+        :parse-float
+        :bookshops.parameters)
+  (:export #:isbn-p
+           #:extract-float
+           #:format-date
+           #:i18n-load
+           #:_))
 
-(export '(isbn-p
-          extract-float
-          i18n-load
-          _))
+(in-package :bookshops.utils)
 
 (defparameter *isbn-accepted-lengths* '(13))
 
@@ -38,3 +43,7 @@
                                        :store-hashtable nil
                                        :store-plural-function t
                                        :update-translation-table nil))))))
+
+(defun format-date (date)
+  "Format the given date with the default date format (yyyy-mm-dd). Return a string."
+  (local-time:format-timestring nil date :format +date-y-m-d+))

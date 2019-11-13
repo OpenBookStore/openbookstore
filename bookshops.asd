@@ -33,13 +33,16 @@
                :cl-i18n)
   :components ((:module "src"
                 :components
-                ((:file "packages")
+                ;; stand-alone packages.
+                ((:file "parameters")
+                 (:file "utils")
+                 ;; they depend on the above.
+                 (:file "packages")
                  (:file "database")
                  (:file "models")
                  (:file "baskets")
                  (:file "contacts")
                  (:file "bookshops")
-                 (:file "utils")
                  (:file "commands")))
 
                (:module "src/management"

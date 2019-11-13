@@ -16,7 +16,6 @@ Usage:
 
 |#
 
-(defconstant +date-y-m-d+ '(:year "-" (:month 2) "-" (:day 2)))
 
 (defparameter *db-name* (asdf:system-relative-pathname :bookshops "db.db"))
 

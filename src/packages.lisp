@@ -3,7 +3,10 @@
         :mito
         :sxql
         :cl-ansi-text
-        :log4cl)
+        :log4cl
+        ;; internal
+        :bookshops.parameters
+        :bookshops.utils)
 
   (:export :connect
            :ensure-tables-exist

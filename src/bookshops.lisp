@@ -2,7 +2,10 @@
   (:use :cl
         :cl-ansi-text
         :parse-float
-        :log4cl)
+        :log4cl
+        ;;
+        :bookshops.parameters
+        :bookshops.utils)
   (:shadow :search)
   (:import-from :bookshops.models
                 :book
