@@ -59,6 +59,11 @@
   ;;    (subpathname *load-pathname* "README.md"))
   :in-order-to ((test-op (test-op "bookshops-test"))))
 
+;; from 108M, 0.04s startup time to 24M, 0.37s.
+#+sb-core-compression
+(defmethod asdf:perform ((o asdf:image-op) (c asdf:system))
+  (uiop:dump-image (asdf:output-file o c) :executable t :compression t))
+
 (asdf:defsystem "bookshops/gui"
   :version "0.1.0"
   :author "vindarel"
