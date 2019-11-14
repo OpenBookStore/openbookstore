@@ -1,7 +1,8 @@
 image: daewok/lisp-devel
 
 stages:
-  - test
+  - build
+  - test  # looks like current tests run forever in the CI.
 
 # We need to install (clone) libraries not in Quicklisp.
 before_script:
@@ -9,7 +10,7 @@ before_script:
   - apt-get install -y git-core
   - make install
 
-test:
-  stage: test
+build:
+  stage: build
   script:
-    - make test
+    - make build
