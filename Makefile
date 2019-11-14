@@ -5,9 +5,7 @@ all: test
 build:
 	#TODO: update replic with multi args completion
 	$(LISP)	--non-interactive \
-		--load ../replic/replic.asd \
 		--load bookshops.asd \
-		--eval '(ql:quickload :replic)' \
 		--eval '(ql:quickload :bookshops)' \
 		--eval '(asdf:make :bookshops)'
 
