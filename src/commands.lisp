@@ -359,9 +359,10 @@
   (let ((bookshops.models::*print-details* t))
     (mapcar #'print-contact (find-contacts))))
 
-(defun loans ()
+(defun loans (&optional name)
+  ;TODO: filter by name
   "Print who borrowed what book and since when, ordered by date (oldest first)."
-  (setf *last-page* (bookshops.models:loans)))
+  (setf *last-page* (bookshops.models:loans :contact name)))
 
 (replic.completion:add-completion "contacts" #'contact-names)
 (replic.completion:add-completion "loans" #'contact-names)

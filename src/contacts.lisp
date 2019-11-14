@@ -88,10 +88,13 @@
     (select-dao 'contact
       (where (:= key val)))))
 
-(defun find-contacts-copies ()
-  "Return the list of borrowed books, most recent last."
+(defun find-contacts-copies (&key contact)
+  "Return the list of borrowed books, most recent last.
+If `contact' is given, filter by this contact."
   ;; (warn "Exclude loans with a quantity at 0 ?")
   (select-dao 'contact-copies
+    (when contact
+      (where (:= :contact contact)))
     (order-by :object-created)))
 
 (defgeneric loan-too-long-p (obj)
@@ -184,11 +187,13 @@
           (quantity contact-copy)))))
 
 
-(defun loans ()
-  "Print who borrowed what book and since when (most recent last)."
-  (let* ((copies (find-contacts-copies))
+(defun loans (&key contact)
+  "Print who borrowed what book and since when (most recent last). If `name', filter by this contact."
+  (let* ((contact (when contact
+                    (first (find-contacts contact))))
+         (copies (find-contacts-copies :contact contact))
          (title-length 40)
-         (padding (+ title-length 9)))                   ;; color escape strings.
+         (padding (+ title-length 9))) ;; color escape strings.
     (mapcar (lambda (copy)
               (format t "~2a- ~va since ~a by ~a~&"
                       (object-id (contact-copies-book copy))
