@@ -34,6 +34,12 @@ In development, don't look.
 
 ## Installation
 
+Download the executable: https://gitlab.com/vindarel/cl-bookshops/-/jobs/351096418/artifacts/download (or get a newer one by going in the latest pipeline and downloading a job artifact).
+
+It's a 24MB self-contained executable (for Debian GNU/Linux,
+x86/64). You don't need to install a Lisp implementation nor anything
+to run it.
+
 Build the executable:
 
     make build
@@ -72,7 +78,7 @@ At any moment, quit the current prompt with `C-d` (control-d) or use:
 
 ### GUI
 
-A simple Tk GUI.
+A useless Tk GUI built for learning purposes.
 
     ./bookshops-gui &
 
