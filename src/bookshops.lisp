@@ -187,13 +187,32 @@
   (format t "Argument error: ~a~&" (opts:option c))
   (uiop:quit 1))
 
+(defun version ()
+  "Return the version as in the asd plus the current commit id."
+  (let ((version (asdf/component:component-version (asdf:find-system :bookshops)))
+        (directory (asdf:system-source-directory :bookshops)))
+    (or (ignore-errors
+         (uiop:with-current-directory (directory)
+           (multiple-value-bind (current-commit)
+               (uiop:run-program (list "git" "describe" "--always")
+                                 :output '(:string :stripped t))
+             (concatenate 'string
+                          version
+                          (format nil "-~a" current-commit)))))
+        version)))
+
 (defun main ()
 
   (opts:define-opts
-    (:name :help
-           :description "print this help and exit."
-           :short #\h
-           :long "help")
+      (:name :help
+             :description "print this help and exit."
+             :short #\h
+             :long "help")
+
+      (:name :version
+             :description "print the version number and exit."
+             :short #\v
+             :long "version")
 
     (:name :interactive
            :description "enter the interactive prompt."
@@ -203,6 +222,11 @@
   (multiple-value-bind (options free-args)
       (handler-bind ((error #'handle-parser-error))
         (opts:get-opts))
+
+    (if (getf options :version)
+        (progn
+          (format t "~a~&" (version))
+          (uiop:quit)))
 
     (if (getf options :help)
         (progn

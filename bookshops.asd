@@ -3,7 +3,7 @@
 |#
 
 (asdf:defsystem "bookshops"
-  :version "0.1.0"
+  :version "0.1.1"
   :author "vindarel"
   :license "GPL3"
   :depends-on (
