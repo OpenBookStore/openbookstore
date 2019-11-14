@@ -56,12 +56,6 @@
   (print-unreadable-object (contact stream :type t)
       (format stream "~a" (name contact))))
 
-(defun print-borrowed-book (book)
-  (format t "~2a- ~40a borrowed on ~a~&"
-          (object-id book)
-          (title book)
-          (object-created-at book)))
-
 (defmethod print-object ((it contact-copies) stream)
   (print-unreadable-object (it stream :type t)
     (format stream "~a lended to ~a on ~a"
@@ -129,28 +123,39 @@
             (yellow (princ-to-string what))
             what))))
 
+(defun print-borrowed-book (book)
+  ;; unused.
+  (format t "~2a- ~40a borrowed on ~a~&"
+          (object-id book)
+          (title book)
+          (object-created-at book)))
 
 (defun print-borrowed-books (contact)
-  (mapcar (lambda (it)
-            (format t "~t~2a- ~40a since ~a~&"
-                    (object-id (contact-copies-book it))
-                    (title it)
-                    (princ-color-flags
-                     (format-date (object-created-at it))
-                     it)))
-          (select-dao 'contact-copies
-            (where (:= :contact contact)))))
+  (let ((title-length 40))
+    (mapcar (lambda (it)
+              (format t "~t~2a- ~va since ~a~&"
+                      (object-id (contact-copies-book it))
+                      title-length
+                      (str:prune title-length (title it))
+                      (princ-color-flags
+                       (format-date (object-created-at it))
+                       it)))
+            (select-dao 'contact-copies
+              (where (:= :contact contact))))))
 
 (defun print-contact (contact &key (stream t) (details *print-details*))
   "Print the given contact, the books she borrowed and if it's been too long."
   ;; format-object method ?
-  (format stream "~2a - ~40a~t ~&"
-          (object-id contact)
-          (cyan (name contact))
-          ;; (length (contact-books contact))
-          )
-  (when details
-    (print-borrowed-books contact)))
+  (let* ((title-length 40)
+         (padding (+ title-length 9)))
+    (format stream "~2a - ~va~t ~&"
+            (object-id contact)
+            padding
+            (cyan (str:prune title-length (name contact)))
+            ;; (length (contact-books contact))
+            )
+    (when details
+      (print-borrowed-books contact))))
 ;;
 ;; Commands
 ;;
@@ -181,11 +186,14 @@
 
 (defun loans ()
   "Print who borrowed what book and since when (most recent last)."
-  (let ((copies (find-contacts-copies)))
+  (let* ((copies (find-contacts-copies))
+         (title-length 40)
+         (padding (+ title-length 9)))                   ;; color escape strings.
     (mapcar (lambda (copy)
-              (format t "~2a- ~30a since ~a by ~a~&"
+              (format t "~2a- ~va since ~a by ~a~&"
                       (object-id (contact-copies-book copy))
-                      (blue (str:prune 30 (title copy)))
+                      padding
+                      (blue (str:prune title-length (title copy)))
                       (princ-color-flags
                        (format-date (object-created-at copy))
                        copy)
