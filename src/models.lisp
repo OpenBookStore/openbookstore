@@ -323,12 +323,11 @@ Usage:
   "Print to stream a user-readable output."
   ;; xxx: print as a nice table.
   ;; ~30a = substring 20 + ansi colors markers.
-  (format stream "~&~2@a- ~40a ~40a ~15a x ~3@a~&"
+  (format stream "~&~2@a- ~40a ~40a ~8@a x ~3@a~&"
           (prin1-to-string (object-id book))
           (blue (str:prune 30 (title book)))
           (str:prune 40 (or (authors book) ""))
-          (str:prune 15 (or (format nil "~a" (price book))
-                            ""))
+          (str:prune 15  (format nil "~$" (price book)))
           (print-quantity-red-green (quantity book))))
 
 (defmethod print-obj ((obj book) &optional (stream t))
