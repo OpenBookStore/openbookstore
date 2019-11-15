@@ -354,10 +354,10 @@
 
 (replic.completion:add-completion "move" #'place-names)
 
-(defun contacts ()
+(defun contacts (&optional name)
   "Show our contacts and the books they borrowed."
   (let ((bookshops.models::*print-details* t))
-    (mapcar #'print-contact (find-contacts))))
+    (mapcar #'print-contact (find-contacts name))))
 
 (defun loans (&optional name)
   ;TODO: filter by name
