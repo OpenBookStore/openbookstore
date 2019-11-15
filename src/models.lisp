@@ -309,11 +309,12 @@ Usage:
           (format t "Will not remove the book ~a from ~a, it doesn't exist there.~&" bk place)
           nil))))
 
-(defun print-quantity-red-green (qty &optional (stream nil))
+(defun print-quantity-red-green (qty)
   "If qty is > 0, print in green. If < 0, in red."
+  ;; Always use colors, for the strings to be the same length. Helps in calcuting the padding.
   (cond
     ((= 0 qty)
-     (format stream "~a" qty))
+     (white (prin1-to-string qty)))
     ((< qty 0)
      (red (prin1-to-string qty)))
     ((> qty 0)
@@ -323,7 +324,8 @@ Usage:
   "Print to stream a user-readable output."
   ;; xxx: print as a nice table.
   ;; ~30a = substring 20 + ansi colors markers.
-  (format stream "~&~2@a- ~40a ~40a ~8@a x ~3@a~&"
+  ;; ~12@a = justify on the right, count colors markers.
+  (format stream "~&~2@a- ~40a ~40a ~8@a x~12@a~&"
           (prin1-to-string (object-id book))
           (blue (str:prune 30 (title book)))
           (str:prune 40 (or (authors book) ""))
