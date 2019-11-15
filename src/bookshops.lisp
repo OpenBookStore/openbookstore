@@ -187,19 +187,19 @@
   (format t "Argument error: ~a~&" (opts:option c))
   (uiop:quit 1))
 
-(defun version ()
-  "Return the version as in the asd plus the current commit id."
+(defparameter +version+
   (let ((version (asdf/component:component-version (asdf:find-system :bookshops)))
         (directory (asdf:system-source-directory :bookshops)))
     (or (ignore-errors
-         (uiop:with-current-directory (directory)
-           (multiple-value-bind (current-commit)
-               (uiop:run-program (list "git" "describe" "--always")
-                                 :output '(:string :stripped t))
-             (concatenate 'string
-                          version
-                          (format nil "-~a" current-commit)))))
-        version)))
+          (uiop:with-current-directory (directory)
+            (multiple-value-bind (current-commit)
+                (uiop:run-program (list "git" "describe" "--always")
+                                  :output '(:string :stripped t))
+              (concatenate 'string
+                           version
+                           (format nil "-~a" current-commit)))))
+        version))
+  "The version number as in the asd appended with the current commit id.")
 
 (defun main ()
 
@@ -225,7 +225,7 @@
 
     (if (getf options :version)
         (progn
-          (format t "~a~&" (version))
+          (format t "~a~&" +version+)
           (uiop:quit)))
 
     (if (getf options :help)

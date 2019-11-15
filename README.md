@@ -178,7 +178,7 @@ The same information, but a list of books sorted by date (oldest first):
 
 - `loans`
 
-In both commands, a book that was borrowed more than 10 days is
+In both commands, a book that was borrowed more than 60 days is
 printed in red.
 
 and when your friend returns a book back:
