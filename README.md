@@ -134,6 +134,7 @@ To see more information about one book you have in stock:
 
 - `details <id>`: print more information about the book of
  id `<id>`.
+- `details <Title>`: you can TAB-complete the title.
 
 As with several commands, you can autocomplete the id argument using
 the TAB key. The choices are the ids displayed on the last `stock`

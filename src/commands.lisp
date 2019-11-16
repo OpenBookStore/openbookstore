@@ -127,14 +127,12 @@
 
 (defun last-page-book-ids ()
   "We want to complete the ids and the titles."
-  (append (mapcar (lambda (it)
-                    (prin1-to-string (object-id it)))
-                  *last-page*)
-          (mapcar (lambda (it)
-                    (format nil "'~a'" (title it)))
-                  *last-page*)))
-(defun baskets ()
-  (format t "~a" (mapcar #'name (bookshops.models::find-baskets))))
+  (mapcan (lambda (it)
+            (list (prin1-to-string (object-id it))
+                  ;TODO: TAB-completing a string fails.
+                  (format nil "\"~a\"" (title it))))
+          *last-page*))
+
 (defun basket-names ()
   (mapcar #'name (bookshops.models::find-baskets)))
 
@@ -200,13 +198,16 @@
     (setf *last-search* query)
     (print-page results *current-page*)))
 
-(defun details (pk)
-  "Print all information about the book of the given id.
+(defun details (pk/title)
+  "Print all information about the book of the given id/title.
 
    You can complete the argument with the TAB key."
-  (when (stringp pk)
-    (setf pk (parse-integer pk)))
-  (print-book-details pk))
+  (let ((pk))
+    ;; We have either an id (str) or a title. Consider the id first, fallback to the title.
+    (when (stringp pk/title)
+      (setf pk (ignore-errors
+                 (parse-integer pk/title))))
+    (print-book-details (or pk pk/title))))
 
 ;; Get a list of ids of the last search.
 ;; Specially handy when we have filtered the search.

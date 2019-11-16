@@ -364,8 +364,13 @@ Usage:
         (format t "~%This book is not registered in any place.~&"))))
 
 (defun print-book-details (bk)
-  (when (integerp bk)
-    (setf bk (find-dao 'book :id bk)))
+  (cond
+    ((integerp bk)
+     (setf bk (find-dao 'book :id bk)))
+    ((stringp bk)
+     ;; What with two similar titles?
+     ;; Mito takes the first one.
+     (setf bk (find-dao 'book :title bk))))
   (if bk
       (progn
         (format t "~a x ~a~&" (blue (title bk)) (quantity bk))
