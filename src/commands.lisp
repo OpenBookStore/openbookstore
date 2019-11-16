@@ -44,6 +44,10 @@
                 :find-contacts
                 :find-contact-by
                 :print-contact
+
+                ;; baskets
+                :find-baskets
+                :print-basket
                 ;; utils
                 :print-quantity-red-green
                 )
@@ -51,6 +55,7 @@
   (:export :main
            :search
            :add
+           :baskets
            :details
            :stock
            :next
@@ -120,8 +125,25 @@
               (decf i))
             (reverse results))))
 
-(defun add (index)
-  "Add this book (by index of the last search) into the DB."
+(defun last-page-book-ids ()
+  "We want to complete the ids and the titles."
+  (append (mapcar (lambda (it)
+                    (prin1-to-string (object-id it)))
+                  *last-page*)
+          (mapcar (lambda (it)
+                    (format nil "'~a'" (title it)))
+                  *last-page*)))
+(defun baskets ()
+  (format t "~a" (mapcar #'name (bookshops.models::find-baskets))))
+(defun basket-names ()
+  (mapcar #'name (bookshops.models::find-baskets)))
+
+(defun baskets (&optional name)
+  (let ((bookshops.models:*print-details* (not (str:emptyp name))))
+    (mapcar #'print-basket (find-baskets))))
+
+(replic.completion:add-completion "baskets" #'basket-names)
+
   (when (stringp index)
     ;; generics ?
     (setf index (parse-integer index)))
@@ -185,11 +207,6 @@
   (when (stringp pk)
     (setf pk (parse-integer pk)))
   (print-book-details pk))
-
-(defun last-page-book-ids ()
-  (mapcar (lambda (it)
-            (prin1-to-string (object-id it)))
-          *last-page*))
 
 ;; Get a list of ids of the last search.
 ;; Specially handy when we have filtered the search.

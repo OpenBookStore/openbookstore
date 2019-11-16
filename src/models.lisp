@@ -1,6 +1,7 @@
 
-
 (in-package :bookshops.models)
+
+(export '(*print-details*))
 
 #|
 Usage:

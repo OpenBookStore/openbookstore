@@ -1,5 +1,7 @@
 (in-package :bookshops.models)
 
+(export '(find-baskets))
+
 (defclass basket ()
   ((name
     :initarg :name
@@ -28,9 +30,11 @@ Specifies the quantity in the given basket."))
 
 (defmethod print-object ((obj basket) stream)
   (print-unreadable-object (obj stream :type t)
-    (format stream "~a"
-            (name obj))))
+    (format stream "~a" (name obj))))
 
+(defun basket-books (basket)
+  (mapcar #'basket-copies-book (select-dao 'basket-copies
+                                 (where (:= :basket basket)))))
 (defun create-basket (name)
   "Create a `basket' object in the DB."
   (create-dao 'basket :name name))
@@ -39,3 +43,17 @@ Specifies the quantity in the given basket."))
   (if name
       (error 'not-implemented)
       (select-dao 'basket)))
+
+(defun print-basket (basket &key (stream t))
+  "Print the name of the basket and its number of books.
+With details, print the list of books."
+  (format stream "~2a - ~40a~t x~3a/ ~3a~&"
+          (object-id basket)
+          (name basket)
+          (length (basket-books basket)) ;XXX: not length, count.
+          (reduce #'+ (mapcar #'quantity (basket-books basket))))
+  (when *print-details*
+    (let ((books (basket-books basket)))
+      (if books
+          (mapcar #'print-book books)
+          (format stream "This basket is empty.~&")))))
