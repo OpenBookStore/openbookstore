@@ -113,7 +113,7 @@
          (results (books query))
          (i (length results)))
     (mapcar (lambda (it)
-              (format t "~2@a- ~a, ~a~t~a ~tstock: x~a~&"
+              (format t "~2@a- ~a, ~a~t~$ ~tstock: x~a~&"
                       i
                       (blue (title it))
                       (authors it)
