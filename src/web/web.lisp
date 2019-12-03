@@ -27,6 +27,17 @@
        (:title ,title))
       (:body ,@body))))
 
+(defun books-table-body (books)
+  (with-html-string
+    (:tbody
+     (dolist (bk books)
+       (:tr
+        (:td (mito:object-id bk))
+        (:td
+         (:a :href (format nil "/book/~a" (mito:object-id bk))
+             (title bk)))
+        (:td (quantity bk)))))))
+
 (defun books-list (books)
   (with-page (:title "Books stock")
     (:header
@@ -36,8 +47,27 @@
       (:thead
        (:th "id")
        (:th "Title")
-       (:th "in stock"))
-      (:tbody
+       (:th (:a
+             :href "#"
+             :onclick (ps
+                        ;; Ajax call to /api/stock (future: filter options, pagination etc)
+                        ;; and replace the list of books in the table's body in place.
+                        (let ((request (new (|XMLHttpRequest|))))
+                          (setf (chain request onreadystatechange)
+                                (lambda ()
+                                  (chain console (log (@ this status)
+                                                      "text:"
+                                                      (@ this response-text)
+                                                      "xml:"
+                                                      (@ this |responseXML|)))
+                                  (setf (chain document (get-element-by-id "b-body") |innerHTML|)
+                                        (@ this response-text))))
+                          (chain request (open "GET"
+                                               "/api/stock"
+                                               t))
+                          (chain request (send))))
+             "In stock")))
+      (:tbody :id "b-body"
        (dolist (bk books)
          (:tr
           (:td (mito:object-id bk))
@@ -115,7 +145,12 @@
     (:div (format nil "qty: ~a" qty))))
 
 (defroute command-book-route ("/book/:id/command" :method :get) ()
-  (format t "~&--- command ~a with GET: do nothing~&" id))
+  (format t "~&--- command ~a with GET: do nothing~&" id)
+  (format nil (books-table-body (find-book))))
+
+(defroute api-stock ("/api/stock") ()
+  "Return a list of books as html to replace the table's body."
+  (format nil (books-table-body (last-books))))
 
 (defroute testroute ("/test") (x y)
   (format t "~&---- TEST x: ~a, y: ~a~&" x y)
