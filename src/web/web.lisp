@@ -42,6 +42,7 @@
   (with-page (:title "Books stock")
     (:header
      (:h1 "Books stock"))
+    (:script :src "/skewer")
     (:section
      (:table
       (:thead

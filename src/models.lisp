@@ -439,9 +439,8 @@ Usage:
 
 (defun last-books ()
   "Newest first."
-  (reverse
-   (select-dao 'book
-     (order-by :created-at))))
+  (select-dao 'book
+    (order-by (:desc :created-at))))
 
 (defun find-book-noisbn ()
   (select-dao 'book
