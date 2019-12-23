@@ -430,17 +430,17 @@ Usage:
           existing
           bk))))
 
-(defun find-book (&optional query)
+(defun find-book (&key query (order :asc))
   "Return a list of book objects. If a query string is given, filter by title."
-  (if query
-      (select-dao 'book
-        (where (:like :title (str:concat "%" query "%"))))
-      (select-dao 'book)))
-
-(defun last-books ()
-  "Newest first."
   (select-dao 'book
-    (order-by (:desc :created-at))))
+    (when query
+      (where (:like :title (str:concat "%" query "%"))))
+    (order-by `(,order :created-at))))
+
+(defun last-books (&key (order :asc))
+  ""
+  (select-dao 'book
+    (order-by `(,order :created-at))))
 
 (defun find-book-noisbn ()
   (select-dao 'book

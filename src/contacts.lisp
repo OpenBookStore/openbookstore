@@ -244,7 +244,7 @@ If `contact' is given, filter by this contact."
 (defvar *contact* (find-dao 'contact))
 
 #+nil
-(defvar *thule* (first (find-book "thule")))
+(defvar *thule* (first (find-book :query "thule")))
 
 
 ;;

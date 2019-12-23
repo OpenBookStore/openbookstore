@@ -194,7 +194,7 @@
 (defun stock (&optional title-kw &rest rest)
   "Show our stock (books in DB)."
   (let* ((query (if title-kw (str:join "%" (cons title-kw rest))))
-         (results (find-book query)))
+         (results (find-book :query query)))
     (setf *last-search* query)
     (print-page results *current-page*)))
 
