@@ -142,6 +142,10 @@
 
 (replic.completion:add-completion "baskets" #'basket-names)
 
+(defun add (index &optional basket-name)
+  "Add this book (by index of the last search) into the DB.
+
+By default, add to the stock. If an optional list name is given, add it to the list without modifying the actual stock."
   (when (stringp index)
     ;; generics ?
     (setf index (parse-integer index)))
