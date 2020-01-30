@@ -43,8 +43,21 @@
     :initform nil
     :accessor books)))
 
+(defun stock-search (list-widget query)
+  (let* ((results (bookshops.models:find-book :query query))
+         (book-widgets (mapcar #'make-book-widget results)))
+    (setf (books list-widget) book-widgets)
+    (update list-widget)))
+
 (defmethod render ((widget book-list-widget))
   (with-html
+    (with-html-form (:POST (lambda (&key query &allow-other-keys)
+                                   (stock-search widget query)))
+      (:input :type "text"
+              :name "query"
+              :placeholder "query")
+      (:input :type "submit"
+              :value "Add"))
     (loop for elt in (books widget)
        do (render elt))))
 
