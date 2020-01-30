@@ -32,7 +32,7 @@
                 ;; places
                 :current-place
                 :place-copies-book
-                :place-copies-place
+                :place
                 :print-place
                 :name
                 :find-places
@@ -238,7 +238,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
                    (format t "~2a- ~35a ~2a- ~20a: x~a~&"
                            (object-id (place-copies-book it))
                            (title it)
-                           (object-id (place-copies-place it))
+                           (object-id (place it))
                            (name it)
                            (print-quantity-red-green (quantity it))))
                  negative))))))

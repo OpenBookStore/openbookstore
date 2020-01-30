@@ -164,11 +164,11 @@ Usage:
     :initarg :book
     :col-type book)
    (place
-    :accessor place-copies-place
+    :accessor place
     :initarg :place
     :col-type place)
    (quantity
-    :accessor place-copies-quantity
+    :accessor quantity
     :initform 0
     :col-type (or (:integer) :null)))
   (:metaclass dao-table-class)
@@ -179,8 +179,8 @@ Usage:
   (print-unreadable-object (pc stream :type t)
     (format stream "book \"~a\" in \"~a\", x~a"
             (str:prune 20 (title pc))
-            (name (place-copies-place pc))
-            (place-copies-quantity pc))))
+            (name (place pc))
+            (quantity pc))))
 
 (defmethod title ((it place-copies))
   (if (place-copies-book it)
@@ -188,7 +188,7 @@ Usage:
       "<no book>"))
 
 (defmethod name ((it place-copies))
-  (name (place-copies-place it)))
+  (name (place it)))
 
 (defmethod price ((place place))
   (reduce #'+ (mapcar #'price (place-books place))))
@@ -263,7 +263,7 @@ Usage:
                                 (where (:= :place place)))))
 
 (defun book-places (bk)
-  (mapcar #'place-copies-place (select-dao 'place-copies
+  (mapcar #'place (select-dao 'place-copies
                                  (where (:= :book bk)))))
 
 (defun add-to (place bk &key (quantity 1))
@@ -278,7 +278,7 @@ Usage:
     (if existing
         (progn
           (log:info "The book ~a exists in ~a." bk place)
-          (incf (place-copies-quantity existing) quantity)
+          (incf (quantity existing) quantity)
           (save-dao existing)
           (quantity existing))
         (progn
@@ -357,8 +357,8 @@ Usage:
 
           (mapc (lambda (it)
                   (format t "~2a - ~40a ~t x~a~&"
-                          (object-id (place-copies-place it))
-                          (name (place-copies-place it))
+                          (object-id (place it))
+                          (name (place it))
                           (print-quantity-red-green (quantity it))))
                 bk-places))
         (format t "~%This book is not registered in any place.~&"))))
@@ -458,20 +458,23 @@ Usage:
   (if (object-id book)
       (let ((place-copies (select-dao 'place-copies
                             (where (:= :book book)))))
-        (reduce #'+ (mapcar #'place-copies-quantity place-copies)))
+        (reduce #'+ (mapcar #'quantity place-copies)))
       ;; if book not saved in db.
       0))
 
+(defmethod (setf quantity) (val (book book))
+  (error "Please add or remove copies from a place instead of setting the quantity directly."))
+
 (defmethod quantity ((place place))
   "Quantity of books in this place."
-  (reduce #'+ (mapcar #'place-copies-quantity (select-dao 'place-copies
+  (reduce #'+ (mapcar #'quantity (select-dao 'place-copies
                                                 (where (:= :place place))))))
 
 (defmethod quantity ((pc place-copies))
-  (place-copies-quantity pc))
+  (quantity pc))
 
 ;; (defmethod (setf quantity) (val (pc place-copies))
-;;   (setf (place-copies-quantity pc) val))
+;;   (setf (quantity pc) val))
 
 (defun set-quantity (book nb)
   "Set the quantity of this book into the default place."
