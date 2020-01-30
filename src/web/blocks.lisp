@@ -30,12 +30,24 @@
 (defun make-book-widget (book)
   (make-instance 'book-widget :book book))
 
+(defun add-book (book-widget)
+  "Add one copy to the default place."
+  (let ((book (book book-widget)))
+    (bookshops.models:add-to (bookshops.models:default-place)
+                             book)
+    (update book-widget)))
+
 (defmethod render ((widget book-widget))
   (let ((book (book widget)))
     (with-html
       (:h4 (bookshops.models:title book))
       (:div (bookshops.models:authors book))
-      (:div (bookshops.models:price book)))))
+      (:div (bookshops.models:price book) "€")
+      (:div "in stock:" (bookshops.models:quantity book))
+      (with-html-form (:POST (lambda (&key &allow-other-keys)
+                               (add-book widget)))
+        (:input :type "submit"
+                :value "Add 1")))))
 
 (defwidget book-list-widget ()
   ((books
@@ -55,9 +67,9 @@
                                    (stock-search widget query)))
       (:input :type "text"
               :name "query"
-              :placeholder "query")
+              :placeholder "search title")
       (:input :type "submit"
-              :value "Add"))
+              :value "Search"))
     (loop for elt in (books widget)
        do (render elt))))
 
