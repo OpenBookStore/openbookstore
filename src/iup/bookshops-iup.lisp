@@ -87,4 +87,9 @@
   #+sbcl
   (sb-int:with-float-traps-masked
       (:divide-by-zero :invalid)
-    (bookslist)))
+    (restart-case
+        (bookslist)
+      (connect-db ()
+        :report "Connect to the DB"
+        (bookshops.models:connect)
+        (main)))))
