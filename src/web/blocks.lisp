@@ -21,7 +21,7 @@
 
 (defparameter *port* 8888)
 
-(defwidget book-widget (weblocks-ui:widget)
+(defwidget book-widget (weblocks-ui:ui-widget)
     ((book
       :initarg :book
       :initform nil
