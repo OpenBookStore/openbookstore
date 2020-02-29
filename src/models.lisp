@@ -168,7 +168,7 @@ Usage:
     :initarg :place
     :col-type place)
    (quantity
-    :accessor quantity
+    :accessor place-copy-quantity
     :initform 0
     :col-type (or (:integer) :null)))
   (:metaclass dao-table-class)
@@ -177,10 +177,11 @@ Usage:
 
 (defmethod print-object ((pc place-copies) stream)
   (print-unreadable-object (pc stream :type t)
-    (format stream "book \"~a\" in \"~a\", x~a"
-            (str:prune 20 (title pc))
-            (name (place pc))
-            (quantity pc))))
+    (with-slots (quantity) pc
+      (format stream "book \"~a\" in \"~a\", x~a"
+              (str:prune 20 (title pc))
+              (name (place pc))
+              quantity))))
 
 (defmethod title ((it place-copies))
   (if (place-copies-book it)
@@ -250,7 +251,7 @@ Usage:
           (object-id place)
           (name place)
           (length (place-books place))
-          (reduce #'+ (mapcar #'quantity (place-books place)))
+          (reduce #'+ (mapcar #'place-copy-quantity (place-books place)))
           (price place))
   (when details
     (format stream "~a~&" (mapcar #'print-book (place-books place)))))
@@ -458,7 +459,7 @@ Usage:
   (if (object-id book)
       (let ((place-copies (select-dao 'place-copies
                             (where (:= :book book)))))
-        (reduce #'+ (mapcar #'quantity place-copies)))
+        (reduce #'+ (mapcar #'place-copy-quantity place-copies)))
       ;; if book not saved in db.
       0))
 
@@ -467,8 +468,8 @@ Usage:
 
 (defmethod quantity ((place place))
   "Quantity of books in this place."
-  (reduce #'+ (mapcar #'quantity (select-dao 'place-copies
-                                                (where (:= :place place))))))
+  (reduce #'+ (mapcar #'place-copy-quantity (select-dao 'place-copies
+                                              (where (:= :place place))))))
 
 (defmethod quantity ((pc place-copies))
   (quantity pc))
@@ -508,7 +509,7 @@ Usage:
 ;;
 (defun delete-matching (kw)
   "Delete the books whose titles match kw."
-  (delete-books (find-book kw)))
+  (delete-books (find-book :query kw)))
 
 (defun delete-books (bklist)
   "Delete this list of books."
