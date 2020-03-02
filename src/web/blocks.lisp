@@ -15,7 +15,7 @@
 
 (in-package :bookshops-weblocks)
 
-(defapp stock)
+(defapp stock :prefix "/")
 
 (weblocks/debug:on)
 
