@@ -270,8 +270,8 @@ Usage:
 (defun add-to (place bk &key (quantity 1))
   "Add the given book to this place.
    Return the quantity. nil means it is not present."
-  (assert bk)
   (assert place)
+  (assert bk)
   (unless (object-id bk)
     (error "The book ~a is not saved in DB." bk))
   (let ((existing (find-dao 'place-copies :place place :book bk))
@@ -279,7 +279,7 @@ Usage:
     (if existing
         (progn
           (log:info "The book ~a exists in ~a." bk place)
-          (incf (quantity existing) quantity)
+          (incf (place-copy-quantity existing) quantity)
           (save-dao existing)
           (quantity existing))
         (progn
@@ -485,11 +485,7 @@ Usage:
 (defgeneric (setf quantity) (val obj))
 
 (defmethod (setf quantity) (val (obj place-copies))
-  ;TODO: TEST !! just wrote it to remove a compiler warning. see line
-  ; see           (setf (quantity existing) (decf qty quantity))
-  ;; in remove-from
-  (assert (numberp val))
-  (add-to (default-place) obj :quantity val))
+  (error "Please use proper methods to add copies to a place, or use the accessor instead."))
 
 ;;
 ;; Authors
