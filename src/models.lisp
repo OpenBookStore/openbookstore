@@ -472,7 +472,7 @@ Usage:
                                               (where (:= :place place))))))
 
 (defmethod quantity ((pc place-copies))
-  (quantity pc))
+  (quantity (place pc)))
 
 ;; (defmethod (setf quantity) (val (pc place-copies))
 ;;   (setf (quantity pc) val))
