@@ -70,8 +70,11 @@
               :placeholder "search title")
       (:input :type "submit"
               :value "Search"))
-    (loop for elt in (books widget)
-       do (render elt))))
+    (:table
+     (:tbody
+      (loop for elt in (books widget)
+         do (with-html
+              (:tr (render elt))))))))
 
 (defun make-book-list-widget (books)
   (let ((widgets (mapcar #'make-book-widget books)))
