@@ -83,7 +83,15 @@
 
 (defun start ()
   ;; (weblocks/server:start :port *port*))
-  (weblocks/server:start))
+  ;(setf weblocks/default-init::*welcome-screen-enabled* nil)
+  (unless mito::*connection*
+    (bookshops.models:connect))
+  (restart-case
+      (weblocks/server:start)
+    (connect-to-db ()
+      :report "Connect to the DB"
+      (bookshops.models:connect))))
+
 
 #+nil
 (weblocks/debug:reset-latest-session)
