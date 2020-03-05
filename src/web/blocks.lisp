@@ -37,17 +37,36 @@
                              book)
     (update book-widget)))
 
+;; (defmethod render ((widget book-widget))
+;;   (log:debug "-- render book-widget")
+;;   (let ((book (book widget)))
+;;     (with-html
+;;       (:td (bookshops.models:title book))
+;;       (:td (bookshops.models:authors book))
+;;       (:td (bookshops.models:price book) "€")
+;;       (:td (format nil "x ~a" (bookshops.models:quantity book)))
+      ;; (:td (with-html-form (:POST (lambda (&key &allow-other-keys)
+      ;;                               (add-book widget)))
+      ;;        (:input :type "submit"
+      ;;                :title "Add 1 copy to your stock"
+      ;;                :value "+ 1"))))))
+
 (defmethod render ((widget book-widget))
   (let ((book (book widget)))
     (with-html
-      (:h4 (bookshops.models:title book))
-      (:div (bookshops.models:authors book))
-      (:div (bookshops.models:price book) "€")
-      (:div "in stock:" (bookshops.models:quantity book))
-      (with-html-form (:POST (lambda (&key &allow-other-keys)
-                               (add-book widget)))
-        (:input :type "submit"
-                :value "Add 1")))))
+      (:div :class "grid-x"
+            (:div :class "cell medium-6"
+                  (:div :class "cell medium-6" (bookshops.models:title book))
+                  (:div :class "cell medium-4" (bookshops.models:authors book)))
+            (:div :class "cell medium-5"
+                  (:div :class "cell medium-1" (bookshops.models:price book) "€")
+                  (:div :class "cell medium-2" "x" (bookshops.models:quantity book)))
+            (with-html-form (:POST (lambda (&key &allow-other-keys)
+                                     (add-book widget)))
+              (:input :type "submit"
+                      :class "button"
+                      :title "Add 1 copy to your stock"
+                      :value "+ 1"))))))
 
 (defwidget book-list-widget ()
   ((books
@@ -70,11 +89,11 @@
               :placeholder "search title")
       (:input :type "submit"
               :value "Search"))
-    (:table
-     (:tbody
-      (loop for elt in (books widget)
-         do (with-html
-              (:tr (render elt))))))))
+
+    (:div :class "grid-container"
+          (loop for elt in (books widget)
+             do (with-html
+                  (render elt))))))
 
 (defun make-book-list-widget (books)
   (let ((widgets (mapcar #'make-book-widget books)))
