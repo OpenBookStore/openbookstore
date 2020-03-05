@@ -21,6 +21,11 @@
 
 (defparameter *port* 8888)
 
+(defroutes main-routes
+  ("/stock/" (make-book-list-widget (bookshops.models:find-book)))
+  ("/search/" (make-search-widget))
+  ("/" (weblocks/response:redirect "/stock/")))
+
 (defwidget book-widget (weblocks-ui:ui-widget)
     ((book
       :initarg :book
@@ -83,17 +88,19 @@
 (defmethod render ((widget book-list-widget))
   (with-html
     (with-html-form (:POST (lambda (&key query &allow-other-keys)
-                                   (stock-search widget query)))
-      (:input :type "text"
-              :name "query"
-              :placeholder "search title")
-      (:input :type "submit"
-              :value "Search"))
+                             (stock-search widget query)))
+      (:div :class "cell medium-9"
+            (:input :type "text"
+                    :name "query"
+                    :placeholder "search title")
+            (:input :type "submit"
+                    :class "button"
+                    :value "Search"))
 
-    (:div :class "grid-container"
-          (loop for elt in (books widget)
-             do (with-html
-                  (render elt))))))
+      (:div :class "grid-container"
+            (loop for elt in (books widget)
+               do (with-html
+                    (render elt)))))))
 
 (defun make-book-list-widget (books)
   (let ((widgets (mapcar #'make-book-widget books)))
@@ -101,7 +108,7 @@
 
 (defmethod weblocks/session:init ((app stock))
   (declare (ignorable app))
-  (make-book-list-widget (bookshops.models:find-book)))
+  (make-main-routes))
 
 (defun start ()
   ;; (weblocks/server:start :port *port*))
