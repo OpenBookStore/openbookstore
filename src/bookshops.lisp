@@ -155,27 +155,21 @@
 (defparameter *last-parsing-res* nil "for debug pursposes.")
 
 (defun books (query &key (datasource *datasource*))
-  "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...).
-   The db must be connected.
-  "
+  "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...)."
   (declare (ignorable datasource))
-  (restart-case
-      (let* ((url (build-url query))
-             (_ (log:info url))
-             (req (get-url url))
-             (parsed (parse req))
-             ;; one node
-             (node (clss:select ".resultsList" parsed))
-             ;; many modes ;; vector, iterate with map
-             ;; direct children:
-             (res (clss:select "> li" node)))
-        (declare (ignore _))
-        (setf *last-parsing-res* (coerce res 'list))
-        (setf *last-results* (map 'list #'book-info res)))
-    (connect-to-db ()
-      :report "Connect to the database"
-      (bookshops.models:connect)
-      (books query :datasource *datasource*))))
+  (unless mito::*connection* (bookshops.models:connect))
+  (let* ((url (build-url query))
+         (_ (log:info url))
+         (req (get-url url))
+         (parsed (parse req))
+         ;; one node
+         (node (clss:select ".resultsList" parsed))
+         ;; many modes ;; vector, iterate with map
+         ;; direct children:
+         (res (clss:select "> li" node)))
+    (declare (ignore _))
+    (setf *last-parsing-res* (coerce res 'list))
+    (setf *last-results* (map 'list #'book-info res))))
 
 (defun init ()
   "Init i18n, connect to the DB,..."
