@@ -10,125 +10,12 @@
   (:use :cl
         :bookshops.models
         :hunchentoot
-        :spinneret
-        :parenscript
         :log4cl)
   (:import-from :easy-routes
                 :routes-acceptor
                 :defroute))
 
 (in-package :bookshops-web)
-
-(defmacro with-page ((&key title) &body body)
-  `(with-html-string
-     (:doctype)
-     (:html
-      (:head
-       (:title ,title))
-      (:body ,@body))))
-
-(defun books-table-body (books)
-  (with-html-string
-    (:tbody
-     (dolist (bk books)
-       (:tr
-        (:td (mito:object-id bk))
-        (:td
-         (:a :href (format nil "/book/~a" (mito:object-id bk))
-             (title bk)))
-        (:td (quantity bk)))))))
-
-(defun books-list (books)
-  (with-page (:title "Books stock")
-    (:header
-     (:h1 "Books stock"))
-    (:script :src "/skewer")
-    (:section
-     (:table
-      (:thead
-       (:th "id")
-       (:th "Title")
-       (:th (:a
-             :href "#"
-             :onclick (ps
-                        ;; Ajax call to /api/stock (future: filter options, pagination etc)
-                        ;; and replace the list of books in the table's body in place.
-                        (let ((request (new (|XMLHttpRequest|))))
-                          (setf (chain request onreadystatechange)
-                                (lambda ()
-                                  (chain console (log (@ this status)
-                                                      "text:"
-                                                      (@ this response-text)
-                                                      "xml:"
-                                                      (@ this |responseXML|)))
-                                  (setf (chain document (get-element-by-id "b-body") |innerHTML|)
-                                        (@ this response-text))))
-                          (chain request (open "GET"
-                                               "/api/stock"
-                                               t))
-                          (chain request (send))))
-             "In stock")))
-      (:tbody :id "b-body"
-       (dolist (bk books)
-         (:tr
-          (:td (mito:object-id bk))
-          (:td
-           (:a :href (format nil "/book/~a" (mito:object-id bk))
-               (title bk)))
-          (:td (quantity bk)))))))
-    (:footer ("footer"))))
-
-(defun book-show (book)
-  (with-page (:title (title book))
-    (:header (:h1 (title book)))
-    (:section
-     (:div "Command copies:")
-     (:form :action (format nil "/book/~a/command" (mito:object-id book))
-            :method "POST"
-            ;; reminder: spinneret accepts #ids and .classes notations.
-            :id "commandForm"
-            (:p (:button
-                 :type "button"
-                 :onclick (ps
-                            (let ((elt (chain document (get-element-by-id "qty"))))
-                              (incf (chain elt value))
-                              (setf (chain document (get-element-by-id "show-qty") |innerText|)
-                                    (chain elt value))
-                              (chain console (log "new qty: "
-                                                  (chain elt value)))
-                              nil))
-                 "Add 1"))
-            (:p (:button
-            (:span (:button
-                 :type "button"
-                 :onclick (ps
-                            (let* ((elt (chain document (get-element-by-id "qty")))
-                                   (qty (parse-int (@ elt value)))
-                                   (nb (chain document (get-element-by-id "show-qty"))))
-                              (decf (chain elt value))
-                              (setf (@ nb inner-text)
-                                    (chain elt value))
-                              (chain console (log "type of qty" (typeof qty)))
-                              (when (>= qty 79)
-                                (chain console (log "when"))
-                                (setf (@ nb style background-color)
-                                      "red"))
-                              (when (< qty 79)
-                                (setf (@ nb style background-color)
-                                      "white"))
-                              (chain console (log "new qty: "
-                                                  (chain elt value)))
-                              nil))
-                 "Remove 1"))
-
-            (:span (:span "to command: ")
-                   (:span :id "show-qty"))
-            (:input :type "hidden" :name "qty" :id "qty" :value 1)
-            (:p (:input :class "button" :type "submit" :value "Validate")))
-     (:span
-      (:td (mito:object-id book))
-      (:td (title book)))
-     (:div (authors book)))))
 
 
 (defroute stock ("/stock/") ()

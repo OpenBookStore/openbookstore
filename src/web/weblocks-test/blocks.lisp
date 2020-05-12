@@ -116,7 +116,7 @@
   (unless mito::*connection*
     (bookshops.models:connect))
   (restart-case
-      (weblocks/server:start)
+      (weblocks/server:start :port *port*)
     (connect-to-db ()
       :report "Connect to the DB"
       (bookshops.models:connect))))

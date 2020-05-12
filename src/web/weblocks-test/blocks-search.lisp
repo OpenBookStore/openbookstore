@@ -55,8 +55,10 @@
                           (render elt))))))))
 
 ;TODO: doesn't save the result.
+;function not called.
 (defun save-book (result-widget)
   "Save this book in the stock, aka add one copy to the default place."
+  (log:info "--- calling save-book with " result-widget)
   (let ((book (result result-widget)))
     (log:info "-- bookresult is" book)  ;; not seen.
     (bookshops.models:add-to (bookshops.models:default-place)
@@ -73,9 +75,23 @@
             (:div :class "cell medium-5"
                   (:div :class "cell medium-1" (bookshops.models:price book) "€")
                   (:div :class "cell medium-2" "x" (bookshops.models:quantity book)))
-            (with-html-form (:POST (lambda (&key &allow-other-keys)
+            (with-html-form (:POST (lambda (&key query &allow-other-keys)
+                                     (declare (ignorable query))
+                                     ;TODO:
+                                     ;; function pas appellée
+                                     ;; Quelle est l'URL du POST? retourne sur search/
                                      (save-book widget)))
               (:input :type "submit"
                       :class "button"
                       :title "Add 1 copy to your stock"
                       :value "Save"))))))
+
+(defmacro defrun-test (name &body body)
+  `(progn
+    (defun ,name ()
+       ,@body)
+    (funcall #',name)))
+
+(defrun-test hello-test
+  (print "now testing…")
+  (assert (= 1 1)))
