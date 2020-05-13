@@ -18,37 +18,14 @@
 (in-package :bookshops-web)
 
 
-(defroute stock ("/stock/") ()
-  (let ((books (find-book)))
-    (books-list books)))
+(djula:add-template-directory
+ (asdf:system-relative-pathname "bookshops" "src/web/templates/"))
+(defparameter +base.html+ (djula:compile-template* "base.html"))
+(defparameter +dashboard.html+ (djula:compile-template* "dashboard.html"))
 
-(defroute book-details ("/book/:id") ()
-  (book-show (find-by :id id)))
-
-(defroute command-book-route ("/book/:id/command" :method :post)
-    (&post qty)
-  (format t "~&--- command for id ~a, qty: ~a~&" id qty)
-  (format t "~&hunchentoot post params: ~a~&" (hunchentoot:post-parameters hunchentoot:*request*))
-  (with-html-string
-    (:div (format nil "qty: ~a" qty))))
-
-(defroute command-book-route ("/book/:id/command" :method :get) ()
-  (format t "~&--- command ~a with GET: do nothing~&" id)
-  (format nil (books-table-body (find-book))))
-
-(defroute api-stock ("/api/stock") ()
-  "Return a list of books as html to replace the table's body."
-  (format nil (books-table-body (last-books))))
-
-(defroute testroute ("/test") (x y)
-  (format t "~&---- TEST x: ~a, y: ~a~&" x y)
-  (with-html-string
-    (:div (format nil "x: ~a, y: ~a" x y))))
-
-(defroute testroute ("/test" :method :post) (x y)
-  (format t "~&---- POST test x: ~a, y: ~a~&" x y)
-  (with-html-string
-    (:div (format nil "x: ~a, y: ~a" x y))))
+(defroute home-route ("/") ()
+  (djula:render-template* +dashboard.html+ nil
+                          :data (list :nb-titles (bookshops.models:count-book))))
 
 (defvar *server* nil
   "Current instance of easy-acceptor.")
