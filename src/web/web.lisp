@@ -18,6 +18,9 @@
 (in-package :bookshops-web)
 
 
+(djula:def-filter :price (val)
+  (format nil "~,2F" val))
+
 (djula:add-template-directory
  (asdf:system-relative-pathname "bookshops" "src/web/templates/"))
 (defparameter +base.html+ (djula:compile-template* "base.html"))
@@ -33,12 +36,14 @@
                                                            (bookshops.models::negative-quantities)))))
 
 (defroute stock-route ("/stock") ()
-  (djula:render-template* +stock.html+ nil
-                          :route "/stock"
-                          :data (list :nb-titles (bookshops.models:count-book)
-                                      :nb-books (bookshops.models::total-quantities)
-                                      :nb-titles-negative (length
-                                                           (bookshops.models::negative-quantities)))))
+  (let ((cards (bookshops.models::find-book)))
+    (djula:render-template* +stock.html+ nil
+                            :route "/stock"
+                            :cards cards
+                            :data (list :nb-titles (bookshops.models:count-book)
+                                        :nb-books (bookshops.models::total-quantities)
+                                        :nb-titles-negative (length
+                                                             (bookshops.models::negative-quantities))))))
 
 (defvar *server* nil
   "Current instance of easy-acceptor.")

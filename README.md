@@ -44,7 +44,7 @@ Build the executable:
 
     make build
 
-To build the Tk GUI, make sure you have Tcl and Tk installed:
+To build the toy Tk GUI, make sure you have Tcl and Tk installed:
 
     wish
 
@@ -55,6 +55,9 @@ this should open a little Tk window. Otherwise, install them:
 then build the GUI:
 
     make build-gui
+
+
+The web view is in progress.
 
 
 ## Usage

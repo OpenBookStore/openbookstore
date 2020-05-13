@@ -2,6 +2,33 @@
 
 {% block content %}
 
-hello block
-
+{% for card in cards %}
+<div name="cardid" data-id="{{ card.id }}" id="card{{ card.id }}" class="box content">
+  <article class="post">
+    <div class="media">
+      <div class="media-left">
+	<p class="image is-64x64">
+	  <img src="{{ card.cover }}">
+	</p>
+      </div>
+      <div class="media-content">
+	<div class="content">
+          <h4> {{ card.title }} </h4>
+	  <p>
+            <span> {{ card.authors }} </span>
+	    <span class="tag"> {{ card.shelf }} </span>
+            <span> {{ card.publisher | capfirst }} </span>
+	  </p>
+	</div>
+      </div>
+      <div class="media-right">
+	<span name="price" data-price="{{ card.price }}" class="has-text-grey-light"> {{ card.price | price }} €</span>
+        <span  class="icon is-small" style="cursor: pointer;" title="Ajouter au panier" onclick="basketremove({{ card.id }})">
+          <i class="delete is-small"></i>
+        </span>
+      </div>
+    </div>
+  </article>
+</div>
+{% endfor %}
 {% endblock %}
