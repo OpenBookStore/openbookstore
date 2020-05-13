@@ -22,10 +22,23 @@
  (asdf:system-relative-pathname "bookshops" "src/web/templates/"))
 (defparameter +base.html+ (djula:compile-template* "base.html"))
 (defparameter +dashboard.html+ (djula:compile-template* "dashboard.html"))
+(defparameter +stock.html+ (djula:compile-template* "stock.html"))
 
 (defroute home-route ("/") ()
   (djula:render-template* +dashboard.html+ nil
-                          :data (list :nb-titles (bookshops.models:count-book))))
+                          :route "/"
+                          :data (list :nb-titles (bookshops.models:count-book)
+                                      :nb-books (bookshops.models::total-quantities)
+                                      :nb-titles-negative (length
+                                                           (bookshops.models::negative-quantities)))))
+
+(defroute stock-route ("/stock") ()
+  (djula:render-template* +stock.html+ nil
+                          :route "/stock"
+                          :data (list :nb-titles (bookshops.models:count-book)
+                                      :nb-books (bookshops.models::total-quantities)
+                                      :nb-titles-negative (length
+                                                           (bookshops.models::negative-quantities)))))
 
 (defvar *server* nil
   "Current instance of easy-acceptor.")

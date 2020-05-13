@@ -454,6 +454,13 @@ Usage:
 (defgeneric quantity (obj)
   (:documentation "Quantity of the given book, or the number of books in the given place."))
 
+(defun total-quantities ()
+  "Total number of cards in all places.
+  Sums all quantities."
+  (let ((places (find-places)))
+    (loop for place in places
+       sum (bookshops.models:quantity place))))
+
 (defmethod quantity ((book book))
   "Sum of the quantities in all places."
   (if (object-id book)
