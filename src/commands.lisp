@@ -21,7 +21,7 @@
                 :title
                 :isbn
                 :date-publication
-                :editor
+                :publisher
                 :authors
                 :quantity
                 :add-to
@@ -120,7 +120,7 @@
                       (price it)
                       (print-quantity-red-green (quantity it)))
               (format t "~t ed: ~a, ~a~&"
-                      (editor it)
+                      (publisher it)
                       (isbn it))
               (decf i))
             (reverse results))))

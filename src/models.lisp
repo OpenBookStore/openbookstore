@@ -85,9 +85,9 @@ Usage:
     :initarg :date-publication
     :col-type (or (:varchar 128) :null))
 
-   (editor
-    :accessor editor
-    :initarg :editor
+   (publisher
+    :accessor publisher
+    :initarg :publisher
     :type string
     :col-type (or (:varchar 128) :null))
 
@@ -383,7 +383,7 @@ Usage:
         (print-book-repartition bk))
       (format t "There is no such book with id ~a~&" bk)))
 
-(defun make-book (&key title isbn authors details-url cover-url editor
+(defun make-book (&key title isbn authors details-url cover-url publisher
                     date-publication price datasource)
   "Create a Book instance. If given author or authors, create Author
   instance(s) if they don't already exist in DB. "
@@ -394,7 +394,7 @@ Usage:
                  :title title
                  :isbn isbn
                  :authors authors
-                 :editor editor
+                 :publisher publisher
                  :price price
                  :date-publication date-publication))
 

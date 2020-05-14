@@ -12,7 +12,7 @@
            :ensure-tables-exist
            ;; book accessors
            :book :make-book
-           :editor
+           :publisher
            :find-book :find-by :find-existing :find-book-noisbn :last-books
            :title :details-url :authors :cover-url :isbn :price
            :print-book :print-book-details

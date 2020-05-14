@@ -4,7 +4,7 @@
   (:import-from :bookshops
                 :books
                 :authors
-                :editor
+                :publisher
                 :price)
   (:import-from :bookshops.models
                 :find-book
@@ -53,7 +53,7 @@
                               :master frame
                               ;; These are the second and third columns.
                               :columns (list "authors"
-                                             "editor"
+                                             "publisher"
                                              "price")
                               :columns-width +results-columns-width+))
          (button (make-instance 'button
@@ -101,7 +101,7 @@
                               ;; xxx: numbers stick to the left instead of the right.
                               ;; note: repetition in the ordering and naming of columns.
                               :column-values (list (authors result)
-                                                   (editor result)
+                                                   (publisher result)
                                                    (price result)))))
 
 (defun main ()

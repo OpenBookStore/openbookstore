@@ -12,7 +12,7 @@
                 :make-book
                 :find-existing
                 :title
-                :editor
+                :publisher
                 :authors
                 :price
                 :default-place
@@ -21,7 +21,7 @@
            :i18n-load
            :init
            ;; book accessors
-           :editor
+           :publisher
            :title
            :authors
            :price
@@ -89,8 +89,8 @@
   "Extract the price. `node': plump node."
   (extract-float (node-selector-to-text ".item_prix" node)))
 
-(defun parse-editor (node)
-  (with-log-error (:editor)
+(defun parse-publisher (node)
+  (with-log-error (:publisher)
     (node-selector-to-text ".editeur" node)))
 
 (defun parse-isbn (node)
@@ -120,7 +120,7 @@
   (let ((titre (parse-title node))
         (auteurs (parse-authors node))
         (price (parse-price node))
-        (editor  (parse-editor node))
+        (publisher  (parse-publisher node))
         (parution-date (parse-publication-date node))
         (isbn (parse-isbn node))
         (cover-url (parse-cover-url node))
@@ -133,7 +133,7 @@
                         :authors auteurs
                         :details-url details-url
                         :price price
-                        :editor editor
+                        :publisher publisher
                         :date-publication parution-date))
     (find-existing bk)))
 
