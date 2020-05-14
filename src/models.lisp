@@ -518,6 +518,14 @@ Usage:
   "Delete this list of books."
   (mapcar #'mito:delete-dao bklist))
 
+(defun delete-books-without-authors (&key simulate)
+  "Delete books without authors."
+  (let ((to-delete (select-dao 'book
+                     (where (:is-null :authors)))))
+    (log:info "deleting ~a books with no authors" (length to-delete))
+    (unless simulate
+      (mapcar #'delete-dao to-delete))))
+
 (defgeneric delete-obj (obj)
   (:method (obj)
     (let ((place-copies (select-dao 'place-copies
