@@ -219,6 +219,7 @@ Usage:
 (defun default-place ()
   "Return the default place (the first created one by default).
    If none exist, create one."
+  ;TODO: do that once at startup and bind a variable.
   (when (mito.connection:connected-p)
     ;; Check the connection because of setf *current-place* in commands package.
     ;; Or initialize it elsewhere.

@@ -24,9 +24,9 @@
 	</div>
       </div>
       <div class="media-right">
-	<span name="price" data-price="{{ card.price }}" class="has-text-grey-light"> {{ card.price | price }} €</span>
-        <span  class="icon is-small" style="cursor: pointer;" title="Ajouter au panier" onclick="basketremove({{ card.id }})">
-          <i class="delete is-small"></i>
+	<span name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
+        <span>
+          x {{ card | quantity }}
         </span>
       </div>
     </div>

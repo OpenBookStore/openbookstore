@@ -48,7 +48,12 @@
 
                (:module "src/management"
                 :components
-                ((:file "management"))))
+                ((:file "management")))
+
+               (:module "src/web"
+                :components
+                ((:file "web")
+                 (:file "api"))))
 
   :build-operation "program-op"
   :build-pathname "bookshops"

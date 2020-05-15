@@ -18,6 +18,10 @@
       <div class="card-content column">
         <div class="media">
           <span class="media-content">
+
+            <button class="button" onclick="card_add_one({{ card.id }})">+1</button>
+            <button class="button" onclick="card_remove_one({{ card.id }})">-1</button>
+
             <p class="title is-4 no-padding">
               <a href="{{ card | url }}" style="color: black;">
                 {{ card.title }}
@@ -50,7 +54,7 @@
           </span>
         </div>
 
-        <div>
+        <div id="quantity">
           En stock: {{ card | quantity }}
 
         </div>
@@ -61,5 +65,36 @@
 
   </div>
 </div>
+
+<script>
+  async function card_add_one(id) {
+    let data = new FormData();
+    data.set("id", id);
+    const resp = await fetch('/api/card/add', {
+      method: 'POST',
+      body: data
+    })
+      .then(data => console.log(data));
+
+    // either update the field...
+    /* let elt = document.getElementById("quantity"); */
+    /* here update the quantity */
+    /* elt.innerText = quantity; */
+    /* either do a page reload */
+    location.reload();  // nearly invisible
+  }
+
+  async function card_remove_one(id) {
+    let data = new FormData();
+    data.set("id", id);
+    const resp = await fetch('/api/card/remove', {
+      method: 'POST',
+      body: data
+    })
+      .then(data => console.log(data));
+
+    location.reload();  // nearly invisible
+  }
+</script>
 
 {% endblock %}

@@ -4,7 +4,11 @@
 ;;;;
 ;;;; Go to localhost:4242/stock/
 ;;;;
-;;;;
+;;;; In this file:
+;;;; - custom Djula filters
+;;;; - templates loading
+;;;; - routes
+;;;; - server start/stop
 
 (defpackage bookshops-web
   (:use :cl
@@ -17,7 +21,10 @@
 
 (in-package :bookshops-web)
 
+(defvar *server* nil
+  "Current instance of easy-acceptor.")
 
+;;; Djula filters.
 (djula:def-filter :price (val)
   (format nil "~,2F" val))
 
@@ -33,6 +40,7 @@
   (format nil "~a" (quantity card)))
 
 
+;;; Load templates.
 (djula:add-template-directory
  (asdf:system-relative-pathname "bookshops" "src/web/templates/"))
 (defparameter +base.html+ (djula:compile-template* "base.html"))
@@ -42,6 +50,7 @@
 
 (defparameter +404.html+ (djula:compile-template* "404.html"))
 
+;;; Routes.
 (defroute home-route ("/") ()
   (djula:render-template* +dashboard.html+ nil
                           :route "/"
@@ -74,9 +83,6 @@
                                :card card))
       (t
        (djula:render-template* +404.html+ nil)))))
-
-(defvar *server* nil
-  "Current instance of easy-acceptor.")
 
 (defun start-app (&key (port 4242))
   (bookshops.models:connect)
