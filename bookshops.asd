@@ -28,6 +28,7 @@
                :hunchentoot
                :easy-routes
                :djula
+               :cl-slug
 
                :log4cl
                :cl-i18n)

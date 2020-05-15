@@ -8,15 +8,17 @@
     <div class="media">
       <div class="media-left">
 	<p class="image is-64x64">
-	  <img src="{{ card.cover }}">
+	  <img src="{{ card.cover-url }}">
 	</p>
       </div>
       <div class="media-content">
 	<div class="content">
-          <h4> {{ card.title }} </h4>
+          <a href="{{ card | url }}">
+            <h4> {{ card.title }} </h4>
+          </a>
 	  <p>
             <span> {{ card.authors }} </span>
-	    <span class="tag"> {{ card.shelf }} </span>
+	    <span class="tag"> shelf: {{ card.shelf }} (todo) </span>
             <span> {{ card.publisher | capfirst }} </span>
 	  </p>
 	</div>
