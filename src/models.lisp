@@ -46,6 +46,7 @@ Usage:
   ((datasource
     :accessor datasource
     :initarg :datasource
+    :initform nil
     :type string
     ;; how to use a variable for 128 ?
     ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
@@ -63,12 +64,14 @@ Usage:
    (title
     :accessor title
     :initarg :title
+    :initform nil
     :type string
     :col-type (:varchar 128))
 
    (isbn
     :accessor isbn
     :initarg :isbn
+    :initform nil
     :type string
     :col-type (or (:varchar 128) :null))
 
@@ -77,28 +80,33 @@ Usage:
     :initarg :price
     ;; we don't default it to 0 (nil denotes a missing field),
     ;; and it might be useful for other objects.
+    :initform nil
     :type float
     :col-type (or :integer :null))
 
    (date-publication
     :accessor date-publication
     :initarg :date-publication
+    :initform nil
     :col-type (or (:varchar 128) :null))
 
    (publisher
     :accessor publisher
     :initarg :publisher
+    :initform nil
     :type string
     :col-type (or (:varchar 128) :null))
 
    (authors
     :accessor authors
     :initarg :authors                   ;TODO: relationship
+    :initform nil
     :col-type (or (:varchar 128) :null))
 
    (cover-url
     :accessor cover-url
     :initarg :cover-url
+    :initform nil
     :type string
     :col-type (or (:varchar 1024) :null)))
   (:metaclass dao-table-class)
@@ -139,6 +147,7 @@ Usage:
   ((name
     ;; accessor as generic, for the intermediate class too.
     :initarg :name
+    :initform nil
     :col-type (:varchar 128)))
   (:metaclass dao-table-class)
   (:documentation "Where the books are stored.
@@ -162,10 +171,12 @@ Usage:
   ((book
     :accessor place-copies-book
     :initarg :book
+    :initform nil
     :col-type book)
    (place
     :accessor place
     :initarg :place
+    :initform nil
     :col-type place)
    (quantity
     :accessor place-copy-quantity
@@ -499,7 +510,9 @@ Usage:
 ;;
 
 (defclass author ()
-  ((name :accessor name :initarg :name
+  ((name :accessor name
+         :initarg :name
+         :initform nil
          :col-type (:varchar 128)))
   (:metaclass dao-table-class))
 
