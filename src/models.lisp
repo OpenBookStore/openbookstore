@@ -15,6 +15,13 @@ Usage:
 (find-dao 'book)
 ;; => #<Book antigone>
 
+Design notes
+============
+
+A book's title, authors and publisher fields also get a -ascii
+equivalent (without accentuated letters). The ascii field is used for
+searches. This method was thought the most portable.
+
 |#
 
 
@@ -68,6 +75,13 @@ Usage:
     :type string
     :col-type (:varchar 128))
 
+   (title-ascii
+    :accessor title-ascii
+    :initform nil
+    :type string
+    :col-type (or (:varchar 128) :null)
+    :documentation "The title, normalized to not contain accentuated letters or special characters. To search a card by title we'll normalize the search query and search against this column. This is the most portable solution.")
+
    (isbn
     :accessor isbn
     :initarg :isbn
@@ -97,11 +111,23 @@ Usage:
     :type string
     :col-type (or (:varchar 128) :null))
 
+   (publisher-ascii
+    :accessor publisher-ascii
+    :initform nil
+    :type string
+    :col-type (or (:varchar 128) :null))
+
    (authors
     :accessor authors
     :initarg :authors                   ;TODO: relationship
     :initform nil
     :col-type (or (:varchar 128) :null))
+
+   (authors-ascii
+    :accessor authors-ascii
+    :initform nil
+    :col-type (or (:varchar 128) :null)
+    :documentation "Normalized representation of authors, without accentuated letters.")
 
    (cover-url
     :accessor cover-url
@@ -122,6 +148,24 @@ Usage:
 
 (defmethod title ((book book))
   (slot-value book 'title))
+
+(defmethod (setf title) :after (val (book book))
+  "After setting a book's title, set also its title ASCII representation (used for searches)."
+  ;; note: obviously these setf methods are not called if we use slot-value directly.
+  ;: XXX: here tests will be welcome to catch other cases where they would not be called.
+  (log:debug "updating title-ascii too")
+  (setf (title-ascii book)
+        (bookshops.utils::asciify (slot-value book 'title))))
+
+(defmethod (setf authors) :after (val (book book))
+  (log:debug "updating authors-ascii too")
+  (setf (authors-ascii book)
+        (bookshops.utils::asciify (slot-value book 'authors))))
+
+(defmethod (setf publisher) :after (val (book book))
+  (log:debug "updating publisher-ascii too")
+  (setf (publisher-ascii book)
+        (bookshops.utils::asciify (slot-value book 'publisher))))
 
 (defgeneric price (obj)
   (:documentation "Return the price of the current object. Return 0 if nil."))
