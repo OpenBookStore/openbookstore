@@ -491,7 +491,8 @@ Usage:
                                               (where (:= :place place))))))
 
 (defmethod quantity ((pc place-copies))
-  (quantity (place pc)))
+  ;; XXX: test the change from quantity of place to place-copy-quantity
+  (place-copy-quantity pc))
 
 ;; (defmethod (setf quantity) (val (pc place-copies))
 ;;   (setf (quantity pc) val))
