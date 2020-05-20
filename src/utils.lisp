@@ -1,6 +1,9 @@
 (defpackage :bookshops.utils
   (:use :cl
+        :mito
+        :sxql
         :parse-float
+        :bookshops.models
         :bookshops.parameters)
   (:export #:isbn-p
            #:extract-float
@@ -47,3 +50,13 @@
 (defun format-date (date)
   "Format the given date with the default date format (yyyy-mm-dd). Return a string."
   (local-time:format-timestring nil date :format +date-y-m-d+))
+
+(defun cleanup-prices ()
+  "When the currency symbol appears in the price, remove it.
+  This should be useful during development of the datasources."
+  (loop for card in (select-dao 'book
+                      (where (:like :price "%€%")))
+     ;; XXX: we should run 1 SQL query to update all fields.
+     do (setf (price card)
+              (str:trim (str:replace-all "€" "" (price card))))
+     do (save-dao card)))
