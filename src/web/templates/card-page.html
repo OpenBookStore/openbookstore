@@ -61,7 +61,12 @@
 
       </div>
     </div>
-    <div>
+
+    {% if raw == "t" %}
+    <pre>
+    {{ card | describe }}
+    </pre>
+    {% endif %}
 
   </div>
 </div>

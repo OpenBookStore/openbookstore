@@ -1,14 +1,22 @@
-;;;;
-;;;; Show the stock on a web page.
-;;;; (in construction, currently not used)
-;;;;
-;;;; Go to localhost:4242/stock/
-;;;;
-;;;; In this file:
-;;;; - custom Djula filters
-;;;; - templates loading
-;;;; - routes
-;;;; - server start/stop
+#|
+Show the stock on a web page.
+(in construction)
+
+(connect)
+then
+(start-app)
+
+and go to localhost:4242/stock/
+
+In this file:
+- custom Djula filters
+- templates loading
+- routes
+- server start/stop
+
+Dev helpers:
+- adding ?raw=t on a URL (on a card page)
+|#
 
 (defpackage bookshops-web
   (:use :cl
@@ -38,6 +46,10 @@
 
 (djula:def-filter :quantity (card)
   (format nil "~a" (quantity card)))
+
+(djula:def-filter :describe (card)
+  (with-output-to-string (s)
+    (describe card s)))
 
 
 ;;; Load templates.
@@ -70,7 +82,10 @@
                                                              (bookshops.models::negative-quantities))))))
 
 
-(defroute card-page ("/card/:slug") ()
+(defroute card-page ("/card/:slug") (&get raw)
+  "Show a card.
+
+  If the URL parameter RAW is \"t\" (the string), then display the card object literally (with describe)."
   (let* ((card-id (ignore-errors
                     (parse-integer (first (str:split "-" slug)))))
          (card (when card-id
@@ -80,7 +95,8 @@
        (djula:render-template* +404.html+ nil))
       (card
        (djula:render-template* +card-page.html+ nil
-                               :card card))
+                               :card card
+                               :raw raw))
       (t
        (djula:render-template* +404.html+ nil)))))
 
