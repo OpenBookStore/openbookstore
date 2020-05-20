@@ -517,16 +517,22 @@ Usage:
 ;; Authors
 ;;
 
-(defclass author ()
-  ((name :accessor name
-         :initarg :name
-         :initform nil
-         :col-type (:varchar 128)))
-  (:metaclass dao-table-class))
+;; Class currently unused. Authors are stored as strings in books.
+;; Actually, even the professional books DB (at least FEL à la demande)
+;; doesn't represent authors objects.
+;; And, throughout the application, the focused, most important object is the book.
+;; We little need to get all books of an author (and in that case, we can make a search, see ABStock).
 
-(defmethod print-object ((author author) stream)
-  (print-unreadable-object (author stream :type t)
-    (format stream "~a" (slot-value author 'name))))
+;; (defclass author ()
+;;   ((name :accessor name
+;;          :initarg :name
+;;          :initform nil
+;;          :col-type (:varchar 128)))
+;;   (:metaclass dao-table-class))
+
+;; (defmethod print-object ((author author) stream)
+;;   (print-unreadable-object (author stream :type t)
+;;     (format stream "~a" (slot-value author 'name))))
 
 ;;
 ;; Delete

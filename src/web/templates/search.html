@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{{ title }}
+
+{% for card in cards %}
+<div name="cardid" data-id="{{ card.id }}" id="card{{ card.id }}" class="box content">
+  <article class="post">
+    <div class="media">
+      <div class="media-left">
+	<p class="image is-64x64">
+	  <img src="{{ card.cover-url }}">
+	</p>
+      </div>
+      <div class="media-content">
+	<div class="content">
+          <a href="{{ card | url }}">
+            <h4> {{ card.title }} </h4>
+          </a>
+	  <p>
+            <span> {{ card.authors }} </span>
+	    <span class="tag"> shelf: {{ card.shelf }} (todo) </span>
+            <span> {{ card.publisher | capfirst }} </span>
+	  </p>
+	</div>
+      </div>
+      <div class="media-right">
+	<span name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
+        <span>
+          x {{ card | quantity }}
+        </span>
+      </div>
+    </div>
+  </article>
+</div>
+{% endfor %}
+{% endblock %}
