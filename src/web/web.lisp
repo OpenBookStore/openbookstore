@@ -47,6 +47,9 @@ Dev helpers:
 (djula:def-filter :quantity (card)
   (format nil "~a" (quantity card)))
 
+(djula:def-filter :name (obj)
+  (format nil "~a" (name obj)))
+
 (djula:def-filter :describe (card)
   (with-output-to-string (s)
     (describe card s)))
@@ -96,6 +99,7 @@ Dev helpers:
       (card
        (djula:render-template* +card-page.html+ nil
                                :card card
+                               :places-copies (bookshops.models::book-places-quantities card)
                                :raw raw))
       (t
        (djula:render-template* +404.html+ nil)))))

@@ -56,8 +56,20 @@
 
         <div id="quantity">
           En stock: {{ card | quantity }}
-
         </div>
+
+        <table class="table">
+          {% for place-copy in places-copies %}
+          <tr>
+            <td>
+              {{ place-copy | name }}
+            </td>
+            <td>
+              {{ place-copy | quantity }}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
 
       </div>
     </div>

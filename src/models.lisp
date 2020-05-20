@@ -277,7 +277,13 @@ Usage:
 
 (defun book-places (bk)
   (mapcar #'place (select-dao 'place-copies
-                                 (where (:= :book bk)))))
+                    (where (:= :book bk)))))
+
+(defun book-places-quantities (bk)
+  "Return the intermediate objects place-copies, so than we can know how
+  many copies of this book are in what places."
+  (select-dao 'place-copies
+    (where (:= :book bk))))
 
 (defun add-to (place bk &key (quantity 1))
   "Add the given book to this place.

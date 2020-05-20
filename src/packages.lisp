@@ -11,6 +11,7 @@
   (:export :connect
            :ensure-tables-exist
            ;; book accessors
+           :name
            :book :make-book
            :publisher
            :find-book :find-by :find-existing :find-book-noisbn :last-books
