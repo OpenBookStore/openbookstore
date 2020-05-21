@@ -41,6 +41,7 @@
                  (:file "packages")
                  (:file "database")
                  (:file "models")
+                 (:file "models-utils")
                  (:file "baskets")
                  (:file "contacts")
                  (:file "bookshops")
