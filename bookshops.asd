@@ -41,12 +41,12 @@
                  (:file "packages")
                  (:file "database")
                  (:file "models")
-                 (:file "models-utils")
                  (:file "baskets")
                  (:file "contacts")
                  (:file "bookshops")
                  (:file "commands")))
 
+               ;; One-off utility "scripts" to work on the DB.
                (:module "src/management"
                 :components
                 ((:file "management")))
