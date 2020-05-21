@@ -481,7 +481,7 @@ searches. This method was thought the most portable.
             new)))))
 
 (defun find-by (key val)
-  "Find by slot. Example: (find-by :isbn xxx). Return only the first matching result."
+  "Find a book by slot. Example: (find-by :isbn xxx). Return only the first matching result."
   (when val
     (find-dao 'book key val)))
 
@@ -494,10 +494,11 @@ searches. This method was thought the most portable.
           bk))))
 
 (defun find-book (&key query (order :asc))
-  "Return a list of book objects. If a query string is given, filter by title."
+  "Return a list of book objects. If a query string is given, filter by the ascii title."
   (select-dao 'book
     (when query
-      (where (:like :title (str:concat "%" query "%"))))
+      (where (:or (:like :title-ascii (str:concat "%" query "%"))
+                  (:like :authors-ascii (str:concat "%" query "%")))))
     (order-by `(,order :created-at))))
 
 (defun last-books (&key (order :asc))

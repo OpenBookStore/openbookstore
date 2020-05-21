@@ -1,8 +1,30 @@
 {% extends "base.html" %}
 
+{% block title %}
+{{ title }}
+{% endblock %}
+
 {% block content %}
 
-{{ title }}
+<form action="/search">
+  <div class="field">
+    <label class="label"> Search </label>
+    <div class="control">
+      <input class="input" name="q" type="text" {% if q %} value="{{ q }}" {% else %} placeholder="Search by title, author and ISBN" {% endif %}>
+    </div>
+  </div>
+
+{% if q and nb-results == 0 %}
+<div class="columns is-centered">
+  <div class="is-half">
+    <p class="is-primary">
+      No results
+    </p>
+  </div>
+</div>
+{% endif %}
+
+</form>
 
 {% for card in cards %}
 <div name="cardid" data-id="{{ card.id }}" id="card{{ card.id }}" class="box content">

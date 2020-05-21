@@ -60,6 +60,7 @@ Dev helpers:
  (asdf:system-relative-pathname "bookshops" "src/web/templates/"))
 (defparameter +base.html+ (djula:compile-template* "base.html"))
 (defparameter +dashboard.html+ (djula:compile-template* "dashboard.html"))
+(defparameter +search.html+ (djula:compile-template* "search.html"))
 (defparameter +stock.html+ (djula:compile-template* "stock.html"))
 (defparameter +card-page.html+ (djula:compile-template* "card-page.html"))
 
@@ -74,8 +75,17 @@ Dev helpers:
                                       :nb-titles-negative (length
                                                            (bookshops.models::negative-quantities)))))
 
-(defroute stock-route ("/stock") ()
-  (let ((cards (bookshops.models::find-book)))
+(defroute stock-route ("/stock") (&get q)
+  (let ((cards (cond
+                 ((bookshops.models::isbn-p q)
+                  (list (find-by :isbn q)))
+                 (q
+                  (find-book :query (bookshops.utils::asciify q)))
+                 (t
+                  ;: XXX: pagination
+                  (subseq (find-book)
+                          0
+                          (min 50 (bookshops.models::count-book)))))))
     (djula:render-template* +stock.html+ nil
                             :route "/stock"
                             :cards cards
@@ -83,6 +93,20 @@ Dev helpers:
                                         :nb-books (bookshops.models::total-quantities)
                                         :nb-titles-negative (length
                                                              (bookshops.models::negative-quantities))))))
+
+(defroute search-route ("/search") (&get q)
+  (let ((cards (cond
+                 ;TODO: search on a datasource here
+                 ((bookshops.models::isbn-p q)
+                  (list (find-by :isbn q)))
+                 (q
+                  (find-book :query (bookshops.utils::asciify q))))))
+    (djula:render-template* +search.html+ nil
+                            :route "/search"
+                            :q q
+                            :cards cards
+                            :nb-results (length cards)
+                            :title (format nil "OpenBookstore - search: ~a" q))))
 
 
 (defroute card-page ("/card/:slug") (&get raw)
@@ -103,6 +127,7 @@ Dev helpers:
                                :raw raw))
       (t
        (djula:render-template* +404.html+ nil)))))
+
 
 (defun start-app (&key (port 4242))
   (bookshops.models:connect)
