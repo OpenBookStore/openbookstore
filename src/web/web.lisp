@@ -1,3 +1,17 @@
+(defpackage bookshops-web
+  (:use :cl
+        :bookshops.models
+        :hunchentoot
+        :log4cl)
+  (:import-from :easy-routes
+                :routes-acceptor
+                :defroute)
+  (:import-from :bookshops.datasources.dilicom
+                :search-books)
+  (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)))
+
+(in-package :bookshops-web)
+
 #|
 Show the stock on a web page.
 (in construction)
@@ -17,17 +31,6 @@ In this file:
 Dev helpers:
 - adding ?raw=t on a URL (on a card page)
 |#
-
-(defpackage bookshops-web
-  (:use :cl
-        :bookshops.models
-        :hunchentoot
-        :log4cl)
-  (:import-from :easy-routes
-                :routes-acceptor
-                :defroute))
-
-(in-package :bookshops-web)
 
 (defvar *server* nil
   "Current instance of easy-acceptor.")
@@ -95,18 +98,22 @@ Dev helpers:
                                                              (bookshops.models::negative-quantities))))))
 
 (defroute search-route ("/search") (&get q)
-  (let ((cards (cond
-                 ;TODO: search on a datasource here
-                 ((bookshops.models::isbn-p q)
-                  (list (find-by :isbn q)))
-                 (q
-                  (find-book :query (bookshops.utils::asciify q))))))
-    (djula:render-template* +search.html+ nil
-                            :route "/search"
-                            :q q
-                            :cards cards
-                            :nb-results (length cards)
-                            :title (format nil "OpenBookstore - search: ~a" q))))
+  (cond
+    ((not (bookshops.utils::isbn-p q))
+     (djula:render-template* +search.html+ nil
+                             :route "/search"
+                             :q q
+                             :messages (list "Please enter an ISBN. We can only search by ISBN with Dilicom.")))
+    (t
+     (let* ((res (dilicom:search-books (list q)))
+            ;; (cards (bookshops.models::data2books res))
+            (cards (bookshops.models::check-in-stock res)))
+       (djula:render-template* +search.html+ nil
+                               :route "/search"
+                               :q q
+                               :cards cards
+                               :nb-results (length cards)
+                               :title (format nil "OpenBookstore - search: ~a" q))))))
 
 
 (defroute card-page ("/card/:slug") (&get raw)

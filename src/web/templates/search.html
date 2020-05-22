@@ -26,6 +26,12 @@
 
 </form>
 
+{% for msg in messages %}
+<div>
+  {{ msg }}
+</div>
+{% endfor %}
+
 {% for card in cards %}
 <div name="cardid" data-id="{{ card.id }}" id="card{{ card.id }}" class="box content">
   <article class="post">
@@ -37,20 +43,25 @@
       </div>
       <div class="media-content">
 	<div class="content">
-          <a href="{{ card | url }}">
-            <h4> {{ card.title }} </h4>
+          <a onclick="alert('clicked')">
+            <span class="title is-6"> {{ card.title }} </span>
           </a>
-	  <p>
-            <span> {{ card.authors }} </span>
-	    <span class="tag"> shelf: {{ card.shelf }} (todo) </span>
-            <span> {{ card.publisher | capfirst }} </span>
-	  </p>
+          <span> {{ card.authors }} </span>
+          <span> éd. {{ card.publisher | capfirst }} </span>
+	  <!-- <p> -->
+	    <!-- <span class="tag"> theme: {{ card.theme }}  </span> -->
+	  <!-- </p> -->
 	</div>
       </div>
       <div class="media-right">
 	<span name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
         <span>
-          x {{ card | quantity }}
+          x
+          {% if card.in-stock %}
+          {{ card.in-stock }}
+          {% else %}
+          0
+          {% endif %}
         </span>
       </div>
     </div>

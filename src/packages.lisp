@@ -8,6 +8,9 @@
         :bookshops.parameters
         :bookshops.utils)
 
+  (:import-from :access
+                :access)
+
   (:export :connect
            :ensure-tables-exist
            ;; book accessors

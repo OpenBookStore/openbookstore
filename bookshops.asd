@@ -32,7 +32,11 @@
 
                :log4cl
                :cl-i18n)
-  :components ((:module "src"
+  :components ((:module "src/datasources"
+                :components
+                ((:file "dilicom")))
+
+               (:module "src"
                 :components
                 ;; stand-alone packages.
                 ((:file "parameters")
@@ -41,6 +45,7 @@
                  (:file "packages")
                  (:file "database")
                  (:file "models")
+                 (:file "models-utils")
                  (:file "baskets")
                  (:file "contacts")
                  (:file "bookshops")

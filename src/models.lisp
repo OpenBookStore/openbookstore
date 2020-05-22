@@ -351,7 +351,7 @@ searches. This method was thought the most portable.
                                           :book bk
                                           :quantity quantity))
           (insert-dao place-copy)
-          (quantity place-copy)))))
+          (quantity bk)))))
 
 (defun remove-from (place bk &key (quantity 1))
   "Remove the given book from this place.
@@ -447,8 +447,9 @@ searches. This method was thought the most portable.
 
 (defun make-book (&key title isbn authors details-url cover-url publisher
                     date-publication price datasource)
-  "Create a Book instance. If given author or authors, create Author
-  instance(s) if they don't already exist in DB. "
+  "Create a Book instance.
+  Authors are saved as a string, not as related objects."
+  (check-type price float)
   (make-instance 'book
                  :datasource datasource
                  :details-url details-url
