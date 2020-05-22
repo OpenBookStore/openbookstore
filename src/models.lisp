@@ -454,8 +454,10 @@ searches. This method was thought the most portable.
                  :details-url details-url
                  :cover-url cover-url
                  :title title
+                 :title-ascii (bookshops.utils::asciify title)
                  :isbn isbn
                  :authors authors
+                 :authors-ascii (bookshops.utils::asciify authors)
                  :publisher publisher
                  :price price
                  :date-publication date-publication))
