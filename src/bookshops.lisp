@@ -143,7 +143,7 @@
     (when *debug* (describe bk))
     ;; xxx: here we could make only 1 query to get the existing books (see Dilicom).
     ;; xxx: add in-stock field (see Dilicom).
-    (find-existing bk)))
+    (find-existing bk :update t)))
 
 (defun build-url (query &key (source *datasource*) (encode t))
   "Build the search url with the query terms in it.

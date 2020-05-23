@@ -489,12 +489,27 @@ searches. This method was thought the most portable.
   (when val
     (find-dao 'book key val)))
 
-(defun find-existing (bk)
-  "bk: a book object. Check in the DB if it already exists. Return a book."
+(defun update-book (book bk)
+  "Update and save the book object with this bk data."
+  (loop for slot in '(:price :date-publication :publisher :details-url :datasource
+                      :cover-url)
+     if (not (equal (access book slot) (access bk slot)))
+     do (log:debug "updating ~a~&" slot)
+     do (setf (access book slot)
+              (access bk slot))
+     do (save-dao book))
+  book)
+
+(defun find-existing (bk &key update)
+  "bk: a book object. Check in the DB if it already exists.
+  Update its fields.
+  Return a book object."
   (when bk
     (let ((existing (find-by :isbn (isbn bk))))
       (if existing
-          existing
+          (if update
+              (update-book existing bk)
+              existing)
           bk))))
 
 (defun find-book (&key query (order :asc))
