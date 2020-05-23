@@ -8,7 +8,8 @@
                 :defroute)
   (:import-from :bookshops.datasources.dilicom
                 :search-books)
-  (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)))
+  (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
+                    (#:fr #:bookshops.datasources.scraper-fr)))
 
 (in-package :bookshops-web)
 
@@ -99,13 +100,11 @@ Dev helpers:
 
 (defroute search-route ("/search") (&get q)
   (cond
-    ((not (bookshops.utils::isbn-p q))
-     (djula:render-template* +search.html+ nil
-                             :route "/search"
-                             :q q
-                             :messages (list "Please enter an ISBN. We can only search by ISBN with Dilicom.")))
-    (t
+    ;; ISBN? Dilicom search.
+    ((bookshops.utils::isbn-p q)
      (let* ((res (dilicom:search-books (list q)))
+            ;; The template accepts non-book objects,
+            ;; it is not necessary to transform the data.
             ;; (cards (bookshops.models::data2books res))
             (cards (bookshops.models::check-in-stock res)))
        (djula:render-template* +search.html+ nil
@@ -113,7 +112,25 @@ Dev helpers:
                                :q q
                                :cards cards
                                :nb-results (length cards)
-                               :title (format nil "OpenBookstore - search: ~a" q))))))
+                               :title (format nil "OpenBookstore - search: ~a" q))))
+
+    ;; Free search? Other datasources.
+    ((not (str:blank? q))
+     (let* ((res (fr:books q))
+            (cards (bookshops.models::check-in-stock res)))
+       (djula:render-template* +search.html+ nil
+                               :route "/search"
+                               :q q
+                               :cards cards
+                               :nb-results (length cards)
+                               :title (format nil "OpenBookstore - search: ~a" q))))
+
+    ;;
+    (t
+     (djula:render-template* +search.html+ nil
+                             :route "/search"
+                             :q q
+                             :messages (list "Please enter an ISBN or some keywords.")))))
 
 
 (defroute card-page ("/card/:slug") (&get raw)

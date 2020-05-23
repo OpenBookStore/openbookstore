@@ -48,14 +48,16 @@
           </a>
           <span> {{ card.authors }} </span>
           <span> éd. {{ card.publisher | capfirst }} </span>
-	  <!-- <p> -->
-	    <!-- <span class="tag"> theme: {{ card.theme }}  </span> -->
-	  <!-- </p> -->
+	  <p>
+            {% if card.availability %}
+	    <span> availability: {{ card.availability }}  </span>
+            {% endif %}
+	  </p>
 	</div>
       </div>
       <div class="media-right">
 	<span name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
-        <span>
+        <span class="tag">
           x
           {% if card.in-stock %}
           {{ card.in-stock }}
