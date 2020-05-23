@@ -34,7 +34,7 @@ In development, don't look.
 
 ## Installation
 
-Download the executable: https://gitlab.com/vindarel/cl-bookshops/-/jobs/351096418/artifacts/download (or get a newer one by going in the latest pipeline and downloading a job artifact).
+Download the executable: https://gitlab.com/vindarel/cl-bookshops/pipelines (download a build artifact with the button on the right).
 
 It's a 24MB self-contained executable (for Debian GNU/Linux,
 x86/64). You don't need to install a Lisp implementation nor anything
@@ -44,20 +44,20 @@ Build the executable:
 
     make build
 
-To build the toy Tk GUI, make sure you have Tcl and Tk installed:
+<!-- To build the toy Tk GUI, make sure you have Tcl and Tk installed: -->
 
-    wish
+<!--     wish -->
 
-this should open a little Tk window. Otherwise, install them:
+<!-- this should open a little Tk window. Otherwise, install them: -->
 
-    apt install tcl tk
+<!--     apt install tcl tk -->
 
-then build the GUI:
+<!-- then build the GUI: -->
 
-    make build-gui
+<!--     make build-gui -->
 
 
-The web view is in progress.
+There is a toy Tk GUI and the web view is in progress.
 
 
 ## Usage
@@ -219,7 +219,8 @@ Be more useful and easier to install and use than our Abelujo web app.
   - [X] proof of concept
 - connect to a remote DB
 - use a GUI running on a remote server (see [ltk-remote](http://www.peter-herth.de/ltk/ltkdoc/node46.html))
-- searching one's stock from a web interface (for clients) (with Weblocks)
+- [X] searching one's stock from a web interface (~~with Weblocks~~)
+- [X] build an online catalogue for clients (ABStock)
 - sells, several places, list of commands, etc.
 - download a pdf of the stock, with barcodes
 - invoices
@@ -305,6 +306,7 @@ To test DB operations, use our macro `with-empty-db`.
 # See also
 
 - https://github.com/jl2/bookdb/, which searches on isbndb.com (not good enough for us and lacking prices)
+- https://gitlab.com/vindarel/abstock our online catalogue
 
 # Licence
 
