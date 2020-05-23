@@ -460,6 +460,7 @@ searches. This method was thought the most portable.
                  :authors authors
                  :authors-ascii (bookshops.utils::asciify authors)
                  :publisher publisher
+                 :publisher-ascii (bookshops.utils::asciify publisher)
                  :price price
                  :date-publication date-publication))
 

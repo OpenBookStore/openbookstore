@@ -44,6 +44,8 @@
 (defvar *last-results* nil
   "List of last results by `books` (objects).")
 
+(defparameter *debug* nil)
+
 (defun get-url (url)
   "Http get this url.
    Function mocked in unit tests."
@@ -57,6 +59,9 @@
 (defun select (selector parsed)
   "Find nodes with CSS selector from a plump-parsed node."
   (lquery:$ selector parsed))
+
+(lquery:define-lquery-list-function elt0 (vector)
+  (elt vector 0))
 
 (defun node-selector-to-text (selector node &key selector2)
   " Take a CSS selector (str), a plump node, extract and clean the result."
@@ -82,8 +87,9 @@
 
 (defun parse-authors (node)
   (with-log-error (:authors)
-    (aref (lquery:$ node ".list_authors" (attr :title))
-          0)))
+    (lquery:$ node ".livre_auteur a"
+              (attr :title)
+              (elt0))))
 
 (defun parse-price (node)
   "Extract the price. `node': plump node."
@@ -103,38 +109,40 @@
 
 (defun parse-cover-url (node)
   (with-log-error (:cover)
-    (aref  (lquery:$ node "img" (attr "data-original"))
-           0)))
+    (lquery:$ node ".zone_image img"
+              (attr "data-original")
+              (elt0))))
 
 (defun parse-details-url (node)
   "Extract the url to the book online information.
   https://www.librairie-de-paris.fr/livre/9782742720682-antigone-henry-bauchau/"
   (with-log-error (:details-url)
     (str:concat *url-base*
-                 (aref (lquery:$ node ".livre_titre a" (attr :href))
-                       0))))
+                (lquery:$ node ".livre_titre a" (attr :href) (elt0)))))
 
 (defun book-info (node)
-  "Takes a plump node and returns a list of book objects with: title, authors, price, publisher, date of publication, etc.
-  "
-  (let ((titre (parse-title node))
-        (auteurs (parse-authors node))
+  "Takes a plump node and returns a list of book objects with: title, authors, price, publisher, date of publication, etc."
+  (let ((title (parse-title node))
+        (authors (parse-authors node))
         (price (parse-price node))
         (publisher  (parse-publisher node))
-        (parution-date (parse-publication-date node))
+        (date-publication (parse-publication-date node))
         (isbn (parse-isbn node))
         (cover-url (parse-cover-url node))
         (details-url (parse-details-url node))
         bk)
-    (setf bk (make-book :title titre
+    (setf bk (make-book :title title
                         :isbn isbn
-                        :datasource "fr"
+                        :datasource "fr:librairiedeparis"
                         :cover-url cover-url
-                        :authors auteurs
+                        :authors authors
                         :details-url details-url
                         :price price
                         :publisher publisher
-                        :date-publication parution-date))
+                        :date-publication date-publication))
+    (when *debug* (describe bk))
+    ;; xxx: here we could make only 1 query to get the existing books (see Dilicom).
+    ;; xxx: add in-stock field (see Dilicom).
     (find-existing bk)))
 
 (defun build-url (query &key (source *datasource*) (encode t))
@@ -179,6 +187,7 @@
 
 (defun handle-parser-error (c)
   (format t "Argument error: ~a~&" (opts:option c))
+  ;; XXX: probably don't quit.
   (uiop:quit 1))
 
 (defparameter +version+
@@ -196,7 +205,6 @@
   "The version number as in the asd appended with the current commit id.")
 
 (defun main ()
-
   (opts:define-opts
       (:name :help
              :description "print this help and exit."

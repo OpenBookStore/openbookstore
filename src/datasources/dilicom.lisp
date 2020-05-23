@@ -46,12 +46,12 @@ TODO: password and user in config.lisp
     (let ((ean13s (with-output-to-string (s)
                     (loop for isbn in isbns
                        do (format s "<ean13s>~a</ean13s>" isbn)))))
-      (print (replace-pairs (list "USER" *user* "PASSWORD" *password*
-                                  "EAN13S" ean13s)
-                            ;; beware, there must be no space around the placeholders,
-                            ;; or the SOAP service fails.
-                            "<?xml version='1.0' encoding='utf-8'?>
-<soap-env:Envelope xmlns:soap-env=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap-env:Body><ns0:demandeFicheProduit xmlns:ns0=\"http://fel.ws.accelya.com/\"><demandeur>USER</demandeur><motDePasse>PASSWORD</motDePasse>EAN13S<multiple>false</multiple></ns0:demandeFicheProduit></soap-env:Body></soap-env:Envelope>")))))
+      (replace-pairs (list "USER" *user* "PASSWORD" *password*
+                           "EAN13S" ean13s)
+                     ;; beware, there must be no space around the placeholders,
+                     ;; or the SOAP service fails.
+                     "<?xml version='1.0' encoding='utf-8'?>
+<soap-env:Envelope xmlns:soap-env=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap-env:Body><ns0:demandeFicheProduit xmlns:ns0=\"http://fel.ws.accelya.com/\"><demandeur>USER</demandeur><motDePasse>PASSWORD</motDePasse>EAN13S<multiple>false</multiple></ns0:demandeFicheProduit></soap-env:Body></soap-env:Envelope>"))))
 
 (defun soap-request (isbns)
   "Create the SOAP request body from a list of ISBNs (strings) and send the POST request to Dilicom's WSDL server."
@@ -79,8 +79,10 @@ TODO: password and user in config.lisp
                    1000.0)
     (error (c)
       (log:warn "Error while decoding dilicom price: ~a" c))))
+#+nil
+(assert (= 16.50 (read-price "0016500")))
 
-(defun search-books (isbns)
+(defun search-books (isbns &key debug)
   (loop for elt across (query isbns)
      for book = (make-hash-table)
      do (setf (gethash :datasource book)
@@ -113,8 +115,7 @@ TODO: password and user in config.lisp
      do (setf (gethash :availability book)
               (lquery:$ elt "codedispo" (text) (elt0)))
 
-
-     do (print-book book)
+     do (when debug (print-book book))
      collect book))
 
 ;; and voilà.
