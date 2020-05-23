@@ -1,3 +1,5 @@
+;; XXX: all packages are not here.
+
 (defpackage bookshops.models
   (:use :cl
         :mito
@@ -35,3 +37,40 @@
            ;; utils
            :print-quantity-red-green :negative-quantities
            :erase-metaclass-from))
+
+(defpackage bookshops
+  (:use :cl
+        :cl-ansi-text
+        :parse-float
+        :log4cl
+        ;;
+        :bookshops.utils)
+
+  (:import-from :bookshops.models
+                :default-place
+                ;; accessors
+                :publisher
+                :title
+                :price
+                :authors
+                :name
+                ;; functions
+                :make-book
+                :find-existing)
+  (:import-from :bookshops.datasources.scraper-fr
+                :books)
+  ;; libs
+  (:import-from :access
+                :access)
+  (:export :main
+           :i18n-load
+           :init
+           ;; book accessors
+           :publisher
+           :title
+           :price
+           :authors
+           :name
+           ;; functions
+           :books)
+  (:documentation "CLI interface"))

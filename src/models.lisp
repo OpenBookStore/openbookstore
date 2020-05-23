@@ -449,7 +449,6 @@ searches. This method was thought the most portable.
                     date-publication price datasource)
   "Create a Book instance.
   Authors are saved as a string, not as related objects."
-  (check-type price float)
   (make-instance 'book
                  :datasource datasource
                  :details-url details-url

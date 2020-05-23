@@ -1,7 +1,5 @@
 (defpackage :bookshops.utils
   (:use :cl
-        :mito
-        :sxql
         :parse-float
         :bookshops.parameters)
   (:export #:isbn-p

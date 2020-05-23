@@ -18,6 +18,7 @@
                :unix-opts
                :replic
                ;; utils
+               :rutils
                :str
                :local-time
                :local-time-duration
@@ -34,7 +35,8 @@
                :cl-i18n)
   :components ((:module "src/datasources"
                 :components
-                ((:file "dilicom")))
+                ((:file "dilicom")
+                 (:file "scraper-fr")))
 
                (:module "src"
                 :components
