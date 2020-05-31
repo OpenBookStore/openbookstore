@@ -1,0 +1,1272 @@
+3000;;;;SCOLAIRE
+;3001;;;Pré-scolaire et primaire
+;;3002;;Pré-scolaire et maternelle
+;;3003;;Élémentaire
+;3004;;;Manuels scolaires Secondaire Général
+;;3005;;Collège
+;;3006;;Lycée général
+;3007;;;Manuels scolaires Secondaire Technique et professionnel
+;;3008;;Lycée professionnel, Bac professionnel (4e/3e technologique, CAP, BEP...)
+;;3009;;Lycée technologique, Bac technologique
+;3010;;;Manuels scolaires Supérieur Technique
+;;3011;;Brevet de Technicien Supérieur (BTS)
+;;3012;;Diplôme Universitaire de Technologie (DUT)
+;4271;;;Classes préparatoires aux grandes écoles (CPGE)
+3013;;;;PARASCOLAIRE
+;3014;;;Cahier de vacances
+;;3015;;Maternelle
+;;3016;;Primaire
+;;3017;;Collège
+;;3018;;Lycée
+;3019;;;Cahier de soutien
+;;3020;;Maternelle
+;;3021;;Élémentaire
+;;3022;;Collège
+;;3023;;Lycée
+;3024;;;Préparation aux examens
+;;3025;;Préparation au Brevet des collèges
+;;3026;;Préparation au Baccalauréat général
+;;3027;;Préparation au Baccalauréat professionnel et technique
+;;4157;;Préparation aux CAP
+;;4158;;Préparation aux BTS
+;;4159;;Préparation aux examens de l’enseignement supérieur
+;3028;;;Annales
+;;3029;;Annales Brevet des collèges
+;;3030;;Annales Baccalauréat général
+;;3031;;Annales Baccalauréat professionnel et technique
+;3032;;;Ouvrage de référence
+;;3033;;Mémentos, aide-mémoires, méthodes de français
+;;;4137;Grammaire
+;;;4138;Orthographe
+;;;4139;Conjugaison
+;;;4140;Vocabulaire et expression
+;;3034;;Mémentos, aide-mémoires et méthodes de langues étrangères
+;;3035;;Mémentos, aide-mémoires, méthodes hors langues
+;;3036;;Atlas parascolaire
+;3037;;;Formation pour adultes
+;3038;;;Classiques pédagogiques
+;;4141;;Œuvre commentée
+;;4142;;Analyse d'œuvre
+;3039;;;Pédagogie et formation des enseignants
+;;3040;;Didactique, pédagogie
+;;3041;;Matériel éducatif pour la maternelle
+;;3042;;Supports pédagogiques pour le niveau élémentaire
+;;3043;;Supports et ouvrages pédagogiques liés aux programmes Collège et Lycée ou à la Formation continue
+;;3044;;Éducation Nationale : concours, carrières
+;;3045;;Revues pédagogiques, Revues des professeurs
+;3046;;;Orientation, Préparation aux concours
+;;3047;;Études, Orientation, Métiers
+;;3048;;Concours administratifs
+;;3049;;Préparation aux autres concours et examens
+;3050;;;Français Langue Étrangère
+3051;;;;SCIENCES FONDAMENTALES
+;4050;;;Histoire des sciences
+;4130;;;Biographie et autobiographie : science et technologie
+;3052;;;Mathématiques
+;;3053;;Algèbre
+;;3054;;Analyse
+;;3055;;Géométrie
+;;3056;;Probabilités et statistiques
+;3057;;;Informatique théorique, Mathématiques discrètes
+;3058;;;Physique
+;3059;;;Chimie
+;;3060;;Biochimie
+;;3061;;Chimie analytique
+;;3062;;Chimie organique
+;;3063;;Chimie minérale (inorganique)
+;;3064;;Chimie expérimentale
+;3065;;;Sciences de la vie
+;;4042;;Biologie
+;;4041;;Botanique
+;;4092;;Ecologie
+;;4043;;Microbiologie
+;;4044;;Zoologie
+;3066;;;Astronomie
+;3067;;;Sciences de la terre (géologie, climatologie, hydrologie...)
+;3068;;;Paléontologie
+;4117;;;Archéologie
+;4118;;;Ethique des sciences et des technologies
+;4119;;;Astrophysique
+;4120;;;Electromagnétisme
+;4121;;;Thermodynamique
+;4122;;;Physique quantique
+;4123;;;Théorie de la relativité
+;4124;;;Neurosciences
+3069;;;;TECHNIQUES ET SCIENCES APPLIQUÉES
+;3070;;;Agriculture
+;3071;;;Génie civil
+;3072;;;Électronique
+;3073;;;Mécanique
+;3074;;;Sciences et techniques industrielles
+;3075;;;Bâtiment
+;3076;;;Architecture, Urbanisme
+;3077;;;Graphisme et image
+;3078;;;Optique
+;3079;;;Énergies
+3080;;;;SCIENCES HUMAINES ET SOCIALES, LETTRES
+;3081;;;Sciences sociales
+;;3082;;Changement social
+;;3083;;Classes sociales et stratification
+;;3084;;Diversités, Discriminations
+;;3085;;Addiction
+;;3086;;Exclusion et pauvreté
+;;3087;;Sociologie du genre
+;;3088;;Générations
+;;3089;;Histoire sociale
+;;3090;;Inégalités
+;;3091;;Migrations et immigrations
+;;;4054;Démographie
+;;3092;;Mobilités
+;;3093;;Santé
+;;3094;;Sexualité
+;;3095;;Sociabilité
+;;4093;;Sociologie
+;;;3096;Sociologie de la famille
+;;;3097;Sociologie des organisations
+;;;3098;Sociologie des sciences
+;;;3099;Sociologie du temps
+;;;4096;Sociologie du sport
+;;;4095;Sociologie du tourisme
+;;;4094;Sociologie des transports
+;3100;;;Action sociale, aide sociale
+;;3101;;Accueil familial
+;;3102;;Aide et protection de l'enfance
+;;3103;;Conduites à risques
+;;3104;;Travail social, intervention, animation, accompagnement
+;;3105;;Public empêché, besoins spécifiques
+;;3106;;Maladie
+;;3107;;Vieillesse, action gérontologique
+;;3108;;Protection sociale
+;;3109;;Fragilité sociale
+;;3110;;Solidarité, humanitaire
+;3111;;;Anthropologie
+;;3112;;Anthropologie physique et biologique
+;;;3113;Homo sapiens
+;;;3114;Primatologie comparée
+;;;3115;Paléoanthropologie
+;;3116;;Anthropologie sociale et culturelle
+;;;3117;Théorie de l'évolution (évolutionnisme)
+;;;3118;Homme et environnement
+;;;3119;Anthropologie politique
+;;;3120;Anthropologie des mondes contemporains
+;;;3121;Anthropologie économique
+;;4097;;Diasporas
+;3122;;;Ethnologie
+;;3123;;Les modèles et les codes sociaux
+;;3124;;La parenté et les alliances
+;;3125;;Aspects symboliques
+;3126;;;Philosophie
+;;3916;;Histoire de la philosophie
+;;3127;;Philosophie antique
+;;3128;;Philosophie médiévale (scolastique)
+;;3129;;Philosophie moderne
+;;;3130;Philosophie humaniste
+;;;3131;Philosophe XVIIe siècle
+;;;3132;Philosophie des Lumières
+;;3133;;Philosophie contemporaine
+;;4125;;Esthétique et philosophie de l'art
+;;4126;;Métaphysique et ontologie
+;;4127;;Philosophie éthique et politique
+;;;4160;Bioéthique
+;;4128;;Epistémologie, philosophie des sciences, logique
+;3134;;;Psychologie
+;;3135;;Psychologie générale
+;;3136;;Psychologie du comportement (ou behaviorisme)
+;;3137;;Psychologie cognitive
+;;3138;;Psychologie du développement
+;;3139;;Psychopathologie
+;;3140;;Psychologie sociale
+;;3141;;Psychophysiologie
+;;3142;;Psychologie évolutionniste
+;;3143;;Psychologie de l'éducation
+;;3144;;Psychologie de l'apprentissage
+;;3145;;Psychologie animale (ou éthologie)
+;3918;;;Psychanalyse
+;3146;;;Lettres et Sciences du langage
+;;4024;;Lettres
+;;;4025;Méthodologie
+;;;4053;Théorie littéraire
+;;;4027;Etudes littéraires générales et thématiques
+;;;4028;Etudes de littérature comparée
+;;4026;;Langue française
+;;4029;;Langues régionales
+;;4030;;Langues anciennes
+;;;4031;Etudes de littérature grecque
+;;;4032;Etudes de littérature latine
+;;4033;;Langues étrangères
+;;3147;;Linguistique, Sciences du langage
+;;;3148;Théories et écoles linguistiques
+;;;3149;Phonétique et phonologie
+;;;3150;Morphologie et syntaxe
+;;;3151;Lexicologie, pragmatique lexicale, sémantique
+;;;3152;Linguistique diachronique (philologie)
+;;;3153;Typologie linguistique
+;;;3154;Stylistique et analyse du discours, esthétique
+;;;3155;Sémiologie
+;;;3156;Psycholinguistique
+;;3157;;Sciences de l'information et de la communication
+;;;3158;Théories de la communication
+;;;3159;Économie, Production de l'information
+;;;3160;Systèmes médiatiques, SIC et TIC
+;;3161;;Sciences de l'éducation
+;;3162;;Systèmes de formation et apprentissages : évaluation et modélisation
+;;3163;;Perspectives sociocognitives, apprentissage et conduites sociales
+;;3164;;Technologisation, formation, activités professionnelles
+3165;;;;MÉDECINE, PHARMACIE, PARAMÉDICAL, MÉDECINE VÉTÉRINAIRE
+;3166;;;Dictionnaire, Guide, Outil, Pratique
+;3167;;;Histoire de la médecine
+;3168;;;Sciences fondamentales
+;3169;;;Spécialités médicales
+;3170;;;Imagerie médicale
+;3171;;;Pharmacie
+;3172;;;Dentaire, Odontostomatologie
+;3173;;;Neurologie, Psychiatrie
+;3174;;;Paramédical, Médico-social, Aide-soignant, Infirmier
+;3175;;;Médecine Vétérinaire
+;3176;;;Revues médicales, Revues paramédicales
+;4161;;;Éthique médicale
+3177;;;;MANAGEMENT, GESTION ET ÉCONOMIE D'ENTREPRISE
+;3178;;;Entreprise
+;3179;;;Création d'entreprise
+;3180;;;Comptabilité, expertise comptable, contrôle de gestion
+;3181;;;Finance
+;;3182;;Finance d'entreprise
+;;3183;;Finance de marchés
+;3184;;;Gestion industrielle
+;3185;;;Méthodologie et gestion de projets
+;3186;;;Management
+;3929;;;Communication
+;3187;;;Marketing
+;3188;;;Production
+;3189;;;Ressources humaines
+;3190;;;Stratégie
+;3191;;;Commerce international
+;3192;;;Développement durable, écologie
+;3930;;;Recherche et développement (R&D)
+;4143;;;Vente
+3193;;;;INFORMATIQUE
+;3194;;;Théorie
+;3195;;;Hardware et matériels
+;;3196;;Architecture des ordinateurs
+;;3197;;Périphériques
+;3198;;;Graphisme
+;;3199;;PAO
+;;3200;;CAO
+;;3201;;DAO - Retouche d'images
+;;3202;;3D
+;;3203;;Modélisation
+;3204;;;Web (logiciel e-commerce, CMS, blog, réseaux sociaux...)
+;;3205;;Réseaux sociaux, Blog
+;;3206;;CMS
+;;3207;;E-Commerce
+;;3208;;CSS, Design web
+;;3209;;SEO, Web analytics
+;3210;;;Audio, Vidéo
+;;3211;;Audio
+;;3212;;Vidéo
+;3213;;;Informatique d'entreprise
+;;3214;;Conduite de projet
+;;3215;;Gestion des sources
+;;3216;;Stockage et archivage de données
+;;3217;;Entrepôt de données
+;;3218;;Management des systèmes d'information
+;;3219;;Messagerie d'entreprise
+;3220;;;Informatique personnelle
+;;3221;;Systèmes d'exploitation
+;;3222;;Bureautique
+;;3223;;Internet (gestion de la messagerie, navigateur...)
+;;3224;;Réseaux
+;3225;;;Programmation et développement
+;;3226;;Assembleur
+;;3227;;HTML
+;;3228;;Java - J2EE
+;;3229;;Javascript
+;;3230;;Langages C (C, C++, C#, Objective-C)
+;;3231;;Python
+;;3232;;Ruby
+;;3233;;Modélisation et génie logiciel
+;;3234;;PERL
+;;3235;;PHP
+;;3236;;Shell
+;;3237;;Visual Basic
+;3238;;;Réseaux et Télécommunications
+;;3239;;Équipements réseaux
+;;3240;;Généralités Réseaux
+;;3241;;Protocoles et standards
+;;3242;;Réseaux sans fil et télécommunications mobiles
+;3243;;;Système
+;;3244;;Généralités système
+;;3245;;Unix - Linux
+;;3246;;MacOS
+;;3247;;Windows
+;;3248;;Systèmes embarqués
+;;3249;;Virtualisation
+;;3250;;Systèmes mobiles (androïd...)
+;3251;;;Données et Bases de données
+;;3252;;Bases de données
+;;3253;;Bases de données relationnelles
+;;3254;;Bases de données non relationnelles
+;;3255;;Data mining
+;;3256;;XML
+;;3257;;Indexation et moteurs de recherche
+;3258;;;Sécurité
+;;4066;;Protection de la vie privée et des données
+;;4067;;Fraude et piratage informatique
+;;4068;;Virus informatiques, chevaux de Troie et vers
+;;4069;;Pare-feu
+;;4070;;Spam
+;;4072;;Cryptage des données
+;;4071;;Spyware / logiciel espion
+3259;;;;DROIT
+;3260;;;Droit général
+;;4272;;Professions du droit
+;;;4273;Déontologie
+;;4274;;Vocabulaire juridique
+;;3261;;Introduction au droit
+;;3262;;Histoire du droit
+;;3263;;Théorie, philosophie et sociologie du droit
+;;4098;;Droit comparé
+;3264;;;Droit public
+;;4099;;Libertés publiques - Droits de l'Homme
+;;4100;;Droit des étrangers
+;;4101;;Droit électoral
+;;3265;;Droit constitutionnel
+;;3266;;Droit administratif
+;;3267;;Finances publiques
+;;4275;;Droit de la régulation
+;3271;;;Droit pénal et procédure pénale
+;;4276;;Droit pénal
+;;4277;;Procédure pénale
+;3268;;;Droit privé
+;;3269;;Droit civil
+;;4278;;Procédure civile/ Droit de l’exécution/ Droit processuel
+;;3270;;Droit des affaires et commercial
+;;;4102;Droit de l'arbitrage
+;;3272;;Droit de la propriété intellectuelle et industrielle
+;;3273;;Droit social
+;;3274;;Droit de la concurrence
+;;3275;;Droit fiscal
+;;3276;;Droit de la consommation
+;;4073;;Droit du travail
+;3277;;;Droit international
+;;3278;;Droit international privé
+;;3279;;Droit international public
+;3280;;;Droit de l'Union européenne
+;;3281;;Droit institutionnel de l'Union européenne
+;;3282;;Droit matériel de l'Union européenne
+;4103;;;Droit immobilier - Urbanisme - Construction
+;4104;;;Droit environnement - Transport - Rural - Energie
+;4105;;;Droit des médias et de l'information
+;4106;;;Droit des associations et des fondations
+;4107;;;Droit des assurances
+;4108;;;Droit notarial
+;4109;;;Droit de la santé - Droit médical
+;4110;;;Droit du sport
+;4111;;;Droit du tourisme
+;4112;;;Droit de la culture
+;4113;;;Droit de l'éducation
+3283;;;;SCIENCES POLITIQUES
+;3284;;;Histoire des idées politiques
+;;3285;;Histoire des idées politiques jusqu'à la fin du XVIIe siècle
+;;3286;;Histoire des idées politiques depuis le XVIIIe siècle
+;;3287;;Vie politique française et européenne
+;;3288;;Analyse des comportements politiques
+;;3289;;Philosophie politique controverses contemporaines
+;3290;;;Organisation de l'État et action publique
+;;3291;;Institutions politiques françaises
+;;3292;;Institutions administratives locales
+;;3293;;Socialisation politique
+;;3294;;Démocratie délibérative, participative
+;;3295;;Élections, mobilisation électorale, campagnes
+;;3296;;Construction européenne
+;3297;;;Relations internationales
+;;3298;;Relations internationales
+;;3299;;Politique étrangère
+;3300;;;Politique et pouvoir
+;;3301;;Les forces armées, les forces de police
+;;3302;;Le pouvoir judiciaire
+;;3303;;Le pouvoir économique
+;;3304;;Le pouvoir religieux et l'État
+3305;;;;SCIENCES ÉCONOMIQUES
+;3306;;;Économie de la mondialisation et du développement
+;;3307;;Commerce international
+;;3308;;Économie du développement
+;;3309;;Économie géographique
+;;3310;;Économie de l'environnement et des ressources naturelles
+;;3311;;Économie de l'agriculture
+;3312;;;Économie publique, économie du travail et inégalités
+;;3313;;Économie du bonheur
+;;3314;;Économie politique des institutions
+;;3315;;Éducation
+;;3317;;Patrimoine, revenu, redistribution
+;;3318;;Santé
+;;3319;;Travail, emploi et politiques sociales
+;3320;;;Économie théorique et expérimentale
+;;3321;;Comportements individuels
+;;3322;;Économétrie
+;;3323;;Économie expérimentale
+;;3324;;Interaction des comportements
+;;3325;;Microéconomie
+;;3326;;Méthode quantitative
+;;3327;;Théorie des jeux
+;;3328;;Macroéconomie
+;;3329;;Dynamique macroéconomique
+;;3330;;Économie financière
+;;3331;;Finance internationale
+;;3332;;Macroéconomie et accumulation d'actifs
+;;3333;;Marché du travail
+;;3334;;Politiques monétaires et budgétaires
+;3335;;;Marchés, risque et organisation
+;;4114;;Bourse - Patrimoine
+;;3336;;Organisation industrielle
+;;3337;;Régulation de secteurs spécifiques (santé, enseignement, marchés de l'énergie, politique de l'environnement...)
+;;3338;;Risques, marchés financiers et assurance
+;;3339;;Structure de marché et politique de concurrence
+;3340;;;Histoire économique
+;;3341;;Histoire de la pensée économique
+;;3342;;Accumulation et transmission de la richesse
+;;3343;;Mobilité occupationnelle et géographique
+;;3344;;Histoire des institutions et marchés monétaires et financiers
+3345;;;;RELIGION
+;3347;;;Christianisme
+;;4048;;Textes bibliques
+;;;4162;Ancien testament
+;;;4163;Bibles
+;;;4164;Evangiles et Nouveau Testament
+;;;4165;Bibles pour enfants
+;;4049;;Etudes bibliques
+;;;4166;Introduction à la Bible
+;;;4167;Histoire biblique
+;;;4168;Dictionnaires et atlas bibliques
+;;;4169;Exégèse et philologie biblique
+;;4170;;Mysticisme
+;;4171;;Œcuménisme
+;;3359;;Spiritualité et témoignages chrétiens
+;;3348;;Catholicisme
+;;;4172;Fêtes et pratiques catholiques
+;;;4173;Textes spirituels du catholicisme
+;;;4174;Liturgies et prières
+;;;4175;Textes du magistère
+;;;3358;Saints et grands figures du catholicisme
+;;;3361;Catéchèse jeunesse
+;;;3362;Catéchuménat, catéchèse adulte
+;;;4279;Préparation aux sacrements
+;;3349;;Protestantisme
+;;;4176;Fêtes et pratiques protestantes
+;;;4177;Textes spirituels du protestantisme
+;;;4178;Liturgies et prières
+;;;4179;Grands figures du protestantisme
+;;;4180;Catéchèse jeunesse
+;;;4181;Catéchuménat, catéchèse adulte
+;;3350;;Orthodoxie
+;;;4182;Fêtes et pratiques orthodoxes
+;;;4183;Textes spirituels de l'orthodoxie
+;;;4184;Liturgies et prières
+;;;4185;Textes du magistère
+;;;4186;Saints et grandes figures de l'orthodoxie
+;;;4187;Catéchèse jeunesse
+;;;4188;Catéchuménat, catéchèse adulte
+;;4046;;Théologie
+;;;4189;Théologies médiévales
+;;;4190;Théologies modernes (XVI-XVIII siècle)
+;;;4191;Théologies contemporaines
+;;;4192;Philosophie et théologie
+;;;4193;Thèmes doctrinaux
+;;4045;;Patristique
+;;;4194;Pères du désert
+;;;4195;Pères grecs
+;;;4196;Pères latins
+;;;4197;Pères orientaux
+;;;4198;Patrologie
+;;4199;;Monachisme
+;3351;;;Islam
+;;4200;;Fêtes et pratiques de l'islam
+;;4201;;Coran
+;;;4202;Etudes et commentaires coraniques
+;;4203;;Prières et invocations
+;;4204;;Philosophie
+;;4205;;Hadith
+;;4206;;Droit et jurisprudence
+;;4207;;Grandes figures de l'islam
+;;4208;;Prophètes
+;;4209;;Courants de l'islam
+;;;4210;Sunnisme
+;;;4211;Chiismes
+;;;4212;Soufisme
+;3352;;;Judaïsme
+;;4213;;Torah
+;;;4214;Talmud et écrits talmudiques
+;;;4215;Loi juive
+;;4216;;Kabbale et autres textes spirituels
+;;4217;;Liturgies et prières
+;;4218;;Fêtes et pratiques du judaïsme
+;;4219;;Enseignement du judaïsme
+;;4220;;Grandes figures du judaïsme
+;;4221;;Littérature rabbinique
+;3353;;;Religions et sagesses orientales
+;;3354;;Bouddhisme
+;;;4222;Prières
+;;;4223;Fêtes et pratiques du bouddhisme
+;;;4224;Enseignement du bouddhisme
+;;;4225;Textes spirituels du bouddhisme
+;;;4226;Grands figures du bouddhisme
+;;;4227;Bouddhisme ancien
+;;;4228;Bouddhisme theravada
+;;;4229;Bouddhisme mahayana
+;;;4230;Bouddhisme tibétain (vajrayana)
+;;3355;;Hindouisme
+;;;4231;Prières
+;;;4232;Fêtes et pratiques de l’hindouisme
+;;;4233;Enseignement de l’hindouisme
+;;;4234;Théologie de l’hindouisme
+;;;4235;Textes spirituels de l’hindouisme
+;;;4236;Grandes figures de l’hindouisme
+;;4237;;Shintoïsme
+;;;4238;Prières
+;;;4239;Fêtes et pratiques du shintoïsme
+;;;4240;Enseignement du shintoïsme
+;;;4241;Textes spirituels du shintoïsme
+;;;4242;Grandes figures du shintoïsme
+;;4243;;Taoïsme
+;;;4244;Prières
+;;;4245;Fêtes et pratiques du taoïsme
+;;;4246;Enseignement du taoïsme
+;;;4247;Textes spirituels du taoïsme
+;;;4248;Grandes figures du taoïsme
+;;4249;;Confucianisme
+;;;4250;Prières
+;;;4251;Fêtes et pratiques du confucianisme
+;;;4252;Enseignement du confucianisme
+;;;4253;Textes spirituels du confucianisme
+;;;4254;Grands figures du confucianisme
+;4255;;;Polythéisme, spiritualité ethnique
+;3917;;;Religions de l'Antiquité
+;4064;;;Agnosticisme
+;4256;;;Athéisme
+;3356;;;Histoire des religions
+;;4034;;Histoire du christianisme
+;;;4257;Histoire du catholicisme
+;;;4258;Histoire du protestantisme
+;;;4259;Histoire de l’orthodoxie
+;;4051;;Histoire de l'islam
+;;4035;;Histoire du judaïsme
+;;4260;;Histoire des religions orientales
+;;;4261;Histoire du bouddhisme
+;;;4262;Histoire de l'hindouisme
+;3363;;;Jeunesse
+;;4263;;Christianisme
+;;4264;;Islam
+;;4265;;Judaïsme
+;;4266;;Religions orientales
+;3364;;;Religion et société
+;4267;;;Dialogue interreligieux
+;4268;;;Religion comparée
+;4269;;;Spiritualité, témoignages de sagesses
+;4270;;;Méditations
+3365;;;;ÉSOTÉRISME, OCCULTISME
+;3366;;;Magie
+;;3367;;Hermétisme, Alchimie
+;;3368;;Ésotérisme
+;;3369;;Sorcellerie
+;;3370;;Symboles
+;;3371;;Parapsychisme, Magnétisme, Guérisseurs
+;;3372;;Art divinatoire
+;3373;;;Énigme, Phénomène inexpliqué
+;3374;;;Esprit, Paranormal
+;3375;;;Sociétés secrètes
+;3376;;;Croyance, Mythe, Rêve
+3377;;;;HISTOIRE
+;3378;;;Histoire générale et thématique
+;;3379;;Personnages historiques
+;;3380;;Documents historiques
+;;3381;;Monde
+;;4040;;Afrique
+;;4037;;Amériques
+;;4036;;Asie
+;;4039;;Moyen-Orient
+;;4038;;Océanie
+;;3382;;Europe
+;;3383;;France
+;3384;;;Préhistoire
+;3385;;;Antiquité
+;3386;;;Moyen Age
+;3387;;;Renaissance
+;3388;;;Les Temps Modernes (avant 1799)
+;3389;;;Histoire contemporaine (1799 - 1914)
+;3390;;;Première Guerre Mondiale
+;3391;;;Histoire de l'entre-deux guerres (1919-1939)
+;3392;;;Deuxième Guerre Mondiale
+;3393;;;Période 1945-1989
+;3394;;;Histoire post-moderne (depuis 1989)
+3395;;;;GÉOGRAPHIE
+;3396;;;Géographie générale, thématique
+;3397;;;Géographie régionale, géographie des territoires
+;3398;;;Géographie physique, géo-système
+;;3399;;Géomorphologie
+;;3400;;Climatologie
+;;3401;;Hydrologie
+;;3402;;Biogéographie
+;3403;;;Géographie humaine, écoumène
+;;3404;;Géographie sociale
+;;3405;;Géopolitique
+;;3406;;Géographie de l'environnement
+;;3407;;Géographie culturelle
+;3408;;;Géographie mathématique
+;;3409;;Techniques cartographiques
+;;3410;;Photogrammétrie
+;;3412;;Analyse spatiale
+;3413;;;Techniques géographiques
+;;3414;;Système d'information géographique, géomatique
+;;3415;;Télédétection
+;3416;;;Géographie quantitative, géostatistique
+;3417;;;Géographie qualitative
+3418;;;;OUVRAGES DE REFERENCE
+;3419;;;Dictionnaires de français
+;;3420;;Dictionnaires de français en un seul volume
+;;3421;;Dictionnaires de français en plusieurs volumes
+;;3422;;Dictionnaires généralistes
+;;3423;;Dictionnaires de langage
+;;3424;;Dictionnaires scolaires
+;3425;;;Dictionnaires de langues étrangères
+;;3426;;Dictionnaires de langues d'origine étrangère
+;;3427;;Dictionnaires bilingues français/autres langues
+;4078;;;Dictionnaires de sciences humaines
+;3428;;;Encyclopédies générales
+;;3429;;Encyclopédie générale en un seul volume
+;;3430;;Encyclopédie générale en plusieurs volumes
+;3431;;;Encyclopédies et dictionnaires thématiques
+;;3432;;Encyclopédie et dictionnaire thématique en un seul volume
+;;3433;;Encyclopédie et dictionnaire thématique en plusieurs volumes
+;3434;;;Encyclopédies en fascicules
+;3801;;;Ouvrages de documentation
+;;4280;;Almanach
+;;4281;;Annuaire
+;;4282;;Catalogue éditeur
+;;4283;;Bibliothéconomie
+3435;;;;LITTÉRATURE GÉNÉRALE
+;3436;;;Oeuvres classiques
+;;3437;;Antiquité
+;;3438;;Moyen Age
+;;3439;;Moderne (avant 1799)
+;;3440;;XIXe siècle
+;;3441;;XXe siècle avant 1945
+;3442;;;Romans
+;;3443;;Romans francophones
+;;3444;;Romans étrangers
+;3445;;;Romans et nouvelles de genre
+;;3446;;Romans d'aventures
+;;3447;;Romans d'espionnage
+;;3448;;Romans policiers
+;;;3449;Policier historique
+;;;3450;Policier procédural (type série les Experts)
+;;;3451;Policier humoristique
+;;3452;;Romans noirs
+;;3453;;Thriller
+;;;3454;Thriller psychologique
+;;;3455;Thriller conspiration, politique, espionnage et militaire
+;;;3456;Thriller médical et scientifique
+;;;3457;Thriller juridique et financier
+;;;3458;Thriller ésotérique
+;;3459;;Romans d'amour, romans sentimentaux
+;;;3460;Sentimental contemporain
+;;;3461;Sentimental suspens
+;;;3462;Sentimental historique
+;;;3463;Sentimental paranormal, bit-lit
+;;;3464;Comédie sentimentale
+;;3465;;Chick-lit
+;;3466;;Science-fiction
+;;;3467;Fiction spéculative
+;;;3468;Dystopie et Uchronie
+;;;3469;Cyberpunk, technologique
+;;;3504;Hard Science
+;;;3470;Space Opéra et Planet Opéra
+;;;3471;Militaire
+;;;3472;Voyage dans le temps
+;;;3473;Post-Apocalyptique
+;;3474;;Fantastique, Terreur
+;;;3475;Horreur, Terreur
+;;;3476;Gothique
+;;;3477;Créatures surnaturelles (vampire, zombie, fantôme, fée, etc.)
+;;3478;;Fantasy, Merveilleux
+;;;3479;Fantasy médiévale et arthurienne
+;;;3480;Heroic fantasy
+;;;3481;Fantasy épique
+;;;3482;Fantasy humoristique
+;;;3483;Dark Fantasy
+;;;3484;Fantasy historique
+;;;3485;Fantasy urbaine
+;;;3486;Fantasy animalière
+;;3487;;Romans érotiques
+;;3488;;Romans humoristiques
+;;3489;;Romans historiques
+;;;3490;Préhistoire
+;;;3491;Antiquité
+;;;3492;Moyen Age
+;;;3493;Moderne (avant 1799)
+;;;3494;XIXe siècle
+;;;3505;1914-1918
+;;;3506;XXe siècle avant 1945
+;;;3507;1939-1945
+;3495;;;Contes et légendes
+;;3496;;Contes et légendes du monde
+;;3497;;Contes et légendes de France
+;;3498;;Contes et légendes d'Europe
+;;3499;;Contes et légendes Maghreb, Moyen-Orient
+;;3500;;Contes et légendes d'Afrique
+;;3501;;Contes et légendes d'Asie
+;;3502;;Contes et légendes des Amériques
+;;3503;;Contes et légendes d'Océanie
+;3508;;;Romans régionaux, Terroir
+;;3509;;Alsace, Lorraine
+;;;3510;Alsace (Strasbourg, Colmar, Mulhouse)
+;;;3511;Lorraine (Metz, Nancy)
+;;3512;;Aquitaine
+;;;3513;Béarn (Pau)
+;;;3514;Gascogne
+;;;3515;Guyenne (Bordeaux)
+;;;3516;Navarre
+;;;3517;Périgord
+;;3518;;Auvergne
+;;;3519;Bourbonnais (Moulins)
+;;;3520;Livradois, Forez
+;;;3521;Velay (Le Puy en Velay, Yssingeaux)
+;;3522;;Normandie
+;;;3523;Alençon
+;;;3524;Perche
+;;;3525;Pays d'Auge
+;;;3526;Pays de Caux
+;;3527;;Bourgogne
+;;;3528;Chalonnais
+;;;3529;Charolais
+;;;3530;Mâconnais
+;;;3531;Morvan
+;;;3532;Nivernois (Nevers)
+;;3533;;Bretagne
+;;3534;;Centre, Val-de-Loire
+;;;3535;Berry (Bourges)
+;;;3536;Blésois
+;;;3537;Chartrain
+;;;3538;Drouais
+;;;3539;Dunois
+;;;3540;Orléanais
+;;;3541;Sancerrois
+;;;3542;Sologne
+;;;3543;Touraine (Tours)
+;;;3544;Val-de-Loire
+;;3545;;Champagne, Ardennes
+;;;3546;Givet
+;;;3547;Mouzon
+;;3548;;Corse
+;;3549;;Franche-Comté
+;;3550;;Paris, Ile-de-France
+;;;3551;Paris
+;;;3552;Ile-de-France
+;;3553;;Languedoc, Roussillon
+;;;3554;Cévennes
+;;;3555;Gévaudan
+;;;3556;Languedoc (Montpellier)
+;;3557;;Nord, Pas de Calais, Picardie
+;;;3558;Artois (Arras)
+;;;3559;Flandre (Lille)
+;;;3560;Picardie (Amiens)
+;;3561;;Pays de la Loire
+;;;3562;Anjou (Angers)
+;;;3563;Maine et Perche (Le Mans)
+;;;3564;Nantais
+;;;3565;Vendée
+;;3566;;Poitou-Charentes
+;;;3567;Angoumois (Angoulême)
+;;;3568;Aunis-et-Saintonge (La Rochelle)
+;;;3569;Poitou (Poitiers)
+;;3570;;PACA
+;;;3571;Camargue
+;;;3572;Luberon
+;;;3573;Nice
+;;;3574;Orange
+;;;3575;Provence (Aix)
+;;;3576;Riviera
+;;;3577;Venaissin
+;;3578;;Rhône-Alpes
+;;;3579;Beaujolais
+;;;3580;Bresse
+;;;3581;Dauphiné (Grenoble)
+;;;3582;Forez
+;;;3583;Lyonnais (Lyon)
+;;;3584;Mercantour
+;;;3585;Savoie
+;;;3586;Vivarais
+;;3587;;Limousin
+;;;3588;La Marche (Guéret)
+;;;3589;Limousin (Limoges)
+;;3590;;Midi-Pyrénées
+;;;3591;Armagnac
+;;;3592;Aubrac
+;;;3593;Bigorre
+;;;3594;Causses
+;;;3595;Comminges
+;;;3596;Couserans
+;;;3597;Comté de Foix
+;;;3598;Haut-Languedoc, Toulousain
+;;;3599;Quercy
+;;;3600;Lavedan
+;;;3601;Rouergue
+;;3602;;DOM-TOM, Outre-mer, Territoires français
+;;;3603;Antilles françaises
+;;;3604;Guyane
+;;;3605;La Réunion
+;;;3606;Nouvelle-Calédonie (Mélanésie)
+;;;3607;Polynésie française, Wallis-et-Futuna
+;;;3608;Saint-Pierre et Miquelon
+;;;3609;TAAF (Terres australes antarctiques françaises)
+;;3610;;Monaco
+;;3611;;Benelux (Belgique, Pays-Bas, Luxembourg)
+;;;3612;Brabant wallon
+;;;3613;Flandres
+;;;3614;Hainaut
+;;;3615;Liège
+;;;3616;Namur
+;;;3617;Luxembourg
+;;;3618;Pays-Bas
+;;3619;;Provinces de Québec
+;;3620;;Cantons de Suisse
+;3621;;;Nouvelles
+;3622;;;Théâtre
+;;3623;;Tragédie
+;;;3624;Tragédie antique
+;;;3625;Tragédie classique
+;;;4084;Dramaturgie contemporaine
+;;3626;;Comédie
+;;;4088;Comédie musicale
+;;;3627;Comédie de caractères, de moeurs
+;;;3628;Comédie ballet
+;;;3629;Farce
+;;;3630;Vaudeville
+;;;4085;Comédie antique et classique
+;;;4086;Comédie contemporaine
+;;;4087;Sketch
+;;;4089;Comédie dramatique
+;;3631;;Tragi-comédie
+;;3632;;Drame
+;;4090;;Monologue
+;3633;;;Poésie
+;;3634;;Poésie lyrique (poésie chantée : ballade, élégie, rondeau...)
+;;3635;;Poésie épique (épopée...)
+;;3636;;Poésie satirique
+;;3637;;Poésie didactique (fables...)
+;;3638;;Poésie contemporaine
+;3639;;;Art épistolaire, Correspondances, Discours
+;3640;;;Récits de voyages
+;3641;;;Récits
+;3642;;;Pamphlets, Maximes, Pensées, Portraits
+;3643;;;Essais littéraires
+;3644;;;Actualités, Reportages
+;;3645;;Société (culture, éducation, famille, mode, religion, sexualité)
+;;3646;;Nature, écologie, climat, énergie, terre, agroalimentaire
+;;3647;;Aventures, documentaires, exploration, voyages
+;;3648;;Affaires, criminalité, enquêtes, justice, police
+;;3649;;Médecine, santé, psychiatrie
+;;3650;;Économie, Entreprise, Finance, Industrie
+;;3651;;Sciences, Techniques (astronomie, biologie, physique, chimie...)
+;;3652;;Média, Télévision, Presse, Radio, Edition, Internet
+;;3653;;Sport
+;;3654;;Musique
+;;3655;;Cinéma
+;;3656;;Théâtre
+;;3657;;Spectacle, Danse
+;;3658;;Politique
+;3659;;;LGBT (lesbien, gay, bisexuel et transgenre)
+;3660;;;Biographies, Mémoires
+;;3661;;Autobiographies
+;;3662;;Biographies
+;;3663;;Journal intime
+;;3664;;Mémoires
+;;3665;;Témoignages
+;3666;;;Humour
+3667;;;;ARTS ET BEAUX LIVRES
+;3668;;;Histoire de l'art, études
+;;3669;;Histoire de l'art
+;;3670;;Ecrits sur l'art
+;;3671;;Essais biographiques
+;;3672;;Dictionnaires d'histoire de l'art
+;;3673;;Musées, muséologie
+;;3674;;Marché de l'art
+;;3675;;Revues sur l'art
+;3676;;;Arts majeurs
+;;3677;;Architecture, urbanisme
+;;3678;;Sculpture
+;;3679;;Peinture
+;;;3680;Peintres, Monographie
+;;;3681;Histoire de la peinture
+;;3682;;Arts graphiques (dessin, estampes, fresques, graffiti, gravures...)
+;;;3683;Dessin
+;;;3684;Typographie, Calligraphie
+;;;3685;Estampes
+;;3686;;Arts du spectacle
+;;3687;;Musique
+;;;3934;Dictionnaire et guide de la musique
+;;;3935;Méthode, formation musicale
+;;;3936;Histoire de la musique
+;;;3937;Instruments généralités
+;;;4056;Instruments à clavier
+;;;4057;Instruments à percussions
+;;;4058;Instruments à cordes
+;;;4059;Instruments à vent
+;;;4060;Instruments mécaniques
+;;;4061;Instruments électroniques
+;;;3938;Musique classique
+;;;3932;Chanson, variété française
+;;;3939;Chanson, variété internationale
+;;;3940;Pop
+;;;3948;Rock
+;;;3941;Reggae, dub
+;;;3942;Electronique
+;;;3933;Blues, jazz, soul
+;;;3943;Country, folk
+;;;3944;Hip hop, rap
+;;;3945;Opéra
+;;;3946;Musique de film, comédie musicale
+;;;3947;Musique du monde
+;;3688;;Poésie
+;;3689;;Cinéma
+;;3690;;Théâtre
+;;3691;;Photographie
+;;;3692;Essai sur la photographie
+;;;3693;Histoire de la photographie
+;;;3694;Monographies
+;;;3695;Techniques photographiques
+;;;3696;Vidéo
+;3697;;;Arts décoratifs
+;;3698;;Tapisseries, Tapis et Brocarts
+;;3699;;Métal ciselé, Ferronnerie
+;;3700;;Pierres fines et précieuses
+;;3701;;Email
+;;3702;;Sculpture (bois, ivoire, jade...)
+;;3703;;Travail du verre et du cristal
+;;3704;;Marqueterie
+;;3705;;Céramique
+;;3706;;Enluminure et miniatures
+;;3707;;Mosaïque
+;;3708;;Art floral
+;;3709;;Design
+;4055;;;Catalogues d'expositions
+;3710;;;Beaux livres illustrés (histoire, nature, mode, transports...)
+;;3711;;Histoire, Civilisation, Société
+;;4131;;Sciences
+;;3712;;Astronomie, Espace
+;;3713;;Nature, Animaux
+;;3714;;Transports (bateau, train, avion, auto, moto)
+;;3715;;Mode, textile, parfums, bijoux, joaillerie, montres
+;;3716;;Nu, Charme, Érotisme
+;;3717;;Jardins et plantes
+;;3718;;Lieux, paysage, pays, voyages
+;;3719;;Littérature, poésie, manuscrit
+;;3720;;Sports
+;;3721;;Gastronomie
+3722;;;;JEUNESSE
+;3723;;;Éveil, petite enfance (- de 3 ans)
+;;3724;;Tout-carton, imagier
+;;3725;;Albums
+;;3726;;Albums animés, pop-up
+;;3727;;Livres objets, livre jouet, livre puzzle, livre surprise, livre matière
+;3728;;;Livres illustrés (+ de 3 ans)
+;;3729;;Premières histoires
+;;3730;;Albums
+;;3731;;Albums animés, pop-up
+;;3732;;Livres objets, livre jouet, livre puzzle, livre surprise
+;;3733;;Recueils (contes, fables...)
+;3734;;;Livres d'activités
+;;3735;;Activités manuelles
+;;3736;;Activités artistiques
+;;3737;;Activités d'extérieur
+;3738;;;Livres et produits à usage unique
+;;3739;;Autocollants, gommettes, collage
+;;3740;;Coloriage, dessin
+;;3741;;Images à coller (ayant une existence propre constituant une série, une collection)
+;;3742;;Tatouage, transfert, magnet
+;;3743;;Papeterie (dérivative d'une oeuvre jeunesse. Ex : calendriers, agendas...)
+;3744;;;Fiction Jeunesse
+;;3745;;Premières lectures, premiers romans
+;;3746;;Histoires
+;;3747;;Séries, héros préférés
+;;3748;;Contes et mythologie
+;;3749;;Romans
+;3750;;;Fiction adolescents
+;;3751;;Romans
+;;;3752;Fantastique, Paranormal
+;;;3753;Magie, Fantasy
+;;;3754;Science-fiction
+;;;3755;Sentimental
+;;;4156;Chick-lit
+;;;3756;Policier, thriller
+;;;4074;Epouvante
+;;;3757;Historique
+;;;3758;Action, aventures
+;;3759;;Témoignages
+;3760;;;Documentaire / Encyclopédie
+;;3761;;Animaux
+;;3762;;Arts
+;;3763;;Atlas
+;;3764;;Encyclopédie
+;;3765;;Géographie
+;;3766;;Histoire, Monde et civilisations
+;;3767;;Nature, environnement
+;;3768;;Sciences
+;;3769;;Sport
+;;3770;;Vie quotidienne et société
+3771;;;;BANDES DESSINÉES, COMICS, MANGAS
+;3772;;;Bandes dessinées
+;;3773;;Bandes dessinées tout public
+;;3774;;Bandes dessinées de genre
+;;;3776;Science-fiction
+;;;3777;Fantasy
+;;;3778;Fantastique, ésotérisme
+;;;3779;Policier thriller
+;;;4065;Horreur
+;;;3780;Histoire
+;;;3781;Action et aventures
+;;;3782;Western
+;;;3783;Humour
+;;;3784;Bandes dessinées d'auteur
+;;;3785;Public averti (érotique, hyper violence...)
+;;3775;;Documentaire
+;;;4132;Culture
+;;;4133;Société
+;;;4134;Littérature
+;;;4135;Adaptation littéraire
+;;;4136;Bande dessinée de savoir
+;;4076;;Bandes dessinées d'auteur
+;;4077;;Tirage de tête
+;;4075;;Guides et critiques
+;3786;;;Comics
+;;3787;;Classique
+;;3788;;Strip
+;;3789;;Super Héros
+;;3790;;Adaptation
+;;3791;;Graphic Novel
+;3792;;;Manga
+;;3793;;Kodomo
+;;3794;;Shôjo
+;;3795;;Shonen
+;;3796;;Seinen
+;;3797;;Josei
+;;4062;;Manga Yaoi
+;;4063;;Manga Yuri
+;;3798;;Public averti (érotique, hyper violence...)
+;;3799;;Revues mangas
+;;3800;;Guides mangas
+3802;;;;PRATIQUE
+;3803;;;Tourisme, Guides et Monographies
+;;3804;;Guides de tourisme (destination)
+;;;3805;Guide d'Europe
+;;;3806;Guide d'Afrique
+;;;3807;Guide du Moyen Orient
+;;;3808;Guide d'Asie
+;;;3809;Guide d'Amérique du Nord
+;;;3810;Guide d'Amérique Centrale
+;;;3811;Guide d'Amérique du Sud
+;;;3812;Guide d'Océanie
+;;;3813;Guides France
+;;3814;;Guides de conversation
+;;3815;;Guides spécialisés
+;;;3816;Guides hébergement et restauration
+;;;3817;Guides camping Caravaning
+;;;3818;Guides de randonnées
+;;;3819;Guides fluviaux ou maritimes
+;;3820;;Albums et beaux livres et carnets de voyages (paysages, pays, villes, lieux, voyages)
+;3821;;;Méthodes de langues (hors scolaire)
+;3822;;;Vie professionnelle
+;;3823;;Efficacité professionnelle
+;;3824;;Recherche d'emploi
+;3825;;;Santé et Bien-être (santé physique et mentale, hygiène, sexualité, psychologie, pédagogie, enfants)
+;;3826;;Régimes alimentaires
+;;3827;;Médecine naturelle, douce, familiale
+;;3828;;Forme, beauté
+;;3829;;Sexualité
+;;3830;;Bien-être
+;;3831;;Développement personnel
+;;4047;;Vieillissement
+;3832;;;Vie quotidienne, Vie de la famille
+;;3833;;Enfance
+;;3834;;Seniors
+;;3835;;Maternité, puériculture
+;;3836;;Éducation
+;;3837;;Économie domestique
+;;3838;;Gestion du patrimoine
+;;4081;;Correspondance
+;3839;;;Activités artistiques
+;3840;;;Activités manuelles
+;;3841;;Loisirs créatifs
+;;3842;;Artisanat
+;;3843;;Art du fil
+;3844;;;Bricolage, décoration, habitat
+;;3845;;Bricolage
+;;;4021;Manuels de bricolage
+;;;3931;Entretien, restauration de la maison
+;;;3926;Cuisine et bains
+;;;3925;Electricité, domotique, sécurité, alarmes
+;;;3927;Plomberie, chauffage, climatisation
+;;;4022;Maçonnerie
+;;;4023;Menuiserie
+;;3846;;Décoration
+;;3928;;Habitat
+;3847;;;Cuisine, gastronomie
+;;4080;;histoire de la cuisine
+;;3848;;Cuisine au quotidien
+;;3849;;Cuisine actuelle et tendances
+;;3850;;Cuisine de saison
+;;3851;;Cuisine régionale
+;;3852;;Cuisine du monde
+;;3853;;Cuisine des chefs
+;;4079;;Cuisine bio
+;;3854;;Cuisine pour les enfants
+;;3855;;Cuisine santé-minceur
+;;3856;;Pâtisserie, confiserie, chocolat
+;3857;;;Boissons
+;;3858;;Vins, champagne
+;;3859;;Alcools
+;;3860;;Cocktails
+;;3861;;Thé, café, infusions
+;;3862;;Boissons non alcoolisées (jus, smoothies, milk-shake...)
+;3864;;;Sports et loisirs
+;;3920;;Sports collectifs
+;;;3921;Football
+;;;3949;Rugby
+;;;3950;Hand-ball
+;;;3951;Volley-ball
+;;;3952;Basket-ball
+;;;3953;Base-ball
+;;;3954;Hockey
+;;;3955;Polo
+;;;4012;Pelote basque
+;;3956;;Athlétisme
+;;3957;;Gymnastique
+;;3958;;Tir sportif
+;;;3959;Carabine, pistolet
+;;;3960;Arc, arbalète
+;;3961;;Sport de combat
+;;;3962;Boxe
+;;;3963;Lutte
+;;;3964;Escrime
+;;3965;;Art martial
+;;;3966;Aïkido
+;;;3967;Judo
+;;;3968;Ju-jitsu
+;;;3969;Karaté
+;;;3970;Kendo
+;;;3971;Kung-fu
+;;;3972;Free fight
+;;;3973;Sumo
+;;3974;;Sports mécaniques
+;;;3975;Course automobile
+;;;3976;Rallye automobile
+;;;3977;Karting
+;;;3978;Dragster
+;;;3979;Camion
+;;;3980;Course de moto
+;;;3981;Tout terrain moto
+;;;3982;Sports aériens
+;;;3983;Sport de navigation
+;;3984;;Sports aériens non motorisés
+;;3985;;Cyclisme, vélo tout terrain (VTT)
+;;;3986;Cyclisme
+;;;3987;Cyclo-cross, vélo tout terrain (VTT)
+;;3988;;Sports aquatiques
+;;;3989;Natation
+;;;3990;Plongeon
+;;;3991;Water-polo
+;;;3992;Plongée sous-marine
+;;3993;;Sports nautiques
+;;;3994;Voile, voilier
+;;;3995;Ski nautique
+;;;3996;Aviron
+;;;3997;Planche à voile
+;;;3998;Surf
+;;;3999;Canoë
+;;4000;;Sports de montagne, sports d'hiver
+;;;4001;Ski
+;;;4002;Alpinisme, escalade
+;;;4003;Bobsleigh, luge
+;;;4004;Patinage
+;;;4005;Curling
+;;;4018;Hockey sur glace
+;;;3922;Spéléologie
+;;4006;;Sports équestres
+;;4007;;Sports de raquettes
+;;;4008;Tennis
+;;;4009;Tennis de table
+;;;4010;Squash
+;;;4011;Badminton
+;;4013;;Golf
+;;4014;;Jeux de boules
+;;4015;;Sports extrêmes
+;;4016;;Olympisme, para-olympisme
+;;4017;;Entraînement sportif
+;;3891;;Jeux de société, Sports cérébraux, Jeux de cartes
+;;;3892;Jeux de rôle (guides, univers, etc.)
+;;;3893;Sports cérébraux
+;;;3894;Jeux de cartes
+;;;3895;Jeux de société
+;;4091;;Jeu vidéo
+;3923;;;Chasse, pêche
+;3865;;;Transport
+;3866;;;Animaux
+;;3867;;Animaux d'élevage
+;;3868;;Animaux de compagnie (ou domestiques)
+;;3869;;Animaux sauvages
+;;3870;;Apiculture
+;3871;;;Nature
+;;3872;;Écologie
+;;3873;;Champignons
+;;3874;;Fleurs sauvages
+;;3875;;Arbres
+;;3876;;Océans et mers
+;;3877;;Montagne
+;;3878;;Ressources naturelles (roches, minéraux, fossiles)
+;;3879;;Volcans et forces naturelles
+;;3880;;Climat et météo
+;;3881;;Astronomie
+;3882;;;Jardinage
+;;4019;;Encyclopédies du jardinage
+;;4020;;Jardins bio, écologiques
+;;3883;;Jardin d'ornement, fleurs
+;;3884;;Plantes d'intérieur
+;;3885;;Potager
+;;3886;;Arbres et arbustes
+;;3887;;Verger
+;;3888;;Techniques et soin des plantes
+;;3889;;Aménagements de jardins et petits espaces (terrasse, balcon, etc.)
+;;3890;;Art et histoire des jardins
+;;3924;;Bassins, fontaines
+;3896;;;Généalogie
+;3897;;;Collections
+3898;;;;CARTES GÉOGRAPHIQUES ET ATLAS
+;3899;;;Cartes géographiques
+;;3900;;Cartes routières
+;;3901;;Cartes géologiques
+;;3902;;Cartes marines
+;;3903;;Cartes météorologiques
+;;3904;;Cartes topographies
+;;3905;;Cartes touristiques
+;;3906;;Cartes thématiques
+;;3907;;Cartes célestes
+;;3908;;Cartes aériennes
+;3909;;;Atlas
+;;3910;;Atlas généraux
+;;3911;;Atlas géographiques
+;;3912;;Atlas thématiques
+;;3913;;Atlas routiers
+;3914;;;Plans
+;;3915;;Plans de ville
+4129;;;;JEUNES ADULTES
+;4144;;;Fantastique, paranormal
+;4145;;;Magie, fantasy
+;4146;;;Science-fiction
+;4147;;;Policier, thriller
+;4148;;;Contemporain
+;4149;;;Historique
+;4150;;;Action, aventures
+;4151;;;Sentimental
+;4152;;;Chick-lit
+;4153;;;Epouvante
+;4154;;;Témoignages
+;4155;;;Dystopie
