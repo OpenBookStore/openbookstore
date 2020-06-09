@@ -14,15 +14,15 @@
     </div>
   </div>
 
-{% if q and nb-results == 0 %}
-<div class="columns is-centered">
-  <div class="is-half">
-    <p class="is-primary">
-      No results
-    </p>
+  {% if q and nb-results == 0 %}
+  <div class="columns is-centered">
+    <div class="is-half">
+      <p class="is-primary">
+        No results
+      </p>
+    </div>
   </div>
-</div>
-{% endif %}
+  {% endif %}
 
 </form>
 
@@ -46,7 +46,7 @@
           <a onclick="alert('clicked')">
             <span class="title is-6"> {{ card.title }} </span>
           </a>
-          <span> {{ card.authors }} </span>
+          <div> {{ card.authors }} </div>
           <span> éd. {{ card.publisher | capfirst }} </span>
 	  <p>
             {% if card.availability %}
@@ -65,7 +65,16 @@
           0
           {% endif %}
         </span>
+
+        <form action="/card/create/" method="POST">
+          <!-- TODO: url not found… -->
+          <input name="q" type="hidden" value="{{ q }}">
+          <input name="title" type="hidden" value="{{ card.title }}">
+          <input type="submit" class="button" value="Add…">
+        </form>
+
       </div>
+
     </div>
   </article>
 </div>

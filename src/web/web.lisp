@@ -132,6 +132,16 @@ Dev helpers:
                              :q q
                              :messages (list "Please enter an ISBN or some keywords.")))))
 
+;TODO: damn, can't reach this route.
+(defroute card-create-route ("/card/create/" :method post) (q title)
+  (format nil "hello q: ~a, title: ~a" q title))
+
+(defroute card-create-route-get ("/card/create/" :method get) ()
+  (format nil "hello create"))
+
+(defroute card-created-add-route ("/card/create/:id" :method get) (q title)
+  (format nil "hello id ~a q: ~a, title: ~a" id q title))
+
 
 (defroute card-page ("/card/:slug") (&get raw)
   "Show a card.
