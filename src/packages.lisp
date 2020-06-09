@@ -73,4 +73,6 @@
            :name
            ;; functions
            :books)
+  (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
+                    (#:fr #:bookshops.datasources.scraper-fr))
   (:documentation "CLI interface"))
