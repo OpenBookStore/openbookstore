@@ -33,30 +33,31 @@
 {% endfor %}
 
 {% for card in cards %}
-<div name="cardid" data-id="{{ card.id }}" id="card{{ card.id }}" class="box content">
+<!-- TODO decide if we want check-in-stock to also add the card id, otherwise we have to use the ISBN here.  -->
+<div name="cardid" data-id="{{ card.id }}" id="card{{ card.isbn }}" class="box content">
   <article class="post">
     <div class="media">
       <div class="media-left">
-	<p class="image is-64x64">
-	  <img src="{{ card.cover-url }}">
-	</p>
+        <p class="image is-64x64">
+          <img src="{{ card.cover-url }}">
+        </p>
       </div>
       <div class="media-content">
-	<div class="content">
+        <div class="content">
           <a onclick="alert('clicked')">
             <span class="title is-6"> {{ card.title }} </span>
           </a>
           <div> {{ card.authors }} </div>
           <span> éd. {{ card.publisher | capfirst }} </span>
-	  <p>
+          <p>
             {% if card.availability %}
-	    <span> availability: {{ card.availability }}  </span>
+            <span> availability: {{ card.availability }}  </span>
             {% endif %}
-	  </p>
-	</div>
+          </p>
+        </div>
       </div>
       <div class="media-right">
-	<span name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
+        <span name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
         <span class="tag">
           x
           {% if card.in-stock %}
@@ -67,9 +68,9 @@
         </span>
 
         <form action="/card/create/" method="POST">
-          <!-- TODO: url not found… -->
           <input name="q" type="hidden" value="{{ q }}">
           <input name="title" type="hidden" value="{{ card.title }}">
+          <input name="isbn" type="hidden"  value="{{ card.isbn }}" />
           <input type="submit" class="button" value="Add…">
         </form>
 

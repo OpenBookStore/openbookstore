@@ -67,6 +67,7 @@ Dev helpers:
 (defparameter +search.html+ (djula:compile-template* "search.html"))
 (defparameter +stock.html+ (djula:compile-template* "stock.html"))
 (defparameter +card-page.html+ (djula:compile-template* "card-page.html"))
+(defparameter +card-create.html+ (djula:compile-template* "card-create.html"))
 
 (defparameter +404.html+ (djula:compile-template* "404.html"))
 
@@ -132,16 +133,31 @@ Dev helpers:
                              :q q
                              :messages (list "Please enter an ISBN or some keywords.")))))
 
-;TODO: damn, can't reach this route.
-(defroute card-create-route ("/card/create/" :method post) (q title)
-  (format nil "hello q: ~a, title: ~a" q title))
+;;; TODO is create really an appropriate name?
+;;; this is actually just managing the stock, ensuring that the book exists.
+;;; also what do we do if a book with the same isbn does alaready exist?
+(defroute card-create-route ("/card/create/" :method :post) (q title isbn)
+  (let ((card (create-book :title title :isbn isbn)))
+    (djula:render-template* +card-create.html+ nil
+                            :q q
+                            :card card
+                            :places-copies
+                            (bookshops.models::book-places-quantities card)
+                            :places (bookshops.models:find-places))))
 
-(defroute card-create-route-get ("/card/create/" :method get) ()
-  (format nil "hello create"))
-
-(defroute card-created-add-route ("/card/create/:id" :method get) (q title)
+(defroute card-created-add-route ("/card/create/:id" :method :get) (q title)
   (format nil "hello id ~a q: ~a, title: ~a" id q title))
 
+(defroute card-add-stock-route ("/card/add-stock/:book-id" :method :post)
+    (q place-id quantity)
+  (let ((card (mito:find-dao 'book :id book-id))
+        (place (mito:find-dao 'place :id place-id))
+        (quantity (ignore-errors (parse-integer quantity))))
+    ;; TODO Validate quantity and place-id
+    (bookshops.models:add-to place card :quantity quantity)
+    ;; TODO redirect to search with title query and isbn
+    (hunchentoot:redirect
+     (format nil "/search?q=~a#card~a" q (bookshops.models:isbn card)))))
 
 (defroute card-page ("/card/:slug") (&get raw)
   "Show a card.
