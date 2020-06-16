@@ -54,7 +54,7 @@ searches. This method was thought the most portable.
     :accessor datasource
     :initarg :datasource
     :initform nil
-    :type string
+    :type (or string null)
     ;; how to use a variable for 128 ?
     ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
     :col-type (or (:varchar 128) :null)
@@ -64,7 +64,7 @@ searches. This method was thought the most portable.
     :accessor details-url
     :initarg :details-url
     :initform nil
-    :type string
+    :type (or string null)
     :col-type (or (:varchar 128) :null)
     :documentation "Link to the book's page on its datasource.")
 
@@ -78,7 +78,7 @@ searches. This method was thought the most portable.
    (title-ascii
     :accessor title-ascii
     :initform nil
-    :type string
+    :type (or string null)
     :col-type (or (:varchar 128) :null)
     :documentation "The title, normalized to not contain accentuated letters or special characters. To search a card by title we'll normalize the search query and search against this column. This is the most portable solution.")
 
@@ -86,7 +86,7 @@ searches. This method was thought the most portable.
     :accessor isbn
     :initarg :isbn
     :initform nil
-    :type string
+    :type (or string null)
     :col-type (or (:varchar 128) :null))
 
    (price
@@ -108,13 +108,13 @@ searches. This method was thought the most portable.
     :accessor publisher
     :initarg :publisher
     :initform nil
-    :type string
+    :type (or string null)
     :col-type (or (:varchar 128) :null))
 
    (publisher-ascii
     :accessor publisher-ascii
     :initform nil
-    :type string
+    :type (or string null)
     :col-type (or (:varchar 128) :null))
 
    (authors
@@ -133,7 +133,7 @@ searches. This method was thought the most portable.
     :accessor cover-url
     :initarg :cover-url
     :initform nil
-    :type string
+    :type (or string null)
     :col-type (or (:varchar 1024) :null)))
   (:metaclass dao-table-class)
   (:documentation "A book represents the book entity, not the physical object.
