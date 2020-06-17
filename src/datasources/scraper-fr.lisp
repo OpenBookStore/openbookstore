@@ -27,8 +27,12 @@
 (defparameter *datasource* *french-search*
   "The default data source.")
 
+;;; TODO where is this used?
 (defvar *last-results* nil
   "List of last results by `books` (objects).")
+
+;;; TODO allow configuration of cache?
+(defvar *cache* (cacle:make-cache 100 '%books :test 'equal :lifetime (* 24 3600)))
 
 (defparameter *debug* nil "xxx: just use (log:debug)")
 
@@ -172,16 +176,22 @@
 
 (defparameter *last-parsing-res* nil "for debug pursposes.")
 
-(defun books (query &key (datasource *datasource*))
-  "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...)."
-  (declare (ignorable datasource))
+(defun %books (query)
+  "provider for the cache."
   (let* ((url (build-url query))
          (req (get-url url))
          (parsed (parse req))
          ;; one node
-         ;: XXX: clss can be replaced by lQuery.
+                                        ;: XXX: clss can be replaced by lQuery.
          (node (clss:select ".resultsList" parsed))
          ;; direct children:
          (res (clss:select "> li" node)))
     (setf *last-parsing-res* (coerce res 'list))
-    (setf *last-results* (map 'list #'book-info res))))
+    (values (setf *last-results* (map 'list #'book-info res))
+            1)))
+
+(defun books (query &key (datasource *datasource*))
+  "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...)."
+  (let ((*datasource* datasource))
+    ;; TODO datasource isn't actually used for some reason?
+    (cacle:cache-fetch *cache* query)))
