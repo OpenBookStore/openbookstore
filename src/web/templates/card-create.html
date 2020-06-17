@@ -70,6 +70,7 @@
         </table>
 
         <div id="stock-management" >
+            <!-- TODO possibly use horizontal form addons from bulma instead -->
             <form action="/card/add-stock/{{ card.id }}" method="POST" >
                 <input type="hidden" name="q" value="{{ q }}" />
                 <div class="field" >
