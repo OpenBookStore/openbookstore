@@ -136,8 +136,13 @@ Dev helpers:
 ;;; TODO is create really an appropriate name?
 ;;; this is actually just managing the stock, ensuring that the book exists.
 ;;; also what do we do if a book with the same isbn does alaready exist?
-(defroute card-create-route ("/card/create/" :method :post) (q title isbn)
-  (let ((card (create-book :title title :isbn isbn)))
+(defroute card-create-route ("/card/create/:book-id" :method :post)
+    (q title isbn cover-url publisher)
+  (let ((card
+         (if (str:blank? book-id)
+             (create-book :title title :isbn isbn :cover-url cover-url
+                          :publisher publisher)
+             (mito:find-dao 'book :id book-id))))
     (djula:render-template* +card-create.html+ nil
                             :q q
                             :card card
@@ -145,8 +150,9 @@ Dev helpers:
                             (bookshops.models::book-places-quantities card)
                             :places (bookshops.models:find-places))))
 
-(defroute card-created-add-route ("/card/create/:id" :method :get) (q title)
-  (format nil "hello id ~a q: ~a, title: ~a" id q title))
+(defun redirect-to-search-result (query book)
+  (hunchentoot:redirect
+   (format nil "/search?q=~a#card~a" query (bookshops.models:isbn book))))
 
 (defroute card-add-stock-route ("/card/add-stock/:book-id" :method :post)
     (q place-id quantity)
@@ -155,9 +161,19 @@ Dev helpers:
         (quantity (ignore-errors (parse-integer quantity))))
     ;; TODO Validate quantity and place-id
     (bookshops.models:add-to place card :quantity quantity)
-    ;; TODO redirect to search with title query and isbn
-    (hunchentoot:redirect
-     (format nil "/search?q=~a#card~a" q (bookshops.models:isbn card)))))
+    (redirect-to-search-result q card)))
+
+(defroute card-quick-add-route ("/card/quick-add-stock/:book-id" :method :post)
+    (q quantity title isbn cover-url publisher)
+  (let ((book
+         (if (str:blank? book-id)
+             (create-book :title title :isbn isbn :cover-url cover-url
+                          :publisher publisher)
+             (mito:find-dao 'book :id book-id)))
+        ;; TODO hard to debug because of this
+        (quantity (or (ignore-errors (parse-integer quantity)) 1)))
+    (bookshops.models:add-to (default-place) book :quantity quantity)
+    (redirect-to-search-result q book)))
 
 (defroute card-page ("/card/:slug") (&get raw)
   "Show a card.

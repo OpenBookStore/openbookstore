@@ -463,10 +463,8 @@ searches. This method was thought the most portable.
                  :price price
                  :date-publication date-publication))
 
-(defun create-book (&key title isbn)
-  (create-dao 'book
-              :title title
-              :isbn isbn))
+(defun create-book (&rest initargs)
+  (apply #'create-dao 'book initargs))
 
 (defun save-book (book)
   "Save this book in DB. If it already exists, return the existing book. Otherwise, return the new one."

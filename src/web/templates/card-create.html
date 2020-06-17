@@ -72,16 +72,21 @@
         <div id="stock-management" >
             <form action="/card/add-stock/{{ card.id }}" method="POST" >
                 <input type="hidden" name="q" value="{{ q }}" />
-                <label class="label"> Place </label>
-                <select name="place-id" >
-                    <!-- TODO make default place selected -->
-                    {% for place in places %}
-                    <option value="{{ place.id }}">{{ place.name }}</option>
-                    {% endfor %}
-                </select>
-                <label class="label"> Quantity </label>
-                <input name="quantity" type="text" id="quantity" />
-                <button action="submit" class="button" >Add</button>
+                <div class="field" >
+                    <label class="label"> Place </label>
+                    <select name="place-id" class="select" >
+                        {% for place in places %}
+                        <option value="{{ place.id }}">{{ place.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label class="label"> Quantity </label>
+                    <input name="quantity" type="text" id="quantity" placeholder="e.g. 5" />
+                </div>
+                <div class="field is-grouped" >
+                    <button action="submit" class="button is-link" >Add</button>
+                </div>
             </form>
         </div>
 

@@ -57,23 +57,36 @@
         </div>
       </div>
       <div class="media-right">
-        <span name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
-        <span class="tag">
-          x
-          {% if card.in-stock %}
-          {{ card.in-stock }}
-          {% else %}
-          0
-          {% endif %}
-        </span>
+          <div class="level">
+              <span class="level-item" name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
+              {% if card.in-stock %}
+              <span class="tag level-item is-success"> x {{ card.in-stock}}</span>
+              {% else %}
+              <span class="tag level-item is-light"> x 0</span>
+              {% endif %}
+          </div>
 
-        <form action="/card/create/" method="POST">
-          <input name="q" type="hidden" value="{{ q }}">
-          <input name="title" type="hidden" value="{{ card.title }}">
-          <input name="isbn" type="hidden"  value="{{ card.isbn }}" />
-          <input type="submit" class="button" value="Add…">
-        </form>
-
+        <!-- TODO how to handle duplication of forms? how to stop them getting out of sync
+             with the end point parameters too? -->
+        <div class="level">
+            <form action="/card/create/{{ card.book.id }}" method="POST" class="level-item">
+                <input name="q" type="hidden" value="{{ q }}">
+                <input name="title" type="hidden" value="{{ card.title }}">
+                <input name="isbn" type="hidden"  value="{{ card.isbn }}" />
+                <input name="cover-url" type="hidden" value="{{ card.cover-url }}"/>
+                <input name="publisher" type="hidden" value="{{ card.publisher }}" />
+                <input type="submit" class="button" value="Add">
+            </form>
+            <form action="/card/quick-add-stock/{{ card.book.id }}" method="POST" class="level-item">
+                <input name="quantity" type="hidden" value="1" />
+                <input name="q" type="hidden" value="{{ q }}">
+                <input name="title" type="hidden" value="{{ card.title }}">
+                <input name="isbn" type="hidden"  value="{{ card.isbn }}" />
+                <input name="cover-url" type="hidden" value="{{ card.cover-url }}"/>
+                <input name="publisher" type="hidden" value="{{ card.publisher }}" />
+                <input type="submit" class="button" value="+1">
+            </form>
+        </div>
       </div>
 
     </div>
