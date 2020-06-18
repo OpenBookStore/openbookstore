@@ -34,10 +34,5 @@
                        :test #'string-equal)
        ;; do (format t "book isbn: ~a, elt found: ~a~&" (isbn book) elt)
        do (setf (access elt :in-stock)
-                (quantity book))
-       ;; TODO does it make sense to put a reference to the books in here?
-       ;; This is done so the search page can refer to books by id rather than ISBN
-       ;; but should the page even be doing that?
-       do (setf (access elt :book)
-                book))
+                (quantity book)))
     data))

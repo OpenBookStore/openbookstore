@@ -182,7 +182,7 @@
          (req (get-url url))
          (parsed (parse req))
          ;; one node
-                                        ;: XXX: clss can be replaced by lQuery.
+         ;: XXX: clss can be replaced by lQuery.
          (node (clss:select ".resultsList" parsed))
          ;; direct children:
          (res (clss:select "> li" node)))
@@ -194,4 +194,6 @@
   "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...)."
   (let ((*datasource* datasource))
     ;; TODO datasource isn't actually used for some reason?
-    (cacle:cache-fetch *cache* query)))
+    ;; TODO mutation of results is not going to end well.
+    (cacle:with-cache-fetch result (*cache* query)
+      result)))
