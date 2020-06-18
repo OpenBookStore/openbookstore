@@ -58,6 +58,13 @@ Dev helpers:
   (with-output-to-string (s)
     (describe card s)))
 
+;;; TODO djula has no with tag, making it seemingly impossible to use
+;;; filters with an if tag?
+;;; hence this hack exists but this is unacceptable.
+(djula:def-filter :quantity-style (quantity)
+  (cond ((= 0 quantity) "")
+        ((plusp quantity) "is-success")
+        (t "is-danger is-light")))
 
 ;;; Load templates.
 (djula:add-template-directory

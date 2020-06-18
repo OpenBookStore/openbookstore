@@ -60,7 +60,7 @@
           <div class="level">
               <span class="level-item" name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
               {% if card.in-stock %}
-              <span class="tag level-item {% ifequal card.in-stock 0 %}{% else %} is-success {% endifequal %}"> x {{ card.in-stock}}</span>
+              <span class="tag level-item {{ card.in-stock | quantity-style }}"> x {{ card.in-stock}}</span>
               {% else %}
               <span class="tag level-item is-light"> x 0</span>
               {% endif %}
