@@ -140,45 +140,40 @@ Dev helpers:
                              :q q
                              :messages (list "Please enter an ISBN or some keywords.")))))
 
-;;; TODO is create really an appropriate name?
-;;; this is actually just managing the stock, ensuring that the book exists.
-;;; also what do we do if a book with the same isbn does alaready exist?
-(defroute card-create-route ("/card/create/:book-id" :method :post)
-    (q title isbn cover-url publisher)
-  (let ((card
-         (if (str:blank? book-id)
-             (create-book :title title :isbn isbn :cover-url cover-url
-                          :publisher publisher)
-             (mito:find-dao 'book :id book-id))))
+(defroute add-or-create-route ("/card/add-or-create/" :method :post)
+    (q title isbn cover-url publisher (updatep :parameter-type 'boolean
+                                               :init-form t))
+  (let* ((book (find-existing (make-book :title title :isbn isbn :cover-url cover-url
+                                         :publisher publisher)
+                              :update updatep)))
+    (save-book book)
     (djula:render-template* +card-create.html+ nil
                             :q q
-                            :card card
+                            :card book
                             :places-copies
-                            (bookshops.models::book-places-quantities card)
+                            (bookshops.models::book-places-quantities book)
                             :places (bookshops.models:find-places))))
 
 (defun redirect-to-search-result (query book)
   (hunchentoot:redirect
    (format nil "/search?q=~a#card~a" query (bookshops.models:isbn book))))
 
-(defroute card-add-stock-route ("/card/add-stock/:book-id" :method :post)
-    (q place-id quantity)
-  (let ((card (mito:find-dao 'book :id book-id))
-        (place (mito:find-dao 'place :id place-id))
-        (quantity (ignore-errors (parse-integer quantity))))
-    ;; TODO Validate quantity and place-id
+(defroute card-add-stock-route ("/card/add-stock/" :method :post)
+    (q place-id (quantity :parameter-type 'integer :init-form 1) isbn)
+  (let ((card (find-by :isbn isbn))
+        (place (find-place-by :id place-id)))
     (bookshops.models:add-to place card :quantity quantity)
     (redirect-to-search-result q card)))
 
-(defroute card-quick-add-route ("/card/quick-add-stock/:book-id" :method :post)
-    (q quantity title isbn cover-url publisher)
+(defroute card-quick-add-route ("/card/quick-add-stock/" :method :post)
+    (q (quantity :parameter-type 'integer :init-form 1) title isbn cover-url publisher
+       (updatep :parameter-type 'boolean :init-form t))
   (let ((book
-         (if (str:blank? book-id)
-             (create-book :title title :isbn isbn :cover-url cover-url
+         (find-existing
+             (make-book :title title :isbn isbn :cover-url cover-url
                           :publisher publisher)
-             (mito:find-dao 'book :id book-id)))
-        ;; TODO hard to debug because of this
-        (quantity (or (ignore-errors (parse-integer quantity)) 1)))
+             :update updatep)))
+    (save-book book)
     (bookshops.models:add-to (default-place) book :quantity quantity)
     (redirect-to-search-result q book)))
 

@@ -71,8 +71,9 @@
 
         <div id="stock-management" >
             <!-- TODO possibly use horizontal form addons from bulma instead -->
-            <form action="/card/add-stock/{{ card.id }}" method="POST" >
+            <form action="/card/add-stock/" method="POST" >
                 <input type="hidden" name="q" value="{{ q }}" />
+                <input type="hidden" name="isbn" value="{{ card.isbn }}"/>
                 <div class="field" >
                     <label class="label"> Place </label>
                     <select name="place-id" class="select" >
