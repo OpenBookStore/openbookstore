@@ -84,7 +84,7 @@
                 </div>
                 <div class="field">
                     <label class="label"> Quantity </label>
-                    <input name="quantity" type="text" id="quantity" placeholder="e.g. 5" />
+                    <input name="quantity" type="text" id="quantity-input" value="0"/>
                 </div>
                 <div class="field is-grouped" >
                     <button action="submit" class="button is-link" >Add</button>
@@ -100,34 +100,14 @@
 </div>
 
 <script>
-  async function card_add_one(id) {
-    let data = new FormData();
-    data.set("id", id);
-    const resp = await fetch('/api/card/add', {
-      method: 'POST',
-      body: data
-    })
-      .then(data => console.log(data));
+ window.addEventListener('load', (event) => {
+     const quantityInput = document.getElementById('quantity-input');
+     quantityInput.focus();
+     // https://stackoverflow.com/questions/511088/use-javascript-to-place-cursor-at-end-of-text-in-text-input-element
+     quantityInput.setSelectionRange(0, -1);
 
-    // either update the field...
-    /* let elt = document.getElementById("quantity"); */
-    /* here update the quantity */
-    /* elt.innerText = quantity; */
-    /* either do a page reload */
-    location.reload();  // nearly invisible
-  }
-
-  async function card_remove_one(id) {
-    let data = new FormData();
-    data.set("id", id);
-    const resp = await fetch('/api/card/remove', {
-      method: 'POST',
-      body: data
-    })
-      .then(data => console.log(data));
-
-    location.reload();  // nearly invisible
-  }
+ });
+ console.log('what');
 </script>
 
 {% endblock %}

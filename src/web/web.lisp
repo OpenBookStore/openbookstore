@@ -159,7 +159,7 @@ Dev helpers:
    (format nil "/search?q=~a#card~a" query (bookshops.models:isbn book))))
 
 (defroute card-add-stock-route ("/card/add-stock/" :method :post)
-    (q place-id (quantity :parameter-type 'integer :init-form 1) isbn)
+    (q place-id (quantity :parameter-type 'integer :init-form 0) isbn)
   (let ((card (find-by :isbn isbn))
         (place (find-place-by :id place-id)))
     (bookshops.models:add-to place card :quantity quantity)
