@@ -61,11 +61,8 @@
       <div class="media-right">
           <div class="level">
               <span class="level-item" name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
-              {% if card.in-stock %}
-              <span class="tag level-item {{ card.in-stock | quantity-style }}"> x {{ card.in-stock}}</span>
-              {% else %}
-              <span class="tag level-item is-light"> x 0</span>
-              {% endif %}
+              <span class="tag level-item {{ card | quantity | quantity-style }}">
+                  x {{ card | quantity }}</span>
           </div>
 
         <!-- TODO how to handle duplication of forms? how to stop them getting out of sync

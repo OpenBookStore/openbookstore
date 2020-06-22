@@ -49,7 +49,9 @@ Dev helpers:
           (slug:slugify (title card))))
 
 (djula:def-filter :quantity (card)
-  (format nil "~a" (quantity card)))
+  (typecase card
+    (bookshops.models:book (quantity card))
+    (t (or (access:access card :in-stock) 0))))
 
 (djula:def-filter :name (obj)
   (format nil "~a" (name obj)))
