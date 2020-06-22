@@ -150,7 +150,8 @@ Dev helpers:
 (defroute add-or-create-route ("/card/add-or-create/" :method :post)
     (q title isbn cover-url publisher (updatep :parameter-type 'boolean
                                                :init-form t)
-       (book-id :parameter-type 'string :init-form ""))
+       (book-id :parameter-type 'string :init-form "")
+       (referer-route :parameter-type 'string :init-form "/search"))
   (let* ((book
           (if (str:blank? book-id)
               (find-existing (make-book :title title :isbn isbn :cover-url cover-url
@@ -161,25 +162,28 @@ Dev helpers:
     (djula:render-template* +card-page.html+ nil
                             :q q
                             :card book
+                            :referer-route referer-route
                             :places-copies
                             (bookshops.models::book-places-quantities book)
                             :places (bookshops.models:find-places))))
 
-(defun redirect-to-search-result (query book)
+(defun redirect-to-search-result (route query book)
   (hunchentoot:redirect
-   (format nil "/search?q=~a#card~a" query (bookshops.models::object-id book))))
+   (format nil "~a?q=~a#card~a" route  query (bookshops.models::object-id book))))
 
 (defroute card-add-stock-route ("/card/add-stock/" :method :post)
-    (q place-id (quantity :parameter-type 'integer :init-form 0) isbn)
+    (q place-id (quantity :parameter-type 'integer :init-form 0) isbn
+       (referer-route :parameter-type 'string :init-form "/search"))
   (let ((card (find-by :isbn isbn))
         (place (find-place-by :id place-id)))
     (bookshops.models:add-to place card :quantity quantity)
-    (redirect-to-search-result q card)))
+    (redirect-to-search-result referer-route q card)))
 
 (defroute card-quick-add-route ("/card/quick-add-stock/" :method :post)
     (q (quantity :parameter-type 'integer :init-form 1) title isbn cover-url publisher
        (updatep :parameter-type 'boolean :init-form t)
-       (book-id :parameter-type 'string :init-form ""))
+       (book-id :parameter-type 'string :init-form "")
+       (referer-route :parameter-type 'string :init-form "/search"))
   (let ((book
          (if (str:blank? book-id)
              (find-existing
@@ -189,7 +193,7 @@ Dev helpers:
              (find-by :id book-id))))
     (save-book book)
     (bookshops.models:add-to (default-place) book :quantity quantity)
-    (redirect-to-search-result q book)))
+    (redirect-to-search-result referer-route q book)))
 
 (defroute card-page ("/card/:slug") (&get raw)
   "Show a card.

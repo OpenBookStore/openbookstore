@@ -71,6 +71,7 @@
             {% block card_button_row %}
             <form action="/card/add-or-create/" method="POST" class="level-item">
                 <input name="q" type="hidden" value="{{ q }}">
+                <input name="referer-route" type="hidden" value="{{ route }}">
                 <input name="book-id"  type="hidden" value="{{ card.id ]}">
                 <input name="title" type="hidden" value="{{ card.title }}">
                 <input name="title" type="hidden" value="{{ card.title }}">
@@ -82,6 +83,7 @@
             <form action="/card/quick-add-stock/" method="POST" class="level-item">
                 <input name="quantity" type="hidden" value="1" />
                 <input name="q" type="hidden" value="{{ q }}">
+                <input name="referer-route" type="hidden" value="{{ route }}">
                 <input name="book-id" type="hidden" value="{{ card.id }}" />
                 <input name="title" type="hidden" value="{{ card.title }}" />
                 <input name="isbn" type="hidden"  value="{{ card.isbn }}" />
