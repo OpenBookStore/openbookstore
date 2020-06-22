@@ -78,6 +78,29 @@ Dev helpers:
 
 (defparameter +404.html+ (djula:compile-template* "404.html"))
 
+;;; search
+;;; TODO find somewhere better to put search functionatlity this.
+(defvar *search-cache* (cacle:make-cache 5000 '%search-datasources :test 'equal
+                                         :lifetime (* 24 3600)))
+
+(defun %search-datasources (q)
+  (declare (type string q))
+  (cond
+    ;; ISBN? Dilicom search.
+    ((bookshops.utils::isbn-p q)
+     (dilicom:search-books (list q)))
+
+    ;; Free search? Other datasources.
+    ((not (str:blank? q))
+     (fr:books q))
+
+    (t nil)))
+
+(defun search-datasources (query)
+  (cacle:with-cache-fetch res (*search-cache* query)
+    (when res
+      (bookshops.models::check-in-stock res))))
+
 ;;; Routes.
 (defroute home-route ("/") ()
   (djula:render-template* +dashboard.html+ nil
@@ -101,51 +124,37 @@ Dev helpers:
     (djula:render-template* +stock.html+ nil
                             :route "/stock"
                             :cards cards
+                            :nb-results (length cards)
+                            :q q
                             :data (list :nb-titles (bookshops.models:count-book)
                                         :nb-books (bookshops.models::total-quantities)
                                         :nb-titles-negative (length
                                                              (bookshops.models::negative-quantities))))))
 
 (defroute search-route ("/search") (&get q)
-  (cond
-    ;; ISBN? Dilicom search.
-    ((bookshops.utils::isbn-p q)
-     (let* ((res (dilicom:search-books (list q)))
-            ;; The template accepts non-book objects,
-            ;; it is not necessary to transform the data.
-            ;; (cards (bookshops.models::data2books res))
-            (cards (bookshops.models::check-in-stock res)))
-       (djula:render-template* +search.html+ nil
-                               :route "/search"
-                               :q q
-                               :cards cards
-                               :nb-results (length cards)
-                               :title (format nil "OpenBookstore - search: ~a" q))))
-
-    ;; Free search? Other datasources.
-    ((not (str:blank? q))
-     (let* ((res (fr:books q))
-            (cards (bookshops.models::check-in-stock res)))
-       (djula:render-template* +search.html+ nil
-                               :route "/search"
-                               :q q
-                               :cards cards
-                               :nb-results (length cards)
-                               :title (format nil "OpenBookstore - search: ~a" q))))
-
-    ;;
-    (t
-     (djula:render-template* +search.html+ nil
-                             :route "/search"
-                             :q q
-                             :messages (list "Please enter an ISBN or some keywords.")))))
+  (let ((cards (and q (search-datasources q))))
+    (if cards
+        (djula:render-template* +search.html+ nil
+                                :route "/search"
+                                :q q
+                                :cards cards
+                                :nb-results (length cards)
+                                :title (format nil "OpenBookstore - search: ~a" q))
+        (djula:render-template* +search.html+ nil
+                                :route "/search"
+                                :q q
+                                :messages (list "Please enter an ISBN or some keywords.")))))
 
 (defroute add-or-create-route ("/card/add-or-create/" :method :post)
     (q title isbn cover-url publisher (updatep :parameter-type 'boolean
-                                               :init-form t))
-  (let* ((book (find-existing (make-book :title title :isbn isbn :cover-url cover-url
-                                         :publisher publisher)
-                              :update updatep)))
+                                               :init-form t)
+       (book-id :parameter-type 'string :init-form ""))
+  (let* ((book
+          (if (str:blank? book-id)
+              (find-existing (make-book :title title :isbn isbn :cover-url cover-url
+                                        :publisher publisher)
+                             :update updatep)
+              (find-by :id book-id))))
     (save-book book)
     (djula:render-template* +card-page.html+ nil
                             :q q
@@ -156,7 +165,7 @@ Dev helpers:
 
 (defun redirect-to-search-result (query book)
   (hunchentoot:redirect
-   (format nil "/search?q=~a#card~a" query (bookshops.models:isbn book))))
+   (format nil "/search?q=~a#card~a" query (bookshops.models::object-id book))))
 
 (defroute card-add-stock-route ("/card/add-stock/" :method :post)
     (q place-id (quantity :parameter-type 'integer :init-form 0) isbn)
@@ -167,12 +176,15 @@ Dev helpers:
 
 (defroute card-quick-add-route ("/card/quick-add-stock/" :method :post)
     (q (quantity :parameter-type 'integer :init-form 1) title isbn cover-url publisher
-       (updatep :parameter-type 'boolean :init-form t))
+       (updatep :parameter-type 'boolean :init-form t)
+       (book-id :parameter-type 'string :init-form ""))
   (let ((book
-         (find-existing
-             (make-book :title title :isbn isbn :cover-url cover-url
-                          :publisher publisher)
-             :update updatep)))
+         (if (str:blank? book-id)
+             (find-existing
+              (make-book :title title :isbn isbn :cover-url cover-url
+                         :publisher publisher)
+              :update updatep)
+             (find-by :id book-id))))
     (save-book book)
     (bookshops.models:add-to (default-place) book :quantity quantity)
     (redirect-to-search-result q book)))

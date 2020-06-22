@@ -34,5 +34,7 @@
                        :test #'string-equal)
        ;; do (format t "book isbn: ~a, elt found: ~a~&" (isbn book) elt)
        do (setf (access elt :in-stock)
-                (quantity book)))
+                (quantity book))
+       do (setf (access elt :id)
+                (object-id book)))
     data))

@@ -15,7 +15,6 @@
 ;; Print hash-tables readably (used for debug logs).
 (toggle-print-hash-table)
 
-
 (defparameter *french-search* "http://www.librairie-de-paris.fr/listeliv.php?MOTS={QUERY}&SUPPORT=&RECHERCHE=simple&TRI=&DISPOCHE=&RAYONS=&LIVREANCIEN=2&CSR="
   "French source of books. The {query} string will be replaced by the list
   of '+' separated search keywords.")
@@ -30,9 +29,6 @@
 ;;; TODO where is this used?
 (defvar *last-results* nil
   "List of last results by `books` (objects).")
-
-;;; TODO allow configuration of cache?
-(defvar *cache* (cacle:make-cache 100 '%books :test 'equal :lifetime (* 24 3600)))
 
 (defparameter *debug* nil "xxx: just use (log:debug)")
 
@@ -176,8 +172,8 @@
 
 (defparameter *last-parsing-res* nil "for debug pursposes.")
 
-(defun %books (query)
-  "provider for the cache."
+(defun books (query)
+  "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...)."
   (let* ((url (build-url query))
          (req (get-url url))
          (parsed (parse req))
@@ -189,11 +185,3 @@
     (setf *last-parsing-res* (coerce res 'list))
     (values (setf *last-results* (map 'list #'book-info res))
             1)))
-
-(defun books (query &key (datasource *datasource*))
-  "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...)."
-  (let ((*datasource* datasource))
-    ;; TODO datasource isn't actually used for some reason?
-    ;; TODO mutation of results is not going to end well.
-    (cacle:with-cache-fetch result (*cache* query)
-      result)))
