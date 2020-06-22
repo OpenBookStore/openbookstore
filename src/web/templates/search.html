@@ -61,7 +61,8 @@
       <div class="media-right">
           <div class="level">
               <span class="level-item" name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
-              <span class="tag level-item {{ card | quantity | quantity-style }}">
+              <span class="tag level-item
+{{ card | quantity | quantity-style:(:positive "is-success" :negative "is-danger is-light" :zero "") }}">
                   x {{ card | quantity }}</span>
           </div>
 

@@ -60,13 +60,12 @@ Dev helpers:
   (with-output-to-string (s)
     (describe card s)))
 
-;;; TODO djula has no with tag, making it seemingly impossible to use
-;;; filters with an if tag?
-;;; hence this hack exists but this is unacceptable.
-(djula:def-filter :quantity-style (quantity)
-  (cond ((= 0 quantity) "")
-        ((plusp quantity) "is-success")
-        (t "is-danger is-light")))
+;;; stolen options read-from-string idea from the djula time filter
+(djula:def-filter :quantity-style (quantity raw-options)
+  (let ((options (read-from-string raw-options)))
+    (cond ((= 0 quantity) (access:access options :zero))
+          ((plusp quantity) (access:access options :positive))
+          (t (access:access options :negative)))))
 
 ;;; Load templates.
 (djula:add-template-directory
