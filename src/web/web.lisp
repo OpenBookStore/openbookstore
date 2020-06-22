@@ -190,6 +190,8 @@ Dev helpers:
        (djula:render-template* +404.html+ nil))
       (card
        (djula:render-template* +card-stock.html+ nil
+                               :messages nil
+                               :route "/stock"
                                :card card
                                :places-copies (bookshops.models::book-places-quantities card)
                                :raw raw))

@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<form action="/search">
+<form action="{{ route }}">
   <div class="field">
     <label class="label"> Search </label>
     <div class="control">
@@ -43,6 +43,7 @@
         </p>
       </div>
       <div class="media-content">
+        {% block card_content %}
         <div class="content">
           <a onclick="alert('clicked')">
             <span class="title is-6"> {{ card.title }} </span>
@@ -55,6 +56,7 @@
             {% endif %}
           </p>
         </div>
+        {% endblock card_content %}
       </div>
       <div class="media-right">
           <div class="level">
@@ -69,6 +71,7 @@
         <!-- TODO how to handle duplication of forms? how to stop them getting out of sync
              with the end point parameters too? -->
         <div class="level">
+            {% block card_button_row %}
             <form action="/card/add-or-create/" method="POST" class="level-item">
                 <input name="q" type="hidden" value="{{ q }}">
                 <input name="title" type="hidden" value="{{ card.title }}">
@@ -86,6 +89,7 @@
                 <input name="publisher" type="hidden" value="{{ card.publisher }}" />
                 <input type="submit" class="button" value="+1">
             </form>
+            {% endblock card_button_row %}
         </div>
       </div>
 
