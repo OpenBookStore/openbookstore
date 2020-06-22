@@ -73,8 +73,8 @@ Dev helpers:
 (defparameter +dashboard.html+ (djula:compile-template* "dashboard.html"))
 (defparameter +search.html+ (djula:compile-template* "search.html"))
 (defparameter +stock.html+ (djula:compile-template* "stock.html"))
-(defparameter +card-page.html+ (djula:compile-template* "card-page.html"))
 (defparameter +card-create.html+ (djula:compile-template* "card-create.html"))
+(defparameter +card-stock.html+ (djula:compile-template* "card-stock.html"))
 
 (defparameter +404.html+ (djula:compile-template* "404.html"))
 
@@ -189,7 +189,7 @@ Dev helpers:
       ((null card-id)
        (djula:render-template* +404.html+ nil))
       (card
-       (djula:render-template* +card-page.html+ nil
+       (djula:render-template* +card-stock.html+ nil
                                :card card
                                :places-copies (bookshops.models::book-places-quantities card)
                                :raw raw))

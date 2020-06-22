@@ -3,102 +3,106 @@
 {% block content %}
 
 <div class="container is-fullheight" style="margin-bottom: 10em">
-  <div class="section">
-    <div class="columns is-centered">
-      <div class="column is-2">
-        <div class="card" id="{{ card.id }}">
-          <div class="card-image">
-            <figure class="image">
-              <img src="{{ card.cover-url }}" alt="Couverture de {{ card.title }}"/>
-            </figure>
-          </div>
-        </div>
-      </div>
-
-      <div class="card-content column">
-        <div class="media">
-          <span class="media-content">
-
-
-            <p class="title is-4 no-padding">
-              <a href="{{ card | url }}" style="color: black;">
-                {{ card.title }}
-              </a>
-            </p>
-            {% if card.authors %}
-            <p><span><a href="/search?q={{ card.authors }}">{{ card.authors | capfirst }}</a></span></p>
-            {% endif %}
-
-            {% if card.publisher %}
-            <p class="">{{ card.publisher | capfirst }}</p>
-            {% endif %}
-
-            {% if card.shelf %}
-            <p>
-              <a href="/search?rayon={{ card.shelf_id }}">
-                <span class="tag" title="{{ card.shelf }}"> {{ card.shelf | truncatechars:27 }} </span>
-              </a>
-            </p>
-            {% endif %}
-
-            {% if card.isbn %}
-            <div class="has-text-grey-light"> {{ card.isbn }} </div>
-            {% endif %}
-
-            {% if card.price %}
-            <div class="title is-6"> {{ card.price | price }} €</div>
-            {% endif %}
-
-          </span>
-        </div>
-
-        <div id="quantity">
-          En stock: {{ card | quantity }}
-        </div>
-
-        <table class="table">
-          {% for place-copy in places-copies %}
-          <tr>
-            <td>
-              {{ place-copy | name }}
-            </td>
-            <td>
-                {{ place-copy | quantity }}
-            </td>
-          </tr>
-          {% endfor %}
-        </table>
-
-        <div id="stock-management" >
-            <!-- TODO possibly use horizontal form addons from bulma instead -->
-            <form action="/card/add-stock/" method="POST" >
-                <input type="hidden" name="q" value="{{ q }}" />
-                <input type="hidden" name="isbn" value="{{ card.isbn }}"/>
-                <div class="field" >
-                    <label class="label"> Place </label>
-                    <select name="place-id" class="select" >
-                        {% for place in places %}
-                        <option value="{{ place.id }}">{{ place.name }}</option>
-                        {% endfor %}
-                    </select>
+    <div class="section">
+        <div class="columns is-centered">
+            <div class="column is-2">
+                <div class="card" id="{{ card.id }}">
+                    <div class="card-image">
+                        <figure class="image">
+                            <img src="{{ card.cover-url }}" alt="Couverture de {{ card.title }}"/>
+                        </figure>
+                    </div>
                 </div>
-                <div class="field">
-                    <label class="label"> Quantity </label>
-                    <input name="quantity" type="text" id="quantity-input" value="0"/>
-                </div>
-                <div class="field is-grouped" >
-                    <button action="submit" class="button is-link" >Add</button>
-                </div>
-            </form>
-        </div>
+            </div>
 
-      </div>
+            <div class="card-content column">
+                <div class="media">
+                    <span class="media-content">
+
+                        {% block media_header %}
+                        {% endblock media_header %}
+                        <p class="title is-4 no-padding">
+                            <a href="{{ card | url }}" style="color: black;">
+                                {{ card.title }}
+                            </a>
+                        </p>
+                        {% if card.authors %}
+                        <p><span><a href="/search?q={{ card.authors }}">{{ card.authors | capfirst }}</a></span></p>
+                        {% endif %}
+
+                        {% if card.publisher %}
+                        <p class="">{{ card.publisher | capfirst }}</p>
+                        {% endif %}
+
+                        {% if card.shelf %}
+                        <p>
+                            <a href="/search?rayon={{ card.shelf_id }}">
+                                <span class="tag" title="{{ card.shelf }}"> {{ card.shelf | truncatechars:27 }} </span>
+                            </a>
+                        </p>
+                        {% endif %}
+
+                        {% if card.isbn %}
+                        <div class="has-text-grey-light"> {{ card.isbn }} </div>
+                        {% endif %}
+
+                        {% if card.price %}
+                        <div class="title is-6"> {{ card.price | price }} €</div>
+                        {% endif %}
+
+                    </span>
+                </div>
+
+                <div id="quantity">
+                    En stock: {{ card | quantity }}
+                </div>
+
+                <table class="table">
+                    {% for place-copy in places-copies %}
+                    <tr>
+                        <td>
+                            {{ place-copy | name }}
+                        </td>
+                        <td>
+                            {{ place-copy | quantity }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                {% block subinfo %}
+                <div id="stock-management" >
+                    <!-- TODO possibly use horizontal form addons from bulma instead -->
+                    <form action="/card/add-stock/" method="POST" >
+                        <input type="hidden" name="q" value="{{ q }}" />
+                        <input type="hidden" name="isbn" value="{{ card.isbn }}"/>
+                        <div class="field" >
+                            <label class="label"> Place </label>
+                            <select name="place-id" class="select" >
+                                {% for place in places %}
+                                <option value="{{ place.id }}">{{ place.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label class="label"> Quantity </label>
+                            <input name="quantity" type="text" id="quantity-input" value="0"/>
+                        </div>
+                        <div class="field is-grouped" >
+                            <button action="submit" class="button is-link" >Add</button>
+                        </div>
+                    </form>
+                </div>
+                {% endblock subinfo %}
+
+            </div>
+
+        </div>
 
     </div>
-
-  </div>
 </div>
 
+{% block script %}
 <script>
  window.addEventListener('load', (event) => {
      const quantityInput = document.getElementById('quantity-input');
@@ -106,5 +110,6 @@
      quantityInput.setSelectionRange(0, -1);
  });
 </script>
+{% endblock script %}
 
 {% endblock %}

@@ -19,9 +19,8 @@
         <div class="media">
           <span class="media-content">
 
-            <button class="button" onclick="card_add_one({{ card.id }})">+1</button>
-            <button class="button" onclick="card_remove_one({{ card.id }})">-1</button>
-
+            {% block media_header %}
+            {% endblock %}
             <p class="title is-4 no-padding">
               <a href="{{ card | url }}" style="color: black;">
                 {{ card.title }}
@@ -44,11 +43,11 @@
             {% endif %}
 
             {% if card.isbn %}
-	    <div class="has-text-grey-light"> {{ card.isbn }} </div>
+            <div class="has-text-grey-light"> {{ card.isbn }} </div>
             {% endif %}
 
             {% if card.price %}
-	    <div class="title is-6"> {{ card.price | price }} €</div>
+            <div class="title is-6"> {{ card.price | price }} €</div>
             {% endif %}
 
           </span>
@@ -73,45 +72,17 @@
 
       </div>
     </div>
-
+    {% block media_content %}
     {% if raw == "t" %}
     <pre>
     {{ card | describe }}
     </pre>
     {% endif %}
+    {% block media_content %}
 
   </div>
 </div>
 
-<script>
-  async function card_add_one(id) {
-    let data = new FormData();
-    data.set("id", id);
-    const resp = await fetch('/api/card/add', {
-      method: 'POST',
-      body: data
-    })
-      .then(data => console.log(data));
-
-    // either update the field...
-    /* let elt = document.getElementById("quantity"); */
-    /* here update the quantity */
-    /* elt.innerText = quantity; */
-    /* either do a page reload */
-    location.reload();  // nearly invisible
-  }
-
-  async function card_remove_one(id) {
-    let data = new FormData();
-    data.set("id", id);
-    const resp = await fetch('/api/card/remove', {
-      method: 'POST',
-      body: data
-    })
-      .then(data => console.log(data));
-
-    location.reload();  // nearly invisible
-  }
-</script>
-
+{% block script %}
+{% endblock %}
 {% endblock %}
