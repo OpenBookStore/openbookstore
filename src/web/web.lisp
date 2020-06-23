@@ -51,6 +51,7 @@ Dev helpers:
 (djula:def-filter :quantity (card)
   (typecase card
     (bookshops.models:book (quantity card))
+    (bookshops.models:place-copies (bookshops.models:place-copy-quantity card))
     (t (or (access:access card :in-stock) 0))))
 
 (djula:def-filter :name (obj)

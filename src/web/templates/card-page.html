@@ -57,9 +57,9 @@
                     En stock: {{ card | quantity }}
                 </div>
 
-                <table class="table">
+                <table id="place-copies-table" class="table">
                     {% for place-copy in places-copies %}
-                    <tr>
+                    <tr id="place-copy{{ place-copy.id }}">
                         <td>
                             {{ place-copy | name }}
                         </td>
