@@ -26,7 +26,6 @@
 (defparameter *datasource* *french-search*
   "The default data source.")
 
-;;; TODO where is this used?
 (defvar *last-results* nil
   "List of last results by `books` (objects).")
 
