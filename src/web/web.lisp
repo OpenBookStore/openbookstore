@@ -168,7 +168,9 @@ Dev helpers:
 
 (defun redirect-to-search-result (route query book)
   (hunchentoot:redirect
-   (format nil "~a?q=~a#card~a" route  query (bookshops.models::object-id book))))
+   (format nil "~a~@[?q=~a~]#card~a" route
+           (and (str:non-empty-string-p query) query)
+           (bookshops.models::object-id book))))
 
 (defroute card-add-stock-route ("/card/add-stock/" :method :post)
     (q place-id (quantity :parameter-type 'integer :init-form 0) isbn
