@@ -183,5 +183,4 @@
          ;; direct children:
          (res (clss:select "> li" node)))
     (setf *last-parsing-res* (coerce res 'list))
-    (values (setf *last-results* (map 'list #'book-info res))
-            1)))
+    (setf *last-results* (map 'list #'book-info res))))
