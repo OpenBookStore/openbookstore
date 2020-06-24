@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if current-user %}
+<div >
+    <p>Unauthorized</p>
+    <p>You do not have the roles required to access this page {{ roles }}</p>
+</div>
+{% else %}
+<p> You are not logged in</p>
+{% endif %}
+
+{% endblock %}

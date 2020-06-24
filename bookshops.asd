@@ -14,6 +14,7 @@
                :clss ;; might do with lquery only
                ;; DB
                :mito
+               :mito-auth
                ;; readline
                :unix-opts
                :replic
@@ -50,6 +51,7 @@
                  (:file "database")
                  (:file "models")
                  (:file "models-utils")
+                 (:file "authentication")
                  (:file "baskets")
                  (:file "contacts")
                  (:file "bookshops")
@@ -62,7 +64,9 @@
 
                (:module "src/web"
                 :components
-                ((:file "web")
+                ((:file "package")
+                 (:file "authentication")
+                 (:file "web")
                  (:file "api"))))
 
   :build-operation "program-op"

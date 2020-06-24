@@ -1,16 +1,3 @@
-(defpackage bookshops-web
-  (:use :cl
-        :bookshops.models
-        :hunchentoot
-        :log4cl)
-  (:import-from :easy-routes
-                :routes-acceptor
-                :defroute)
-  (:import-from :bookshops.datasources.dilicom
-                :search-books)
-  (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
-                    (#:fr #:bookshops.datasources.scraper-fr)))
-
 (in-package :bookshops-web)
 
 #|
@@ -109,12 +96,14 @@ Dev helpers:
 (defroute home-route ("/") ()
   (djula:render-template* +dashboard.html+ nil
                           :route "/"
+                          :current-user (current-user)
                           :data (list :nb-titles (bookshops.models:count-book)
                                       :nb-books (bookshops.models::total-quantities)
                                       :nb-titles-negative (length
                                                            (bookshops.models::negative-quantities)))))
 
-(defroute stock-route ("/stock") (&get q)
+(defroute stock-route ("/stock" :decorators ((@check-roles q(:stock-owner))))
+    (&get q)
   (let ((cards (cond
                  ((bookshops.models::isbn-p q)
                   (list (find-by :isbn q)))
