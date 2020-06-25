@@ -36,6 +36,8 @@ Dev helpers:
 (defvar *server* nil
   "Current instance of easy-acceptor.")
 
+(defparameter *port* 4242)
+
 ;;; Djula filters.
 (djula:def-filter :price (val)
   (format nil "~,2F" val))
@@ -219,10 +221,11 @@ Dev helpers:
        (djula:render-template* +404.html+ nil)))))
 
 
-(defun start-app (&key (port 4242))
+(defun start-app (&key (port *port*))
   (bookshops.models:connect)
   (setf *server* (make-instance 'routes-acceptor :port port))
-  (start *server*))
+  (start *server*)
+  (uiop:format! t "~&Application started on port ~a.~&" port))
 
 (defun stop-app ()
   ;; disconnect db ?

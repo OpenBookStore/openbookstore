@@ -79,6 +79,30 @@ At any moment, quit the current prompt with `C-d` (control-d) or use:
 
 ![](search-add.png)
 
+### Lisp REPL
+
+Load `bookshops.asd` (C-c C-k in Slime), Quickload the system
+(`(ql:quickload "bookshops")`), then initialize the DB connection and
+the translations with `(bookshops:init)`, then explore commands in
+`bookshops.commands`, like `stock`.
+
+You might need to enable terminal colors with `M-x slime-repl-ansi-on` ([see here](https://github.com/enriquefernandez/slime-repl-ansi-color)).
+
+### Web UI
+
+Run it with:
+
+    make run
+
+aka `sbcl --load run.lisp`.
+
+Set the port with the environment variable `OBS_PORT` (defaults to 4242).
+
+Quit with `C-d`.
+
+From the REPL, call `(bookshops-web::start-app :port 4242)`.
+
+
 ### GUI
 
 A useless Tk GUI built for learning purposes.
@@ -88,15 +112,6 @@ A useless Tk GUI built for learning purposes.
 or from the REPL: load `bookshops/gui` and run `bookshops.gui:main`.
 
 You can't do much !
-
-### Lisp REPL
-
-Load `bookshops.asd` (C-c C-k in Slime), Quickload the system
-(`(ql:quickload "bookshops")`), then initialize the DB connection and
-the translations with `(bookshops:init)`, then explore commands in
-`bookshops.commands`, like `stock`.
-
-You might need to enable terminal colors with `M-x slime-repl-ansi-on` ([see here](https://github.com/enriquefernandez/slime-repl-ansi-color)).
 
 
 ### Bibliographic search, adding books to your stock

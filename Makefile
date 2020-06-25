@@ -28,6 +28,8 @@ install:
 	git clone https://github.com/vindarel/replic/ ~/quicklisp/local-projects/replic/
 	git clone https://github.com/vindarel/cl-str/ ~/quicklisp/local-projects/cl-str/
 
+run:
+	sbcl --load run.lisp
 
 # Workflow:
 # - update
