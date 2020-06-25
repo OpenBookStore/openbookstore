@@ -34,6 +34,7 @@
            :default-place
            :add-to :remove-from :move
            :*current-place*
+           :place-copy-quantity
            ;; utils
            :print-quantity-red-green :negative-quantities
            :erase-metaclass-from))

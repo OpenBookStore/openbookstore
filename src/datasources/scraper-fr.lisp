@@ -15,7 +15,6 @@
 ;; Print hash-tables readably (used for debug logs).
 (toggle-print-hash-table)
 
-
 (defparameter *french-search* "http://www.librairie-de-paris.fr/listeliv.php?MOTS={QUERY}&SUPPORT=&RECHERCHE=simple&TRI=&DISPOCHE=&RAYONS=&LIVREANCIEN=2&CSR="
   "French source of books. The {query} string will be replaced by the list
   of '+' separated search keywords.")
@@ -172,9 +171,8 @@
 
 (defparameter *last-parsing-res* nil "for debug pursposes.")
 
-(defun books (query &key (datasource *datasource*))
+(defun books (query)
   "From a search query (str), return a list of book objects (with a title, a price, a date-publication, authors,...)."
-  (declare (ignorable datasource))
   (let* ((url (build-url query))
          (req (get-url url))
          (parsed (parse req))

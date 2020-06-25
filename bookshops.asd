@@ -24,6 +24,8 @@
                :local-time-duration
                :cl-ppcre
                :parse-float
+               ;; cache
+               :cacle
 
                ;; web app
                :hunchentoot
