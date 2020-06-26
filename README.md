@@ -325,4 +325,4 @@ To test DB operations, use our macro `with-empty-db`.
 
 # Licence
 
-GPLv3
+AGPLv3
