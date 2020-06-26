@@ -5,15 +5,15 @@ In development, don't look.
 ![](https://gitlab.com/vindarel/cl-bookshops/badges/master/pipeline.svg)
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-
 **Table of Contents**
 
 - [Bookshops](#bookshops)
     - [Installation](#installation)
     - [Usage](#usage)
         - [Command line](#command-line)
-        - [GUI](#gui)
         - [Lisp REPL](#lisp-repl)
+        - [Web UI](#web-ui)
+        - [GUI](#gui)
         - [Bibliographic search, adding books to your stock](#bibliographic-search-adding-books-to-your-stock)
         - [Seeing the stock, pagination](#seeing-the-stock-pagination)
         - [Places](#places)
