@@ -102,7 +102,7 @@ Dev helpers:
                                       :nb-titles-negative (length
                                                            (bookshops.models::negative-quantities)))))
 
-(defroute stock-route ("/stock" :decorators ((@check-roles q(:stock-owner))))
+(defroute stock-route ("/stock" :decorators ((@check-roles (:stock-owner))))
     (&get q)
   (let ((cards (cond
                  ((bookshops.models::isbn-p q)
@@ -116,6 +116,7 @@ Dev helpers:
                           (min 50 (bookshops.models::count-book)))))))
     (djula:render-template* +stock.html+ nil
                             :route "/stock"
+                            :current-user (current-user)
                             :cards cards
                             :nb-results (length cards)
                             :q q

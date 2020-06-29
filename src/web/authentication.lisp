@@ -28,8 +28,7 @@
     ((email :parameter-type 'string :init-form "")
      (password :parameter-type 'string :init-form ""))
   (login email password)
-  (djula:render-template* +login.html+ nil
-                          :current-user (current-user)))
+  (hunchentoot:redirect "/"))
 
 (defroute post-logout-route ("/logout" :method :post) ()
   (logout)
@@ -49,3 +48,6 @@
          (djula:render-template* +permission-denied.html+ nil
                                  :roles roles
                                  :current-user current-user)))))
+
+;;; TODO introduce a render-template macro that will provide the current-user
+;;; argument already for convenience
