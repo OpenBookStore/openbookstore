@@ -79,13 +79,13 @@ Dev helpers:
   (cond
     ;; ISBN? Dilicom search.
     ((bookshops.utils::isbn-p q)
-     (dilicom:search-books (list q)))
+     (values (dilicom:search-books (list q)) 1))
 
     ;; Free search? Other datasources.
     ((not (str:blank? q))
-     (fr:books q))
+     (values (fr:books q) 1))
 
-    (t nil)))
+    (t (values nil 1))))
 
 (defun search-datasources (query)
   (cacle:with-cache-fetch res (*search-cache* query)
