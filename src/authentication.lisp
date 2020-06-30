@@ -31,9 +31,6 @@
     (mapcar #'user-role-role
             (mito:retrieve-dao 'user-role :user user))))
 
-(defmacro user-role-p (user role)
-  `(member ,role (user-roles ,user)))
-
 (defun authorize (user &rest roles)
   (= 0 (length (set-difference roles (user-roles user)))))
 
