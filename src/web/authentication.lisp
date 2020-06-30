@@ -19,6 +19,8 @@
 (djula:def-filter :user-name (user)
   (bookshops.models::user-name user))
 
+(djula:def-filter :user-roles (user)
+  (format nil "~{~(~a~)~^, ~}" (bookshops.models::user-roles user)))
 
 (defroute login-route ("/login" :method :get) ()
   (djula:render-template* +login.html+ nil
@@ -46,7 +48,7 @@
 
       (t (setf (hunchentoot:return-code*) hunchentoot:+http-forbidden+)
          (djula:render-template* +permission-denied.html+ nil
-                                 :roles roles
+                                 :roles (format nil "~{~(~a~)~^, ~}" roles)
                                  :current-user current-user)))))
 
 ;;; TODO introduce a render-template macro that will provide the current-user

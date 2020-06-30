@@ -3,12 +3,23 @@
 {% block content %}
 
 {% if current-user %}
-<div >
-    <p>Unauthorized</p>
-    <p>You do not have the roles required to access this page {{ roles }}</p>
-</div>
+<section class="hero is-warning">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title" >Unauthorized</h1>
+            <h2>You do not have the roles required to access this page: {{ roles }}</h2>
+        </div>
+    </div>
+</section>
 {% else %}
-<p> You are not logged in</p>
+<section class="hero is-info">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title" >You are logged out</h1>
+            <h2>You will need to login to access this page</h2>
+        </div>
+    </div>
+</section>
 {% endif %}
 
 {% endblock %}
