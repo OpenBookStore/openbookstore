@@ -11,8 +11,6 @@
 (defun logout ()
   (setf (hunchentoot:session-value :user) nil))
 
-(djula:add-template-directory
- (asdf:system-relative-pathname "bookshops" "src/web/templates/"))
 (defparameter +permission-denied.html+ (djula:compile-template* "permission-denied.html"))
 (defparameter +login.html+ (djula:compile-template* "login.html"))
 

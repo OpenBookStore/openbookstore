@@ -58,8 +58,6 @@ Dev helpers:
           (t (access:access options :negative)))))
 
 ;;; Load templates.
-(djula:add-template-directory
- (asdf:system-relative-pathname "bookshops" "src/web/templates/"))
 (defparameter +base.html+ (djula:compile-template* "base.html"))
 (defparameter +dashboard.html+ (djula:compile-template* "dashboard.html"))
 (defparameter +search.html+ (djula:compile-template* "search.html"))
