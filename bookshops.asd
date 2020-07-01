@@ -19,6 +19,7 @@
                :unix-opts
                :replic
                ;; utils
+               :can
                :rutils
                :str
                :local-time

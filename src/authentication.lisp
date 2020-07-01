@@ -24,15 +24,13 @@
   (:auto-pk nil)
   (:record-timestamps nil))
 
-(defgeneric user-roles (user)
-  (:method (user)
-    nil)
-  (:method ((user user))
-    (mapcar #'user-role-role
-            (mito:retrieve-dao 'user-role :user user))))
+(defmethod can:user-roles ((user user))
+  (mapcar #'user-role-role
+          (mito:retrieve-dao 'user-role :user user)))
 
-(defun authorize (user &rest roles)
-  (= 0 (length (set-difference roles (user-roles user)))))
+#+ (or)
+(defmethod can:user-roles-for-resource ((user user) resource)
+  (user-roles user))
 
 (defun login (email password)
   "Return the user if the credentials are correct, otherwise nil."
@@ -40,3 +38,10 @@
     (when (and user
                (mito-auth:auth user password))
       user)))
+
+(defmacro define-role-access (resource action role)
+  `(defmethod can:resource-allowed-p ((resource (eql ',resource))
+                                      (action (eql ',action))
+                                      (role (eql ',role)))
+     (declare (ignore resource action role))
+     t))

@@ -102,7 +102,8 @@ Dev helpers:
                                       :nb-titles-negative (length
                                                            (bookshops.models::negative-quantities)))))
 
-(defroute stock-route ("/stock" :decorators ((@check-roles (:stock-owner))))
+(bookshops.models::define-role-access stock-route :view :stock-owner)
+(defroute stock-route ("/stock" :decorators ((@check-roles stock-route)))
     (&get q)
   (let ((cards (cond
                  ((bookshops.models::isbn-p q)
@@ -110,7 +111,7 @@ Dev helpers:
                  (q
                   (find-book :query (bookshops.utils::asciify q)))
                  (t
-                  ;: XXX: pagination
+                  ;; XXX: pagination
                   (subseq (find-book)
                           0
                           (min 50 (bookshops.models::count-book)))))))

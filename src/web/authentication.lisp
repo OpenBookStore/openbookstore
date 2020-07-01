@@ -20,7 +20,8 @@
   (bookshops.models::user-name user))
 
 (djula:def-filter :user-roles (user)
-  (format nil "~{~(~a~)~^, ~}" (bookshops.models::user-roles user)))
+  ;; iterate the roles, convert them to lower case and ensure there's a trailing comma.
+  (format nil "~{~(~a~)~^, ~}" (can:user-roles user)))
 
 (defroute login-route ("/login" :method :get) ()
   (djula:render-template* +login.html+ nil
@@ -39,16 +40,15 @@
 (defroute get-logout-route ("/logout" :method :get) ()
   (hunchentoot:redirect "/login"))
 
-(defun @check-roles (roles next)
+(defun @check-roles (route-name next)
   (let ((current-user (current-user)))
     (cond
       ((and current-user
-            (apply #'bookshops.models::authorize current-user roles))
+            (can:can current-user :view route-name))
        (funcall next))
 
       (t (setf (hunchentoot:return-code*) hunchentoot:+http-forbidden+)
          (djula:render-template* +permission-denied.html+ nil
-                                 :roles (format nil "~{~(~a~)~^, ~}" roles)
                                  :current-user current-user)))))
 
 ;;; TODO introduce a render-template macro that will provide the current-user
