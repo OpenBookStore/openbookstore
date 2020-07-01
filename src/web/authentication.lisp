@@ -3,8 +3,8 @@
 (defun current-user ()
   (hunchentoot:session-value :user))
 
-(defun login (email password)
-  (let ((user (bookshops.models::login email password)))
+(defun web-login (email password)
+  (let ((user (bookshops.models:login email password)))
     (when user
       (setf (hunchentoot:session-value :user) user))))
 
@@ -28,7 +28,7 @@
 (defroute post-login-route ("/login" :method :post)
     ((email :parameter-type 'string :init-form "")
      (password :parameter-type 'string :init-form ""))
-  (login email password)
+  (web-login email password)
   (hunchentoot:redirect "/"))
 
 (defroute post-logout-route ("/logout" :method :post) ()
