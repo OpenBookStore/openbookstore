@@ -9,7 +9,12 @@
                          contact
                          contact-copies
                          basket
-                         basket-copies))
+                         basket-copies
+                         user
+                         role
+                         user-role
+                         role-copy
+))
 
 (defun connect ()
   "Connect to the DB."
