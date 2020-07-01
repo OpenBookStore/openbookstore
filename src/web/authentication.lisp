@@ -14,6 +14,11 @@
 (defparameter +permission-denied.html+ (djula:compile-template* "permission-denied.html"))
 (defparameter +login.html+ (djula:compile-template* "login.html"))
 
+(defmacro render-template* (template &optional stream &rest template-arguments)
+  (let ((template-arguments
+         (list* :current-user '(current-user) template-arguments)))
+    `(djula:render-template* ,template ,stream ,@ template-arguments)))
+
 (djula:def-filter :user-name (user)
   (bookshops.models::user-name user))
 
@@ -22,8 +27,7 @@
   (format nil "~{~(~a~)~^, ~}" (can:user-roles user)))
 
 (defroute login-route ("/login" :method :get) ()
-  (djula:render-template* +login.html+ nil
-                          :current-user (current-user)))
+  (render-template* +login.html+ nil))
 
 (defroute post-login-route ("/login" :method :post)
     ((email :parameter-type 'string :init-form "")
@@ -46,8 +50,7 @@
        (funcall next))
 
       (t (setf (hunchentoot:return-code*) hunchentoot:+http-forbidden+)
-         (djula:render-template* +permission-denied.html+ nil
-                                 :current-user current-user)))))
+         (render-template* +permission-denied.html+ nil)))))
 
 ;;; TODO introduce a render-template macro that will provide the current-user
 ;;; argument already for convenience

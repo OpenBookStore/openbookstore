@@ -92,13 +92,13 @@ Dev helpers:
 
 ;;; Routes.
 (defroute home-route ("/") ()
-  (djula:render-template* +dashboard.html+ nil
-                          :route "/"
-                          :current-user (current-user)
-                          :data (list :nb-titles (bookshops.models:count-book)
-                                      :nb-books (bookshops.models::total-quantities)
-                                      :nb-titles-negative (length
-                                                           (bookshops.models::negative-quantities)))))
+  (render-template* +dashboard.html+ nil
+                    :route "/"
+                    :current-user (current-user)
+                    :data (list :nb-titles (bookshops.models:count-book)
+                                :nb-books (bookshops.models::total-quantities)
+                                :nb-titles-negative (length
+                                                     (bookshops.models::negative-quantities)))))
 
 (bookshops.models::define-role-access stock-route :view :visitor)
 (defroute stock-route ("/stock" :decorators ((@check-roles stock-route)))
@@ -113,30 +113,29 @@ Dev helpers:
                   (subseq (find-book)
                           0
                           (min 50 (bookshops.models::count-book)))))))
-    (djula:render-template* +stock.html+ nil
-                            :route "/stock"
-                            :current-user (current-user)
-                            :cards cards
-                            :nb-results (length cards)
-                            :q q
-                            :data (list :nb-titles (bookshops.models:count-book)
-                                        :nb-books (bookshops.models::total-quantities)
-                                        :nb-titles-negative (length
-                                                             (bookshops.models::negative-quantities))))))
+    (render-template* +stock.html+ nil
+                      :route "/stock"
+                      :cards cards
+                      :nb-results (length cards)
+                      :q q
+                      :data (list :nb-titles (bookshops.models:count-book)
+                                  :nb-books (bookshops.models::total-quantities)
+                                  :nb-titles-negative (length
+                                                       (bookshops.models::negative-quantities))))))
 
 (defroute search-route ("/search") (&get q)
   (let ((cards (and q (search-datasources q))))
     (if cards
-        (djula:render-template* +search.html+ nil
-                                :route "/search"
-                                :q q
-                                :cards cards
-                                :nb-results (length cards)
-                                :title (format nil "OpenBookstore - search: ~a" q))
-        (djula:render-template* +search.html+ nil
-                                :route "/search"
-                                :q q
-                                :messages (list "Please enter an ISBN or some keywords.")))))
+        (render-template* +search.html+ nil
+                          :route "/search"
+                          :q q
+                          :cards cards
+                          :nb-results (length cards)
+                          :title (format nil "OpenBookstore - search: ~a" q))
+        (render-template* +search.html+ nil
+                          :route "/search"
+                          :q q
+                          :messages (list "Please enter an ISBN or some keywords.")))))
 
 (defroute add-or-create-route ("/card/add-or-create/" :method :post)
     (q title isbn cover-url publisher (updatep :parameter-type 'boolean
@@ -150,13 +149,13 @@ Dev helpers:
                              :update updatep)
               (find-by :id book-id))))
     (save-book book)
-    (djula:render-template* +card-page.html+ nil
-                            :q q
-                            :card book
-                            :referer-route referer-route
-                            :places-copies
-                            (bookshops.models::book-places-quantities book)
-                            :places (bookshops.models:find-places))))
+    (render-template* +card-page.html+ nil
+                      :q q
+                      :card book
+                      :referer-route referer-route
+                      :places-copies
+                      (bookshops.models::book-places-quantities book)
+                      :places (bookshops.models:find-places))))
 
 (defun redirect-to-search-result (route query book)
   (hunchentoot:redirect
@@ -198,16 +197,16 @@ Dev helpers:
                  (mito:find-dao 'book :id card-id))))
     (cond
       ((null card-id)
-       (djula:render-template* +404.html+ nil))
+       (render-template* +404.html+ nil))
       (card
-       (djula:render-template* +card-stock.html+ nil
-                               :messages nil
-                               :route "/stock"
-                               :card card
-                               :places-copies (bookshops.models::book-places-quantities card)
-                               :raw raw))
+       (render-template* +card-stock.html+ nil
+                         :messages nil
+                         :route "/stock"
+                         :card card
+                         :places-copies (bookshops.models::book-places-quantities card)
+                         :raw raw))
       (t
-       (djula:render-template* +404.html+ nil)))))
+       (render-template* +404.html+ nil)))))
 
 
 (defun start-app (&key (port *port*))
