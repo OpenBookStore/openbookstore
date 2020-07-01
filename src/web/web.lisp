@@ -102,7 +102,7 @@ Dev helpers:
                                       :nb-titles-negative (length
                                                            (bookshops.models::negative-quantities)))))
 
-(bookshops.models::define-role-access stock-route :view :stock-owner)
+(bookshops.models::define-role-access stock-route :view :visitor)
 (defroute stock-route ("/stock" :decorators ((@check-roles stock-route)))
     (&get q)
   (let ((cards (cond
