@@ -28,3 +28,10 @@
 (defun migrate-all ()
   "Migrate the Book table after we changed the class definition."
   (mapcar #'mito:migrate-table *tables*))
+
+(defun bootstrap-base-roles ()
+  (define-role :visitor ())
+  (define-role :vendor (:visitor))
+  (define-role :editor (:vendor))
+  (define-role :admin (:editor))
+  t)
