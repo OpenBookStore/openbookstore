@@ -91,6 +91,7 @@ Dev helpers:
       (bookshops.models::check-in-stock res))))
 
 ;;; Routes.
+(bookshops.models:define-role-access home-route :view :visitor)
 (defroute home-route ("/") ()
   (render-template* +dashboard.html+ nil
                     :route "/"
@@ -123,6 +124,7 @@ Dev helpers:
                                   :nb-titles-negative (length
                                                        (bookshops.models::negative-quantities))))))
 
+(bookshops.models:define-role-access search-route :view :visitor)
 (defroute search-route ("/search") (&get q)
   (let ((cards (and q (search-datasources q))))
     (if cards
@@ -165,6 +167,7 @@ Dev helpers:
            (and (str:non-empty-string-p query) query)
            (bookshops.models::object-id book))))
 
+(bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute card-add-stock-route ("/card/add-stock/" :method :post)
     (q place-id (quantity :parameter-type 'integer :init-form 0) isbn
        (referer-route :parameter-type 'string :init-form "/search"))
@@ -173,6 +176,7 @@ Dev helpers:
     (bookshops.models:add-to place card :quantity quantity)
     (redirect-to-search-result referer-route q card)))
 
+(bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute card-quick-add-route ("/card/quick-add-stock/" :method :post)
     (q (quantity :parameter-type 'integer :init-form 1) title isbn cover-url publisher
        (updatep :parameter-type 'boolean :init-form t)
@@ -189,6 +193,7 @@ Dev helpers:
     (bookshops.models:add-to (default-place) book :quantity quantity)
     (redirect-to-search-result referer-route q book)))
 
+(bookshops.models:define-role-access add-or-create-route :view :visitor)
 (defroute card-page ("/card/:slug") (&get raw)
   "Show a card.
 
