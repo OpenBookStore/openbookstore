@@ -92,7 +92,7 @@ Dev helpers:
 
 ;;; Routes.
 (bookshops.models:define-role-access home-route :view :visitor)
-(defroute home-route ("/") ()
+(defroute home-route ("/" :decorators ((@check-roles stock-route))) ()
   (render-template* +dashboard.html+ nil
                     :route "/"
                     :current-user (current-user)
@@ -125,7 +125,7 @@ Dev helpers:
                                                        (bookshops.models::negative-quantities))))))
 
 (bookshops.models:define-role-access search-route :view :visitor)
-(defroute search-route ("/search") (&get q)
+(defroute search-route ("/search" :decorators ((@check-roles stock-route))) (&get q)
   (let ((cards (and q (search-datasources q))))
     (if cards
         (render-template* +search.html+ nil
@@ -168,7 +168,8 @@ Dev helpers:
            (bookshops.models::object-id book))))
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
-(defroute card-add-stock-route ("/card/add-stock/" :method :post)
+(defroute card-add-stock-route ("/card/add-stock/" :method :post
+                                                   :decorators ((@check-roles stock-route)))
     (q place-id (quantity :parameter-type 'integer :init-form 0) isbn
        (referer-route :parameter-type 'string :init-form "/search"))
   (let ((card (find-by :isbn isbn))
@@ -177,7 +178,8 @@ Dev helpers:
     (redirect-to-search-result referer-route q card)))
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
-(defroute card-quick-add-route ("/card/quick-add-stock/" :method :post)
+(defroute card-quick-add-route ("/card/quick-add-stock/" :method :post
+                                                         :decorators ((@check-roles stock-route)))
     (q (quantity :parameter-type 'integer :init-form 1) title isbn cover-url publisher
        (updatep :parameter-type 'boolean :init-form t)
        (book-id :parameter-type 'string :init-form "")
@@ -194,7 +196,8 @@ Dev helpers:
     (redirect-to-search-result referer-route q book)))
 
 (bookshops.models:define-role-access add-or-create-route :view :visitor)
-(defroute card-page ("/card/:slug") (&get raw)
+(defroute card-page ("/card/:slug" :decorators ((@check-roles stock-route)))
+    (&get raw)
   "Show a card.
 
   If the URL parameter RAW is \"t\" (the string), then display the card object literally (with describe)."
