@@ -86,6 +86,8 @@ It is permitted for a role to appear more than once in the result."
              (list* role
                     (loop :for role :in (mito:retrieve-dao 'role-copy :primary-role role)
                        :append (all-roles (inherited-role role))))))
+    ;; here we move down the inheritance hierarchy by navigating the role-copy table
+    ;; recursively until we reach the end of each branch and have collected all the roles.
     (let ((direct-roles
            (mapcar #'user-role-role (mito:retrieve-dao 'user-role :user user))))
       (mapcar #'role-name
