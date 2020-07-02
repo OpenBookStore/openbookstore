@@ -6,6 +6,7 @@
 <p> You're logged in as {{ current-user | user-name }} </p>
 {% else %}
 <form id="login" action="/login" method="POST">
+    <input name="referer-route" type="hidden" value="{{ referer-route }}"/>
     <div class="field" >
         <label class="label">Email</label>
         <p class="control has-icons-left">

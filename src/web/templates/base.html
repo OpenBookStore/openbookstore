@@ -56,9 +56,10 @@
                     </div>
                 </div>
                 {% else %}
-                <a class="button is-light" href="/login" >
-                    Login
-                </a>
+                <form action="/login" >
+                    <input name="referer-route" type="hidden" value="{{ request-uri }}"/>
+                    <button class="button is-light" >Login</button>
+                </form>
                 {% endif %}
             </div>
       </div>

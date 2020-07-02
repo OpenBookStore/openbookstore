@@ -18,6 +18,7 @@
   (let ((template-arguments
          (list* :current-user '(current-user)
                 :current-user-roles '(mapcar #'string-downcase (can:user-roles (current-user)))
+                :request-uri '(hunchentoot:request-uri*)
                 template-arguments)))
     `(djula:render-template* ,template ,stream ,@ template-arguments)))
 
@@ -28,20 +29,24 @@
   ;; iterate the roles, convert them to lower case and ensure there's a trailing comma.
   (format nil "~{~(~a~)~^, ~}" (can:user-roles user)))
 
-(defroute login-route ("/login" :method :get) ()
-  (render-template* +login.html+ nil))
+(defroute login-route ("/login" :method :get)
+    ((referer-route :parameter-type 'string :init-form "/"))
+  (render-template* +login.html+ nil
+                    :referer-route referer-route))
 
 (defroute post-login-route ("/login" :method :post)
     ((email :parameter-type 'string :init-form "")
-     (password :parameter-type 'string :init-form ""))
+     (password :parameter-type 'string :init-form "")
+     (referer-route :parameter-type 'string :init-form "/"))
   (web-login email password)
-  (hunchentoot:redirect "/"))
+  (hunchentoot:redirect referer-route))
 
 (defroute post-logout-route ("/logout" :method :post) ()
   (logout)
   (hunchentoot:redirect "/login"))
 
-(defroute get-logout-route ("/logout" :method :get) ()
+(defroute get-logout-route ("/logout" :method :get)
+    ()
   (hunchentoot:redirect "/login"))
 
 (defun @check-roles (route-name next)
