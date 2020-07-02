@@ -49,14 +49,14 @@
                  (:file "utils")
                  ;; they depend on the above.
                  (:file "packages")
-                 (:file "database")
                  (:file "models")
                  (:file "models-utils")
                  (:file "authentication")
                  (:file "baskets")
                  (:file "contacts")
                  (:file "bookshops")
-                 (:file "commands")))
+                 (:file "commands")
+                 (:file "database")))
 
                ;; One-off utility "scripts" to work on the DB.
                (:module "src/management"
