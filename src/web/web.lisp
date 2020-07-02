@@ -137,7 +137,7 @@ Dev helpers:
                           :q q
                           :messages (list "Please enter an ISBN or some keywords.")))))
 
-(bookshops.models:define-role-access add-or-create-route :editor)
+(bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute add-or-create-route ("/card/add-or-create/" :method :post
                                                       :decorators ((@check-roles stock-route)))
     (q title isbn cover-url publisher (updatep :parameter-type 'boolean
