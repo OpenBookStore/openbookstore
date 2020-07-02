@@ -16,7 +16,9 @@
 
 (defmacro render-template* (template &optional stream &rest template-arguments)
   (let ((template-arguments
-         (list* :current-user '(current-user) template-arguments)))
+         (list* :current-user '(current-user)
+                :current-user-roles '(mapcar #'string-downcase (can:user-roles (current-user)))
+                template-arguments)))
     `(djula:render-template* ,template ,stream ,@ template-arguments)))
 
 (djula:def-filter :user-name (user)

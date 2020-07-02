@@ -71,6 +71,9 @@
                 </table>
 
                 {% block subinfo %}
+                <!-- TODO this is a bodge around no in boolean operator for if in djula -->
+                {% for role in current-user-roles %}
+                {% ifequal role "editor" %}
                 <div id="stock-management" >
                     <!-- TODO possibly use horizontal form addons from bulma instead -->
                     <form action="/card/add-stock/" method="POST" >
@@ -94,6 +97,8 @@
                         </div>
                     </form>
                 </div>
+                {% endifequal %}
+                {% endfor %}
                 {% endblock subinfo %}
 
             </div>
