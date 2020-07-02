@@ -100,7 +100,7 @@ Dev helpers:
                                 :nb-titles-negative (length
                                                      (bookshops.models::negative-quantities)))))
 
-(bookshops.models::define-role-access stock-route :view :visitor)
+(bookshops.models:define-role-access stock-route :view :visitor)
 (defroute stock-route ("/stock" :decorators ((@check-roles stock-route)))
     (&get q)
   (let ((cards (cond
@@ -137,7 +137,9 @@ Dev helpers:
                           :q q
                           :messages (list "Please enter an ISBN or some keywords.")))))
 
-(defroute add-or-create-route ("/card/add-or-create/" :method :post)
+(bookshops.models:define-role-access add-or-create-route :editor)
+(defroute add-or-create-route ("/card/add-or-create/" :method :post
+                                                      :decorators ((@check-roles stock-route)))
     (q title isbn cover-url publisher (updatep :parameter-type 'boolean
                                                :init-form t)
        (book-id :parameter-type 'string :init-form "")

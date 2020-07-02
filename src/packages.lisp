@@ -51,6 +51,7 @@
            :add-role
            :inherit-role
            :login
+           :define-role-access
 
            ;; utils
            :print-quantity-red-green :negative-quantities
