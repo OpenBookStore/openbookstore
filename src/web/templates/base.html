@@ -28,12 +28,40 @@
         </div>
         <div id="navMenu" class="navbar-menu">
           <div class="navbar-start">
-            <a class="navbar-item" href="/">
-              Home
-            </a>
+              <a class="navbar-item" href="/">
+                  Home
+              </a>
           </div>
-
         </div>
+        <div class="navbar-end" >
+            <div class="navbar-item" >
+                {% if current-user %}
+                <div class="dropdown is-hoverable">
+                    <div class="dropdown-trigger" >
+                        <button class="button" aria-haspopup="true" aria-controls="profile-dropdown" >
+                            <span class="icon is-small" >
+                                <i class="fas fa-user" aria-hidden="true"></i>
+                            </span>
+                            <span>{{ current-user | user-name }}</span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu" role="menu" id="profile-dropdown">
+                        <div class="dropdown-content" >
+                            <div class="dropdown-item" >
+                                <form action="/logout" method="POST" >
+                                    <button class="button is-light">Logout</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <form action="/login" >
+                    <input name="referer-route" type="hidden" value="{{ request-uri }}"/>
+                    <button class="button is-light" >Login</button>
+                </form>
+                {% endif %}
+            </div>
       </div>
     </nav>
     <!-- END NAV -->

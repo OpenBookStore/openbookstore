@@ -1,16 +1,3 @@
-(defpackage bookshops-web
-  (:use :cl
-        :bookshops.models
-        :hunchentoot
-        :log4cl)
-  (:import-from :easy-routes
-                :routes-acceptor
-                :defroute)
-  (:import-from :bookshops.datasources.dilicom
-                :search-books)
-  (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
-                    (#:fr #:bookshops.datasources.scraper-fr)))
-
 (in-package :bookshops-web)
 
 #|
@@ -71,8 +58,6 @@ Dev helpers:
           (t (access:access options :negative)))))
 
 ;;; Load templates.
-(djula:add-template-directory
- (asdf:system-relative-pathname "bookshops" "src/web/templates/"))
 (defparameter +base.html+ (djula:compile-template* "base.html"))
 (defparameter +dashboard.html+ (djula:compile-template* "dashboard.html"))
 (defparameter +search.html+ (djula:compile-template* "search.html"))
@@ -92,13 +77,13 @@ Dev helpers:
   (cond
     ;; ISBN? Dilicom search.
     ((bookshops.utils::isbn-p q)
-     (dilicom:search-books (list q)))
+     (values (dilicom:search-books (list q)) 1))
 
     ;; Free search? Other datasources.
     ((not (str:blank? q))
-     (fr:books q))
+     (values (fr:books q) 1))
 
-    (t nil)))
+    (t (values nil 1))))
 
 (defun search-datasources (query)
   (cacle:with-cache-fetch res (*search-cache* query)
@@ -106,50 +91,57 @@ Dev helpers:
       (bookshops.models::check-in-stock res))))
 
 ;;; Routes.
-(defroute home-route ("/") ()
-  (djula:render-template* +dashboard.html+ nil
-                          :route "/"
-                          :data (list :nb-titles (bookshops.models:count-book)
-                                      :nb-books (bookshops.models::total-quantities)
-                                      :nb-titles-negative (length
-                                                           (bookshops.models::negative-quantities)))))
+(bookshops.models:define-role-access home-route :view :visitor)
+(defroute home-route ("/" :decorators ((@check-roles stock-route))) ()
+  (render-template* +dashboard.html+ nil
+                    :route "/"
+                    :current-user (current-user)
+                    :data (list :nb-titles (bookshops.models:count-book)
+                                :nb-books (bookshops.models::total-quantities)
+                                :nb-titles-negative (length
+                                                     (bookshops.models::negative-quantities)))))
 
-(defroute stock-route ("/stock") (&get q)
+(bookshops.models:define-role-access stock-route :view :visitor)
+(defroute stock-route ("/stock" :decorators ((@check-roles stock-route)))
+    (&get q)
   (let ((cards (cond
                  ((bookshops.models::isbn-p q)
                   (list (find-by :isbn q)))
                  (q
                   (find-book :query (bookshops.utils::asciify q)))
                  (t
-                  ;: XXX: pagination
+                  ;; XXX: pagination
                   (subseq (find-book)
                           0
                           (min 50 (bookshops.models::count-book)))))))
-    (djula:render-template* +stock.html+ nil
-                            :route "/stock"
-                            :cards cards
-                            :nb-results (length cards)
-                            :q q
-                            :data (list :nb-titles (bookshops.models:count-book)
-                                        :nb-books (bookshops.models::total-quantities)
-                                        :nb-titles-negative (length
-                                                             (bookshops.models::negative-quantities))))))
+    (render-template* +stock.html+ nil
+                      :route "/stock"
+                      :cards cards
+                      :nb-results (length cards)
+                      :q q
+                      :data (list :nb-titles (bookshops.models:count-book)
+                                  :nb-books (bookshops.models::total-quantities)
+                                  :nb-titles-negative (length
+                                                       (bookshops.models::negative-quantities))))))
 
-(defroute search-route ("/search") (&get q)
+(bookshops.models:define-role-access search-route :view :visitor)
+(defroute search-route ("/search" :decorators ((@check-roles stock-route))) (&get q)
   (let ((cards (and q (search-datasources q))))
     (if cards
-        (djula:render-template* +search.html+ nil
-                                :route "/search"
-                                :q q
-                                :cards cards
-                                :nb-results (length cards)
-                                :title (format nil "OpenBookstore - search: ~a" q))
-        (djula:render-template* +search.html+ nil
-                                :route "/search"
-                                :q q
-                                :messages (list "Please enter an ISBN or some keywords.")))))
+        (render-template* +search.html+ nil
+                          :route "/search"
+                          :q q
+                          :cards cards
+                          :nb-results (length cards)
+                          :title (format nil "OpenBookstore - search: ~a" q))
+        (render-template* +search.html+ nil
+                          :route "/search"
+                          :q q
+                          :messages (list "Please enter an ISBN or some keywords.")))))
 
-(defroute add-or-create-route ("/card/add-or-create/" :method :post)
+(bookshops.models:define-role-access add-or-create-route :view :editor)
+(defroute add-or-create-route ("/card/add-or-create/" :method :post
+                                                      :decorators ((@check-roles stock-route)))
     (q title isbn cover-url publisher (updatep :parameter-type 'boolean
                                                :init-form t)
        (book-id :parameter-type 'string :init-form "")
@@ -161,13 +153,13 @@ Dev helpers:
                              :update updatep)
               (find-by :id book-id))))
     (save-book book)
-    (djula:render-template* +card-page.html+ nil
-                            :q q
-                            :card book
-                            :referer-route referer-route
-                            :places-copies
-                            (bookshops.models::book-places-quantities book)
-                            :places (bookshops.models:find-places))))
+    (render-template* +card-page.html+ nil
+                      :q q
+                      :card book
+                      :referer-route referer-route
+                      :places-copies
+                      (bookshops.models::book-places-quantities book)
+                      :places (bookshops.models:find-places))))
 
 (defun redirect-to-search-result (route query book)
   (hunchentoot:redirect
@@ -175,7 +167,9 @@ Dev helpers:
            (and (str:non-empty-string-p query) query)
            (bookshops.models::object-id book))))
 
-(defroute card-add-stock-route ("/card/add-stock/" :method :post)
+(bookshops.models:define-role-access add-or-create-route :view :editor)
+(defroute card-add-stock-route ("/card/add-stock/" :method :post
+                                                   :decorators ((@check-roles stock-route)))
     (q place-id (quantity :parameter-type 'integer :init-form 0) isbn
        (referer-route :parameter-type 'string :init-form "/search"))
   (let ((card (find-by :isbn isbn))
@@ -183,7 +177,9 @@ Dev helpers:
     (bookshops.models:add-to place card :quantity quantity)
     (redirect-to-search-result referer-route q card)))
 
-(defroute card-quick-add-route ("/card/quick-add-stock/" :method :post)
+(bookshops.models:define-role-access add-or-create-route :view :editor)
+(defroute card-quick-add-route ("/card/quick-add-stock/" :method :post
+                                                         :decorators ((@check-roles stock-route)))
     (q (quantity :parameter-type 'integer :init-form 1) title isbn cover-url publisher
        (updatep :parameter-type 'boolean :init-form t)
        (book-id :parameter-type 'string :init-form "")
@@ -199,7 +195,9 @@ Dev helpers:
     (bookshops.models:add-to (default-place) book :quantity quantity)
     (redirect-to-search-result referer-route q book)))
 
-(defroute card-page ("/card/:slug") (&get raw)
+(bookshops.models:define-role-access add-or-create-route :view :visitor)
+(defroute card-page ("/card/:slug" :decorators ((@check-roles stock-route)))
+    (&get raw)
   "Show a card.
 
   If the URL parameter RAW is \"t\" (the string), then display the card object literally (with describe)."
@@ -209,16 +207,16 @@ Dev helpers:
                  (mito:find-dao 'book :id card-id))))
     (cond
       ((null card-id)
-       (djula:render-template* +404.html+ nil))
+       (render-template* +404.html+ nil))
       (card
-       (djula:render-template* +card-stock.html+ nil
-                               :messages nil
-                               :route "/stock"
-                               :card card
-                               :places-copies (bookshops.models::book-places-quantities card)
-                               :raw raw))
+       (render-template* +card-stock.html+ nil
+                         :messages nil
+                         :route "/stock"
+                         :card card
+                         :places-copies (bookshops.models::book-places-quantities card)
+                         :raw raw))
       (t
-       (djula:render-template* +404.html+ nil)))))
+       (render-template* +404.html+ nil)))))
 
 
 (defun start-app (&key (port *port*))

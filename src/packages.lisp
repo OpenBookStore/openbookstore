@@ -15,6 +15,7 @@
 
   (:export :connect
            :ensure-tables-exist
+           :bootstrap-base-roles
            ;; book accessors
            :name
            :book :make-book
@@ -35,6 +36,23 @@
            :add-to :remove-from :move
            :*current-place*
            :place-copy-quantity
+           ;; authentication
+           :user
+           :user-name
+           :role
+           :user-role-user
+           :user-role-role
+           :role-copy
+           :primary-role
+           :inherited-role
+
+           :create-user
+           :create-role
+           :add-role
+           :inherit-role
+           :login
+           :define-role-access
+
            ;; utils
            :print-quantity-red-green :negative-quantities
            :erase-metaclass-from))

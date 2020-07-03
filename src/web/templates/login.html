@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if current-user %}
+<p> You're logged in as {{ current-user | user-name }} </p>
+{% else %}
+<form id="login" action="/login" method="POST">
+    <input name="referer-route" type="hidden" value="{{ referer-route }}"/>
+    <div class="field" >
+        <label class="label">Email</label>
+        <p class="control has-icons-left">
+            <input name="email" value="" class="input" type="text" >
+            <span class="icon is-small is-left" >
+                <i class="fas fa-envelope" ></i>
+            </span>
+        </p>
+    </div>
+    <div clas="field">
+        <label class="label" >Password</label>
+        <p class="control has-icons-left">
+            <input name="password" class="input" type="password" value="" >
+            <span class="icon is-small is-left" >
+                <i class="fas fa-lock" ></i>
+            </span>
+        </p>
+    </div>
+    <div class="field">
+        <p class="control">
+            <button class="button is-primary">Login</button>
+        </p>
+    </div>
+</form>
+{% endif %}
+
+{% endblock %}

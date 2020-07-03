@@ -14,10 +14,12 @@
                :clss ;; might do with lquery only
                ;; DB
                :mito
+               :mito-auth
                ;; readline
                :unix-opts
                :replic
                ;; utils
+               :can
                :rutils
                :str
                :local-time
@@ -47,13 +49,14 @@
                  (:file "utils")
                  ;; they depend on the above.
                  (:file "packages")
-                 (:file "database")
                  (:file "models")
                  (:file "models-utils")
+                 (:file "authentication")
                  (:file "baskets")
                  (:file "contacts")
                  (:file "bookshops")
-                 (:file "commands")))
+                 (:file "commands")
+                 (:file "database")))
 
                ;; One-off utility "scripts" to work on the DB.
                (:module "src/management"
@@ -62,7 +65,9 @@
 
                (:module "src/web"
                 :components
-                ((:file "web")
+                ((:file "package")
+                 (:file "authentication")
+                 (:file "web")
                  (:file "api"))))
 
   :build-operation "program-op"
