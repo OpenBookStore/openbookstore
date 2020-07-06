@@ -35,16 +35,16 @@ Dev helpers:
           "card"                       ; this can be translated
           (mito:object-id card)
           ;; the slug won't actually be read back, only the id.
-          (slug:slugify (title card))))
+          (slug:slugify (models:title card))))
 
 (djula:def-filter :quantity (card)
   (typecase card
-    (bookshops.models:book (quantity card))
-    (bookshops.models:place-copies (bookshops.models:place-copy-quantity card))
+    (models:book (models:quantity card))
+    (models:place-copies (models:place-copy-quantity card))
     (t (or (access:access card :in-stock) 0))))
 
 (djula:def-filter :name (obj)
-  (format nil "~a" (name obj)))
+  (format nil "~a" (models:name obj)))
 
 (djula:def-filter :describe (card)
   (with-output-to-string (s)
@@ -76,7 +76,7 @@ Dev helpers:
   (declare (type string q))
   (cond
     ;; ISBN? Dilicom search.
-    ((bookshops.utils::isbn-p q)
+    ((bookshops.utils:isbn-p q)
      (values (dilicom:search-books (list q)) 1))
 
     ;; Free search? Other datasources.
@@ -96,22 +96,22 @@ Dev helpers:
   (render-template* +dashboard.html+ nil
                     :route "/"
                     :current-user (current-user)
-                    :data (list :nb-titles (bookshops.models:count-book)
-                                :nb-books (bookshops.models::total-quantities)
+                    :data (list :nb-titles (models:count-book)
+                                :nb-books (models::total-quantities)
                                 :nb-titles-negative (length
-                                                     (bookshops.models::negative-quantities)))))
+                                                     (models::negative-quantities)))))
 
 (bookshops.models:define-role-access stock-route :view :visitor)
 (defroute stock-route ("/stock" :decorators ((@check-roles stock-route)))
     (&get q)
   (let ((cards (cond
-                 ((bookshops.models::isbn-p q)
-                  (list (find-by :isbn q)))
+                 ((utils:isbn-p q)
+                  (list (models:find-by :isbn q)))
                  (q
-                  (find-book :query (bookshops.utils::asciify q)))
+                  (models:find-book :query (bookshops.utils::asciify q)))
                  (t
                   ;; XXX: pagination
-                  (subseq (find-book)
+                  (subseq (models:find-book)
                           0
                           (min 50 (bookshops.models::count-book)))))))
     (render-template* +stock.html+ nil
@@ -148,11 +148,12 @@ Dev helpers:
        (referer-route :parameter-type 'string :init-form "/search"))
   (let* ((book
           (if (str:blank? book-id)
-              (find-existing (make-book :title title :isbn isbn :cover-url cover-url
-                                        :publisher publisher)
+              (models:find-existing
+               (models:make-book :title title :isbn isbn :cover-url cover-url
+                          :publisher publisher)
                              :update updatep)
-              (find-by :id book-id))))
-    (save-book book)
+              (models:find-by :id book-id))))
+    (models:save-book book)
     (render-template* +card-page.html+ nil
                       :q q
                       :card book
@@ -165,15 +166,15 @@ Dev helpers:
   (hunchentoot:redirect
    (format nil "~a~@[?q=~a~]#card~a" route
            (and (str:non-empty-string-p query) query)
-           (bookshops.models::object-id book))))
+           (mito:object-id book))))
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute card-add-stock-route ("/card/add-stock/" :method :post
                                                    :decorators ((@check-roles stock-route)))
     (q place-id (quantity :parameter-type 'integer :init-form 0) isbn
        (referer-route :parameter-type 'string :init-form "/search"))
-  (let ((card (find-by :isbn isbn))
-        (place (find-place-by :id place-id)))
+  (let ((card (models:find-by :isbn isbn))
+        (place (models:find-place-by :id place-id)))
     (bookshops.models:add-to place card :quantity quantity)
     (redirect-to-search-result referer-route q card)))
 
@@ -186,13 +187,13 @@ Dev helpers:
        (referer-route :parameter-type 'string :init-form "/search"))
   (let ((book
          (if (str:blank? book-id)
-             (find-existing
-              (make-book :title title :isbn isbn :cover-url cover-url
-                         :publisher publisher)
+             (models:find-existing
+              (models:make-book :title title :isbn isbn :cover-url cover-url
+                                :publisher publisher)
               :update updatep)
-             (find-by :id book-id))))
-    (save-book book)
-    (bookshops.models:add-to (default-place) book :quantity quantity)
+             (models:find-by :id book-id))))
+    (models:save-book book)
+    (bookshops.models:add-to (models:default-place) book :quantity quantity)
     (redirect-to-search-result referer-route q book)))
 
 (bookshops.models:define-role-access add-or-create-route :view :visitor)
@@ -221,10 +222,10 @@ Dev helpers:
 
 (defun start-app (&key (port *port*))
   (bookshops.models:connect)
-  (setf *server* (make-instance 'routes-acceptor :port port))
-  (start *server*)
+  (setf *server* (make-instance 'easy-routes:routes-acceptor :port port))
+  (hunchentoot:start *server*)
   (uiop:format! t "~&Application started on port ~a.~&" port))
 
 (defun stop-app ()
   ;; disconnect db ?
-  (stop *server*))
+  (hunchentoot:stop *server*))
