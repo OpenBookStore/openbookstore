@@ -135,7 +135,7 @@ searches. This method was thought the most portable.
     :initform nil
     :type (or string null)
     :col-type (or (:varchar 1024) :null)))
-  (:metaclass dao-table-class)
+  (:metaclass mito:dao-table-class)
   (:documentation "A book represents the book entity, not the physical object.
      It may not have an isbn.
      A book is stored in one or many places."))
@@ -155,7 +155,7 @@ searches. This method was thought the most portable.
   ;: XXX: here tests will be welcome to catch other cases where they would not be called.
   (log:debug "updating title-ascii too")
   (setf (title-ascii book)
-        (bookshops.utils::asciify (slot-value book 'title))))
+        (utils::asciify (slot-value book 'title))))
 
 (defmethod (setf authors) :after (val (book book))
   (log:debug "updating authors-ascii too")
@@ -193,7 +193,7 @@ searches. This method was thought the most portable.
     :initarg :name
     :initform nil
     :col-type (:varchar 128)))
-  (:metaclass dao-table-class)
+  (:metaclass mito:dao-table-class)
   (:documentation "Where the books are stored.
     It could be a temporary place, like a stand, or a friend's. We are allowed to sell from certain
     places, not from others."))
@@ -226,7 +226,7 @@ searches. This method was thought the most portable.
     :accessor place-copy-quantity
     :initform 0
     :col-type (or (:integer) :null)))
-  (:metaclass dao-table-class)
+  (:metaclass mito:dao-table-class)
   (:documentation "Intermediate table between books and places.
     Specifies the quantity in the given place."))
 
@@ -254,11 +254,11 @@ searches. This method was thought the most portable.
   (make-instance 'place :name name))
 
 (defun save-place (place)
-  (insert-dao place))
+  (mito:insert-dao place))
 
 (defun create-place (name)
   "Create and save a `place' object in DB."
-  (create-dao 'place :name name))
+  (mito:create-dao 'place :name name))
 
 (defun default-place ()
   "Return the default place (the first created one by default).
@@ -267,9 +267,9 @@ searches. This method was thought the most portable.
   (when (mito.connection:connected-p)
     ;; Check the connection because of setf *current-place* in commands package.
     ;; Or initialize it elsewhere.
-    (if (= 0 (count-dao 'place))
+    (if (= 0 (mito:count-dao 'place))
         (create-place "home")
-        (first (select-dao 'place (order-by (:asc :id)))))))
+        (first (mito:select-dao 'place (sxql:order-by (:asc :id)))))))
 
 (defun current-place ()
   "Return the current place, set it with the default one if needed."
@@ -284,14 +284,14 @@ searches. This method was thought the most portable.
         ;; xxx should be same interface as find-book
         (unless (consp query)
           (setf query (cons query nil)))
-        (select-dao 'place
-          (where (:like :name (str:concat "%" (str:join "%" query) "%")))))
-      (select-dao 'place)))
+        (mito:select-dao 'place
+          (sxql:where (:like :name (str:concat "%" (str:join "%" query) "%")))))
+      (mito:select-dao 'place)))
 
 (defun find-place-by (key val)
   "Find a place by key. "
   (when val
-    (find-dao 'place key val)))
+    (mito:find-dao 'place key val)))
 
 (defmethod print-object ((place place) stream)
   (print-unreadable-object (place stream :type t)
@@ -304,7 +304,7 @@ searches. This method was thought the most portable.
   "Print the name of the place and its number of books.
    If :details is t, print a paginated list of its books."
   (format stream "~2a - ~40a~t x~3a/ ~3a total: ~3a~&"
-          (object-id place)
+          (mito:object-id place)
           (name place)
           (length (place-books place))
           (reduce #'+ (mapcar #'place-copy-quantity (place-books place)))
@@ -316,33 +316,33 @@ searches. This method was thought the most portable.
   (print-place obj :stream stream))
 
 (defun place-books (place)
-  (mapcar #'place-copies-book (select-dao 'place-copies
-                                (where (:= :place place)))))
+  (mapcar #'place-copies-book (mito:select-dao 'place-copies
+                                (sxql:where (:= :place place)))))
 
 (defun book-places (bk)
-  (mapcar #'place (select-dao 'place-copies
-                    (where (:= :book bk)))))
+  (mapcar #'place (mito:select-dao 'place-copies
+                    (sxql:where (:= :book bk)))))
 
 (defun book-places-quantities (bk)
   "Return the intermediate objects place-copies, so than we can know how
   many copies of this book are in what places."
-  (select-dao 'place-copies
-    (where (:= :book bk))))
+  (mito:select-dao 'place-copies
+    (sxql:where (:= :book bk))))
 
 (defun add-to (place bk &key (quantity 1))
   "Add the given book to this place.
    Return the quantity. nil means it is not present."
   (assert place)
   (assert bk)
-  (unless (object-id bk)
+  (unless (mito:object-id bk)
     (error "The book ~a is not saved in DB." bk))
-  (let ((existing (find-dao 'place-copies :place place :book bk))
+  (let ((existing (mito:find-dao 'place-copies :place place :book bk))
         place-copy)
     (if existing
         (progn
           (log:info "The book ~a exists in ~a." bk place)
           (incf (place-copy-quantity existing) quantity)
-          (save-dao existing)
+          (mito:save-dao existing)
           (quantity existing))
         (progn
           (log:info "~a doesn't exist in ~a yet, let's add it.~&" bk place)
@@ -350,22 +350,22 @@ searches. This method was thought the most portable.
                                           :place place
                                           :book bk
                                           :quantity quantity))
-          (insert-dao place-copy)
+          (mito:insert-dao place-copy)
           (quantity bk)))))
 
 (defun remove-from (place bk &key (quantity 1))
   "Remove the given book from this place.
    Return the quantity.
    If the book was never in the original place, don't remove it. Otherwise, it can end in a negative quantity."
-  (unless (object-id bk)
+  (unless (mito:object-id bk)
     (error "The book ~a is not saved in the DB." bk))
-  (let ((existing (find-dao 'place-copies :place place :book bk))
+  (let ((existing (mito:find-dao 'place-copies :place place :book bk))
         qty)
     (if existing
         (progn
           (setf qty (quantity existing))
           (setf (quantity existing) (decf qty quantity))
-          (save-dao existing)
+          (mito:save-dao existing)
           ;; (when (minusp qty)
           ;;   (format t "~a" (red (format nil "mmh, you now have a negative stock of \"~a\"" (title bk)))))
           qty)
@@ -378,11 +378,11 @@ searches. This method was thought the most portable.
   ;; Always use colors, for the strings to be the same length. Helps in calcuting the padding.
   (cond
     ((= 0 qty)
-     (white (prin1-to-string qty)))
+     (cl-ansi-text:white (prin1-to-string qty)))
     ((< qty 0)
-     (red (prin1-to-string qty)))
+     (cl-ansi-text:red (prin1-to-string qty)))
     ((> qty 0)
-     (green (prin1-to-string qty)))))
+     (cl-ansi-text:green (prin1-to-string qty)))))
 
 (defun print-book (book &optional (stream t))
   "Print to stream a user-readable output."
@@ -390,8 +390,8 @@ searches. This method was thought the most portable.
   ;; ~30a = substring 20 + ansi colors markers.
   ;; ~12@a = justify on the right, count colors markers.
   (format stream "~&~2@a- ~40a ~40a ~8@a x~12@a~&"
-          (prin1-to-string (object-id book))
-          (blue (str:prune 30 (title book)))
+          (prin1-to-string (mito:object-id book))
+          (cl-ansi-text:blue (str:prune 30 (title book)))
           (str:prune 40 (or (authors book) ""))
           (str:prune 15  (format nil "~$" (price book)))
           (print-quantity-red-green (quantity book))))
@@ -409,9 +409,9 @@ searches. This method was thought the most portable.
    2  - second place                               x-2
    "
   (when (integerp bk)
-    (setf bk (find-dao 'book :id bk)))
-  (let ((bk-places (select-dao 'place-copies
-                     (where (:= :book bk)))))
+    (setf bk (mito:find-dao 'book :id bk)))
+  (let ((bk-places (mito:select-dao 'place-copies
+                     (sxql:where (:= :book bk)))))
     (if bk-places
         (progn
           (format t "----------~&")
@@ -420,7 +420,7 @@ searches. This method was thought the most portable.
 
           (mapc (lambda (it)
                   (format t "~2a - ~40a ~t x~a~&"
-                          (object-id (place it))
+                          (mito:object-id (place it))
                           (name (place it))
                           (print-quantity-red-green (quantity it))))
                 bk-places))
@@ -429,14 +429,14 @@ searches. This method was thought the most portable.
 (defun print-book-details (bk)
   (cond
     ((integerp bk)
-     (setf bk (find-dao 'book :id bk)))
+     (setf bk (mito:find-dao 'book :id bk)))
     ((stringp bk)
      ;; What with two similar titles?
      ;; Mito takes the first one.
-     (setf bk (find-dao 'book :title bk))))
+     (setf bk (mito:find-dao 'book :title bk))))
   (if bk
       (progn
-        (format t "~a x ~a~&" (blue (title bk)) (quantity bk))
+        (format t "~a x ~a~&" (cl-ansi-text:blue (title bk)) (quantity bk))
         (format t "~t~a~&" (authors bk))
         (format t "~tisbn: ~a~&" (isbn bk))
         (format t "~t~a~&" (price bk))
@@ -464,7 +464,7 @@ searches. This method was thought the most portable.
                  :date-publication date-publication))
 
 (defun create-book (&rest initargs)
-  (apply #'create-dao 'book initargs))
+  (apply #'mito:create-dao 'book initargs))
 
 (defun save-book (book)
   "Save this book in DB. If it already exists, return the existing book. Otherwise, return the new one."
@@ -473,18 +473,18 @@ searches. This method was thought the most portable.
     (if existing
         (progn
           (log:info "book of isbn " (isbn book) " is already in stock.")
-          (save-dao existing)
+          (mito:save-dao existing)
           existing)
         (progn
-          (let ((new (insert-dao book)))
+          (let ((new (mito:insert-dao book)))
             (log:info "creating new book")
-            (save-dao new)
+            (mito:save-dao new)
             new)))))
 
 (defun find-by (key val)
   "Find a book by slot. Example: (find-by :isbn xxx). Return only the first matching result."
   (when val
-    (find-dao 'book key val)))
+    (mito:find-dao 'book key val)))
 
 (defun update-book (book bk)
   "Update and save the book object with this bk data."
@@ -494,7 +494,7 @@ searches. This method was thought the most portable.
      do (log:debug "updating ~a~&" slot)
      do (setf (access book slot)
               (access bk slot))
-     do (save-dao book))
+     do (mito:save-dao book))
   book)
 
 (defun find-existing (bk &key update)
@@ -511,24 +511,24 @@ searches. This method was thought the most portable.
 
 (defun find-book (&key query (order :asc))
   "Return a list of book objects. If a query string is given, filter by the ascii title."
-  (select-dao 'book
+  (mito:select-dao 'book
     (when query
-      (where (:or (:like :title-ascii (str:concat "%" query "%"))
+      (sxql:where (:or (:like :title-ascii (str:concat "%" query "%"))
                   (:like :authors-ascii (str:concat "%" query "%")))))
-    (order-by `(,order :created-at))))
+    (sxql:order-by `(,order :created-at))))
 
 (defun last-books (&key (order :asc))
   ""
-  (select-dao 'book
-    (order-by `(,order :created-at))))
+  (mito:select-dao 'book
+    (sxql:order-by `(,order :created-at))))
 
 (defun find-book-noisbn ()
-  (select-dao 'book
-    (where (:is-null :isbn))))
+  (mito:select-dao 'book
+    (sxql:where (:is-null :isbn))))
 
 (defun count-book ()
   ""
-  (count-dao 'book))
+  (mito:count-dao 'book))
 
 (defgeneric quantity (obj)
   (:documentation "Quantity of the given book, or the number of books in the given place."))
@@ -542,9 +542,9 @@ searches. This method was thought the most portable.
 
 (defmethod quantity ((book book))
   "Sum of the quantities in all places."
-  (if (object-id book)
-      (let ((place-copies (select-dao 'place-copies
-                            (where (:= :book book)))))
+  (if (mito:object-id book)
+      (let ((place-copies (mito:select-dao 'place-copies
+                            (sxql:where (:= :book book)))))
         (reduce #'+ (mapcar #'place-copy-quantity place-copies)))
       ;; if book not saved in db.
       0))
@@ -554,8 +554,8 @@ searches. This method was thought the most portable.
 
 (defmethod quantity ((place place))
   "Quantity of books in this place."
-  (reduce #'+ (mapcar #'place-copy-quantity (select-dao 'place-copies
-                                              (where (:= :place place))))))
+  (reduce #'+ (mapcar #'place-copy-quantity (mito:select-dao 'place-copies
+                                              (sxql:where (:= :place place))))))
 
 (defmethod quantity ((pc place-copies))
   ;; XXX: test the change from quantity of place to place-copy-quantity
@@ -608,24 +608,24 @@ searches. This method was thought the most portable.
 
 (defun delete-books-without-authors (&key simulate)
   "Delete books without authors."
-  (let ((to-delete (select-dao 'book
-                     (where (:is-null :authors)))))
+  (let ((to-delete (mito:select-dao 'book
+                     (sxql:where (:is-null :authors)))))
     (log:info "deleting ~a books with no authors" (length to-delete))
     (unless simulate
-      (mapcar #'delete-dao to-delete))))
+      (mapcar #'mito:delete-dao to-delete))))
 
 (defgeneric delete-obj (obj)
   (:method (obj)
-    (let ((place-copies (select-dao 'place-copies
-                          (where (:= :book obj)))))
-      (mapcar #'delete-dao place-copies)
-      (delete-dao obj))))
+    (let ((place-copies (mito:select-dao 'place-copies
+                          (sxql:where (:= :book obj)))))
+      (mapcar #'mito:delete-dao place-copies)
+      (mito:delete-dao obj))))
 
 (defmethod delete-obj ((place place))
-  (let ((place-copies (select-dao 'place-copies
-                        (where (:= :place place)))))
-    (mapcar #'delete-dao place-copies)
-    (delete-dao place)))
+  (let ((place-copies (mito:select-dao 'place-copies
+                        (sxql:where (:= :place place)))))
+    (mapcar #'mito:delete-dao place-copies)
+    (mito:delete-dao place)))
 
 (defun delete-objects (objlist)
   (mapcar #'delete-obj objlist))
@@ -637,10 +637,11 @@ searches. This method was thought the most portable.
 (defun move (bk to &key (quantity 1) (from (current-place)))
   "Move a book from the actual place (the default one) to another one.
    If :from is specified, move from this place."
-  (log:info from (object-id from)
-            to (object-id to))
-  (if (= (object-id from) (object-id to))
-      (format t (_ "No need to move this book from and to the same place (~a).~&") (name to))
+  (log:info from (mito:object-id from)
+            to (mito:object-id to))
+  (if (= (mito:object-id from) (mito:object-id to))
+      (format t (utils:_ "No need to move this book from and to the same place (~a).~&")
+              (name to))
       (progn
         (if (remove-from from bk :quantity quantity)
             (progn
@@ -653,8 +654,8 @@ searches. This method was thought the most portable.
 ;;
 (defun negative-quantities ()
   "Return a list of place-copies where the book's quantity is negative."
-  (select-dao 'place-copies
-    (where (:< :quantity 0))))
+  (mito:select-dao 'place-copies
+    (sxql:where (:< :quantity 0))))
 
 ;;
 ;; utils

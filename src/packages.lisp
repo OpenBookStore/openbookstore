@@ -1,14 +1,7 @@
 ;; XXX: all packages are not here.
 
 (defpackage bookshops.models
-  (:use :cl
-        :mito
-        :sxql
-        :cl-ansi-text
-        :log4cl
-        ;; internal
-        :bookshops.parameters
-        :bookshops.utils)
+  (:use :cl)
 
   (:import-from :access
                 :access)
@@ -55,7 +48,10 @@
 
            ;; utils
            :print-quantity-red-green :negative-quantities
-           :erase-metaclass-from))
+           :erase-metaclass-from)
+  (:local-nicknames
+   (#:parameters #:bookshops.parameters)
+   (#:utils #:bookshops.utils)))
 
 (defpackage bookshops
   (:use :cl

@@ -7,7 +7,7 @@
 ;; Books at someone's place aren't in at home now.
 (defclass contact (place)
   ()
-  (:metaclass dao-table-class))
+  (:metaclass mito:dao-table-class))
 
 ;; (defclass contact-copies (place-copies)
 ;;   ((max-time
@@ -35,7 +35,7 @@
     :col-type :integer
     :initform 60                        ;; days
     :accessor max-time))
-  (:metaclass dao-table-class))
+  (:metaclass mito:dao-table-class))
 
 (defmethod quantity ((it contact-copies))
   (contact-copies-quantity it))
@@ -61,7 +61,7 @@
     (format stream "~a lended to ~a on ~a"
             (title it)
             (name it)
-            (object-created-at it))))
+            (mito:object-created-at it))))
 
 (defun make-contact (name)
   "Make a new contact (no DB registration)."
@@ -69,7 +69,7 @@
 
 (defun create-contact (name)
   "Create a new contact (with DB registration)."
-  (create-dao 'contact :name name))
+  (mito:create-dao 'contact :name name))
 
 (defun find-contacts (&optional query)
   "If query (list of strings), return contacts matching this name. Otherwise, return all contacts."
@@ -79,30 +79,31 @@
         ;; xxx should be same interface as find-book
         (unless (consp query)
           (setf query (cons query nil)))
-        (select-dao 'contact
-          (where (:like :name (str:concat "%" (str:join "%" query) "%")))))
-      (select-dao 'contact)))
+        (mito:select-dao 'contact
+          (sxql:where (:like :name (str:concat "%" (str:join "%" query) "%")))))
+      (mito:select-dao 'contact)))
 
 (defun find-contact-by (key val)
   (when val
-    (select-dao 'contact
-      (where (:= key val)))))
+    (mito:select-dao 'contact
+      (sxql:where (:= key val)))))
 
 (defun find-contacts-copies (&key contact)
   "Return the list of borrowed books, most recent last.
 If `contact' is given, filter by this contact."
   ;; (warn "Exclude loans with a quantity at 0 ?")
-  (select-dao 'contact-copies
+  (mito:select-dao 'contact-copies
     (when contact
-      (where (:= :contact contact)))
-    (order-by :object-created)))
+      (sxql:where (:= :contact contact)))
+    (sxql:order-by :object-created)))
 
 (defgeneric loan-too-long-p (obj)
   (:documentation "Return t if this loan bypasses the number of days allowed."))
 
 (defmethod loan-too-long-p ((obj contact-copies))
   (let* ((now (local-time:now))
-         (time-difference (ltd:timestamp-difference (object-created-at obj) now)))
+         (time-difference (ltd:timestamp-difference
+                           (mito:object-created-at obj) now)))
     (> (abs (ltd:duration-as time-difference :day))
        (max-time obj))))
 
@@ -112,7 +113,7 @@ If `contact' is given, filter by this contact."
 (defmethod loan-danger-p ((obj contact-copies))
   (let* ((now (local-time:now))
          (danger-days 10)
-         (diff (ltd:timestamp-difference (object-created-at obj) now)))
+         (diff (ltd:timestamp-difference (mito:object-created-at obj) now)))
     (> (abs (ltd:duration-as diff :day))
        (- (max-time obj)
           danger-days))))
@@ -120,31 +121,31 @@ If `contact' is given, filter by this contact."
 (defun princ-color-flags (what loan)
   "Return `what` (a string) with red ansi colors if the loan is too long, yellow if danger. To print with `format t`."
   (if (loan-too-long-p loan)
-      (red (princ-to-string what))
+      (cl-ansi-text:red (princ-to-string what))
       (progn
         (if (loan-danger-p loan)
-            (yellow (princ-to-string what))
+            (cl-ansi-text:yellow (princ-to-string what))
             what))))
 
 (defun print-borrowed-book (book)
   ;; unused.
   (format t "~2a- ~40a borrowed on ~a~&"
-          (object-id book)
+          (mito:object-id book)
           (title book)
-          (object-created-at book)))
+          (mito:object-created-at book)))
 
 (defun print-borrowed-books (contact)
   (let ((title-length 40))
     (mapcar (lambda (it)
               (format t "~t~2a- ~va since ~a~&"
-                      (object-id (contact-copies-book it))
+                      (mito:object-id (contact-copies-book it))
                       title-length
                       (str:prune title-length (title it))
                       (princ-color-flags
-                       (format-date (object-created-at it))
+                       (utils:format-date (mito:object-created-at it))
                        it)))
-            (select-dao 'contact-copies
-              (where (:= :contact contact))))))
+            (mito:select-dao 'contact-copies
+              (sxql:where (:= :contact contact))))))
 
 (defun print-contact (contact &key (stream t) (details *print-details*))
   "Print the given contact, the books she borrowed and if it's been too long."
@@ -152,9 +153,9 @@ If `contact' is given, filter by this contact."
   (let* ((title-length 40)
          (padding (+ title-length 9)))
     (format stream "~2a - ~va~t ~&"
-            (object-id contact)
+            (mito:object-id contact)
             padding
-            (cyan (str:prune title-length (name contact)))
+            (cl-ansi-text:cyan (str:prune title-length (name contact)))
             ;; (length (contact-books contact))
             )
     (when details
@@ -167,15 +168,15 @@ If `contact' is given, filter by this contact."
   ;; xxx: modeled after add-to.
   (assert book)
   (assert contact)
-  (unless (object-id book)
+  (unless (mito:object-id book)
     (error "The book ~a is not saved in DB." book))
-  (let ((existing (find-dao 'contact-copies :contact contact :book book))
+  (let ((existing (mito:find-dao 'contact-copies :contact contact :book book))
         contact-copy)
     (if existing
         (progn
           (log:info "The book ~a was already lended to ~a." book contact)
           (incf (contact-copies-quantity existing) quantity)
-          (save-dao existing)
+          (mito:save-dao existing)
           (quantity existing))
         (progn
           (log:info "~a wasn't lended' to ~a yet, let's do it.~&" book contact)
@@ -183,7 +184,7 @@ If `contact' is given, filter by this contact."
                                             :contact contact
                                             :book book
                                             :quantity quantity))
-          (insert-dao contact-copy)
+          (mito:insert-dao contact-copy)
           (quantity contact-copy)))))
 
 
@@ -196,11 +197,11 @@ If `contact' is given, filter by this contact."
          (padding (+ title-length 9))) ;; color escape strings.
     (mapcar (lambda (copy)
               (format t "~2a- ~va since ~a by ~a~&"
-                      (object-id (contact-copies-book copy))
+                      (mito:object-id (contact-copies-book copy))
                       padding
-                      (blue (str:prune title-length (title copy)))
+                      (cl-ansi-text:blue (str:prune title-length (title copy)))
                       (princ-color-flags
-                       (format-date (object-created-at copy))
+                       (utils:format-date (mito:object-created-at copy))
                        copy)
                       (name copy)))
             copies)
@@ -212,9 +213,9 @@ If `contact' is given, filter by this contact."
   "Return this book.
    In case of ambiguity, give the contact as optional argument."
   (declare (ignorable contact))
-  (let ((copies (select-dao 'contact-copies
+  (let ((copies (mito:select-dao 'contact-copies
                   ;; How to chain queries, to filter on contact only if given ?
-                  (where (:= :book book)))))
+                  (sxql:where (:= :book book)))))
     (case (length copies)
       (0
        (format t "It seems that this book was not lended to anyone.~&"))
@@ -222,7 +223,7 @@ If `contact' is given, filter by this contact."
        (let* ((copy (first copies))
               (quantity (quantity copy)))
          (decf (quantity copy))
-         (save-dao copy)
+         (mito:save-dao copy)
          ;; Delete records back to 0 ? We're not handling history yet, but rather no.
          (if (> quantity 1)
              (format t "~a still has ~a cop~@:p of this book.~&"
@@ -245,7 +246,6 @@ If `contact' is given, filter by this contact."
 
 #+nil
 (defvar *thule* (first (find-book :query "thule")))
-
 
 ;;
 ;; Export
