@@ -1,10 +1,22 @@
-{% extends "base.html" %}
+{% extends "no-nav-base.html" %}
 
 {% block content %}
 
 {% if current-user %}
 <p> You're logged in as {{ current-user | user-name }} </p>
 {% else %}
+<div class="container is-fullhd">
+<section class="hero is-info">
+    <div class="hero-body">
+        <div class="container">
+            <h1 class="title is-3">Login</h1>
+            <p class="subtitle is-5">Please login to continue</p>
+        </div>
+    </div>
+</section>
+</div>
+
+<div class="container">
 <form id="login" action="/login" method="POST">
     <input name="referer-route" type="hidden" value="{{ referer-route }}"/>
     <div class="field" >
@@ -31,6 +43,7 @@
         </p>
     </div>
 </form>
+</div>
 {% endif %}
 
 {% endblock %}
