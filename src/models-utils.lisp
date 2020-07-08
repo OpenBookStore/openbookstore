@@ -22,11 +22,12 @@
   "DATA is not a list book objects (but currently a hash-table).
   Add an IN-STOCK field by looking up there ISBN."
   ;; 1 query to get the ones in stock.
-  (let* ((in-stock (select-dao 'book
-                     (where (:in :isbn (print (remove-if #'null
-                                                         (mapcar (lambda (it)
-                                                                   (access it :isbn))
-                                                                 data))))))))
+  (let* ((in-stock (mito:select-dao 'book
+                     (sxql:where
+                      (:in :isbn (print (remove-if #'null
+                                                   (mapcar (lambda (it)
+                                                             (access it :isbn))
+                                                           data))))))))
     ;; Add :in-stock to matches only.
     (loop for book in (print in-stock)
        for elt = (find (isbn book) data
@@ -36,5 +37,5 @@
        do (setf (access elt :in-stock)
                 (quantity book))
        do (setf (access elt :id)
-                (object-id book)))
+                (mito:object-id book)))
     data))
