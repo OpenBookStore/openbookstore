@@ -43,6 +43,11 @@
                               :update t))))
 
 (defun main ()
+
+  (unless (uiop:file-exists-p bookshops.models::*db-name*)
+    (uiop:format! t "Creating the database into ~a...~&" bookshops.models::*db-name*)
+    (bookshops.models::ensure-tables-exist))
+
   (opts:define-opts
       (:name :help
              :description "print this help and exit."

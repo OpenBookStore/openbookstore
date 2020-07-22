@@ -23,6 +23,8 @@
   (setf *db* (mito:connect-toplevel :sqlite3 :database-name *db-name*)))
 
 (defun ensure-tables-exist ()
+  (unless mito::*connection*
+    (connect))
   (mapcar #'mito:ensure-table-exists *tables*))
 
 (defun migrate-all ()
