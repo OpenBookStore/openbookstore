@@ -7,6 +7,7 @@
                 :access)
 
   (:export :connect
+           :add-to
            :ensure-tables-exist
            :bootstrap-base-roles
            ;; book accessors

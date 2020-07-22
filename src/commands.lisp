@@ -9,6 +9,7 @@
                 :_)
 
   (:import-from :bookshops.models
+                :add-to
                 :book
                 :make-book
                 :save-book
@@ -157,6 +158,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
     (let* ((bk (nth index *last-results*)))
       (format t "Registering ~a..." (title bk))
       (let ((new (save-book bk)))
+        (add-to (default-place) new)
         (format t "done. id: ~a~&" (object-id new))))))
 
 (defun total-pages (total)
