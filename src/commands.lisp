@@ -110,7 +110,7 @@
   "Search for books with `query` on `datasource`, nicely print the result."
   ;; the &rest is for the readline repl, that gives many string arguments to this function.
   (let* ((query (str:unwords (cons query rest)))
-         (results (books query))
+         (results (setf *last-results* (search-books query)))
          (i (length results)))
     (mapcar (lambda (it)
               (format t "~2@a- ~a, ~a~t~$ ~tstock: x~a~&"
@@ -146,14 +146,15 @@
   "Add this book (by index of the last search) into the DB.
 
 By default, add to the stock. If an optional list name is given, add it to the list without modifying the actual stock."
+  (declare (ignorable basket-name))
   (when (stringp index)
     ;; generics ?
     (setf index (parse-integer index)))
   (decf index)
-  (unless bookshops::*last-results*
-    (format t "Please do a search before."))
-  (when bookshops::*last-results*
-    (let* ((bk (nth index bookshops::*last-results*)))
+  (unless *last-results*
+    (format t "Please do a search before.~&"))
+  (when *last-results*
+    (let* ((bk (nth index *last-results*)))
       (format t "Registering ~a..." (title bk))
       (let ((new (save-book bk)))
         (format t "done. id: ~a~&" (object-id new))))))
