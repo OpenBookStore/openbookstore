@@ -118,9 +118,10 @@ It is permitted for a role to appear more than once in the result."
               (loop :for role :in direct-roles
                  :append (all-roles role))))))
 
-(defun login (email password)
+(defun login (name/email password)
   "Return the user if the credentials are correct, otherwise nil."
-  (let ((user (mito:find-dao 'user :email email)))
+  (let ((user (or (mito:find-dao 'user :email name/email)
+                  (mito:find-dao 'user :name name/email))))
     (when (and user
                (mito-auth:auth user password))
       user)))
