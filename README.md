@@ -102,6 +102,10 @@ Quit with `C-d`.
 
 From the REPL, call `(bookshops-web::start-app :port 4242)`.
 
+Create a superuser:
+
+    (bookshops.models::create-superuser name email password)
+
 
 ### GUI
 

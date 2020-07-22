@@ -1,5 +1,23 @@
 (in-package #:bookshops.models)
 
+#|
+
+Create a superuser:
+
+(create-superuser name email password)
+
+Create a normal user:
+
+(bookshops.models::create-user "Joe Blogg" "JoeBlogg@example.com" "i<3books")
+
+Give him rights:
+
+(add-role user :admin)
+
+Bootstrap roles: see database.lisp bootstrap-base-roles.
+
+|#
+
 (defclass user (mito-auth:has-secure-password)
   ((name :col-type (:varchar 60)
          :initarg :name
@@ -48,6 +66,11 @@
 (defun create-user (name email password)
   (mito:create-dao 'user :name name :email email :password password))
 
+(defun create-superuser (name email password)
+  "Create a user with the admin role."
+  (let ((user (create-user name email password)))
+    (add-role user :admin)))
+
 (defun create-role (name)
   (or (mito:find-dao 'role :name name)
       (mito:create-dao 'role :name name)))
@@ -59,6 +82,7 @@
     role))
 
 (defgeneric add-role (user role)
+  (:documentation "Add the given role to this user. ROLE is either a role object or a symbol. An example role is ':admin`.")
   (:method ((user user) (role role))
     (or (mito:find-dao 'user-role :user user :role role)
         (mito:create-dao 'user-role :user user :role role)))
