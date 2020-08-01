@@ -52,6 +52,7 @@
                  (:file "models")
                  (:file "models-utils")
                  (:file "authentication")
+                 (:file "manager")
                  (:file "baskets")
                  (:file "contacts")
                  (:file "bookshops")
