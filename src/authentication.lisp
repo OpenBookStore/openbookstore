@@ -138,3 +138,8 @@ It is permitted for a role to appear more than once in the result."
                                       (role (eql ',role)))
      (declare (ignore resource action role))
      t))
+
+
+(defun search-user (key value)
+  "Finds a user by its name or mail"
+  (mito:find-dao 'user key value))

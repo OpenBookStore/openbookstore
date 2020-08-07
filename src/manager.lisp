@@ -29,12 +29,11 @@ $ ./bookshops -i
 |#
 
 (defpackage bookshops.manager
-  (:use :cl
-        :mito
-        :cl-ansi-text)
+  (:use :cl)
   (:import-from :bookshops.models
                 :create-superuser
                 :create-role
+                :search-user
                 :user)
   (:export :manage))
 
@@ -45,6 +44,7 @@ $ ./bookshops -i
   (create-superuser name email password))
 
 (defun add-superuser ()
+  "Command for create a custom superuser"
   (let (name email password)
     (setf name (rl:readline :prompt
                             (format nil (str:concat "Enter username"
@@ -52,7 +52,7 @@ $ ./bookshops -i
                                                     " ? "))))
     (cond ((str:blank? name)
            (error "The username field is mandatory, please try again."))
-          ((mito:find-dao 'user :name name)
+          ((search-user :name name)
            (error "Username ~a already exists" name))
           (t nil))
 
@@ -62,7 +62,7 @@ $ ./bookshops -i
                                                      " ? "))))
     (cond ((str:blank? email)
            (error "The email field is mandatory, please try again."))
-          ((mito:find-dao 'user :email email)
+          ((search-user :email email)
            (error "User with email ~a already exists" email))
           (t nil))
 
@@ -74,7 +74,9 @@ $ ./bookshops -i
            (error "The password field is mandatory, please try again."))
           (t nil))
 
-    (%add-superuser% name email password)))
+    (%add-superuser% name email password)
+
+    (format t "User ~a was created successfully~%" name)))
 
 (defun manage (&optional what)
   (funcall (symbol-function (read-from-string (format nil "bookshops.manager::~a" what)))))
