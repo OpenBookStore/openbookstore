@@ -143,3 +143,15 @@ It is permitted for a role to appear more than once in the result."
 (defun search-user (key value)
   "Finds a user by its name or mail"
   (mito:find-dao 'user key value))
+
+
+(defun list-admin-users (&key (pprint-result nil))
+  "List all user with role :admin"
+  (mapcar (lambda (user)
+            (and (member :admin (can:user-roles user))
+                 (if pprint-result
+                     (format nil "User: ~a Email: ~a ~%"
+                             (user-name user)
+                             (user-email user))
+                     user)))
+          (mito:select-dao 'user)))

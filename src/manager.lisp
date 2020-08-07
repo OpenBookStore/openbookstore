@@ -34,6 +34,7 @@ $ ./bookshops -i
                 :create-superuser
                 :create-role
                 :search-user
+                :list-admin-users
                 :user)
   (:export :manage))
 
@@ -78,7 +79,13 @@ $ ./bookshops -i
 
     (format t "User ~a was created successfully~%" name)))
 
+
+(defun list-superusers ()
+  "Command for list all superusers in the system"
+  (dolist (admin (list-admin-users :pprint-result t))
+    (format t "~a" admin)))
+
 (defun manage (&optional what)
   (funcall (symbol-function (read-from-string (format nil "bookshops.manager::~a" what)))))
 
-(replic.completion:add-completion "manage" '("add-superuser"))
+(replic.completion:add-completion "manage" '("add-superuser" "list-superusers"))
