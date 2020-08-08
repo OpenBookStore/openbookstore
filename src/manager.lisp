@@ -35,6 +35,8 @@ $ ./bookshops -i
                 :create-role
                 :search-user
                 :list-admin-users
+                :is-superuser
+                :remove-user
                 :user)
   (:export :manage))
 
@@ -83,9 +85,33 @@ $ ./bookshops -i
 (defun list-superusers ()
   "Command for list all superusers in the system"
   (dolist (admin (list-admin-users :pprint-result t))
-    (format t "~a" admin)))
+    (format t "~a ~%" admin)))
+
+
+(defun remove-superuser ()
+  "Command for remove a superuser for its name or email"
+  (let (name-or-email)
+    (setf name-or-email
+          (rl:readline :prompt
+                       (format nil (str:concat "Enter username or email"
+                                               (cl-ansi-text:red "*")
+                                               " ? "))))
+    (setf user (or (search-user :name name-or-email)
+                   (search-user :email name-or-email)))
+
+    (cond ((str:blank? name-or-email)
+           (error "The field is mandatory, please try again."))
+          ((not user)
+           (error "The user not exists"))
+          ((not (is-superuser user))
+           (error "The user is not a superuser"))
+          (t nil))
+
+    (remove-user user)
+
+    (format t "User was deleted successfully ~%")))
 
 (defun manage (&optional what)
   (funcall (symbol-function (read-from-string (format nil "bookshops.manager::~a" what)))))
 
-(replic.completion:add-completion "manage" '("add-superuser" "list-superusers"))
+(replic.completion:add-completion "manage" '("add-superuser" "list-superusers" "remove-superuser"))

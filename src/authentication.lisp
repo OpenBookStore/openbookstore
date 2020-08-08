@@ -145,13 +145,20 @@ It is permitted for a role to appear more than once in the result."
   (mito:find-dao 'user key value))
 
 
+(defun is-superuser (user)
+  "Detects if user is a superuser"
+  (find :admin (can:user-roles user)))
+
 (defun list-admin-users (&key (pprint-result nil))
   "List all user with role :admin"
-  (mapcar (lambda (user)
-            (and (member :admin (can:user-roles user))
-                 (if pprint-result
-                     (format nil "User: ~a Email: ~a ~%"
-                             (user-name user)
-                             (user-email user))
-                     user)))
+  (mapcan (lambda (user)
+            (and (is-superuser user)
+                 (list (if pprint-result
+                           (format nil "User: ~a Email: ~a"
+                                   (user-name user)
+                                   (user-email user))
+                           user))))
           (mito:select-dao 'user)))
+
+(defun remove-user (user)
+  (mito:delete-dao user))
