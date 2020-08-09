@@ -46,33 +46,40 @@ $ ./bookshops -i
   (create-role :admin)
   (create-superuser name email password))
 
-(defun add-superuser ()
+(defun add-superuser (&optional name-input email-input password-input)
   "Command for create a custom superuser"
-  (let (name email password)
-    (setf name (rl:readline :prompt
-                            (format nil (str:concat "Enter username"
-                                                    (cl-ansi-text:red "*")
-                                                    " ? "))))
+  (let ((name name-input)
+        (email email-input)
+        (password password-input))
+
+    (if (not name)
+        (setf name (rl:readline :prompt
+                                (format nil (str:concat "Enter username"
+                                                        (cl-ansi-text:red "*")
+                                                        " ? ")))))
     (cond ((str:blank? name)
            (error "The username field is mandatory, please try again."))
           ((search-user :name name)
            (error "Username ~a already exists" name))
           (t nil))
 
-    (setf email (rl:readline :prompt
+
+    (if (not email)
+        (setf email (rl:readline :prompt
                              (format nil (str:concat "Enter email"
                                                      (cl-ansi-text:red "*")
-                                                     " ? "))))
+                                                     " ? ")))))
     (cond ((str:blank? email)
            (error "The email field is mandatory, please try again."))
           ((search-user :email email)
            (error "User with email ~a already exists" email))
           (t nil))
 
-    (setf password (rl:readline :prompt
-                                (format nil (str:concat "Enter password"
-                                                     (cl-ansi-text:red "*")
-                                                     " ? "))))
+    (if (not password)
+        (setf password (rl:readline :prompt
+                                    (format nil (str:concat "Enter password"
+                                                            (cl-ansi-text:red "*")
+                                                            " ? ")))))
     (cond ((str:blank? password)
            (error "The password field is mandatory, please try again."))
           (t nil))
@@ -88,14 +95,15 @@ $ ./bookshops -i
     (format t "~a ~%" admin)))
 
 
-(defun remove-superuser ()
+(defun remove-superuser (&optional name-or-email-input)
   "Command for remove a superuser for its name or email"
-  (let (name-or-email)
-    (setf name-or-email
-          (rl:readline :prompt
-                       (format nil (str:concat "Enter username or email"
-                                               (cl-ansi-text:red "*")
-                                               " ? "))))
+  (let ((name-or-email name-or-email-input))
+    (if (not name-or-email)
+        (setf name-or-email
+              (rl:readline :prompt
+                           (format nil (str:concat "Enter username or email"
+                                                   (cl-ansi-text:red "*")
+                                                   " ? ")))))
     (setf user (or (search-user :name name-or-email)
                    (search-user :email name-or-email)))
 
@@ -111,7 +119,7 @@ $ ./bookshops -i
 
     (format t "User was deleted successfully ~%")))
 
-(defun manage (&optional what)
-  (funcall (symbol-function (read-from-string (format nil "bookshops.manager::~a" what)))))
+(defun manage (&optional what &rest params)
+  (apply (symbol-function (read-from-string (format nil "bookshops.manager::~a" what))) params))
 
 (replic.completion:add-completion "manage" '("add-superuser" "list-superusers" "remove-superuser"))
