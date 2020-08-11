@@ -283,6 +283,18 @@ Model usage:
 
 Slots: `title`... `quantity`, etc.
 
+### Creating custom commands for the binary application
+
+You can use:
+
+- `manage <custom_command>`
+
+to run custom commands.
+
+And you can see some basic instructions on how to create your own commands
+on file "src/manager.lisp"
+
+
 ### Testing
 
 To test DB operations, use our macro `with-empty-db`.

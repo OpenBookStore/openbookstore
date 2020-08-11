@@ -92,6 +92,7 @@
 
           (setf replic:*help-preamble* "With cl-bookshops you can search for books by keywords or isbn, add some to your stock and explore it.")
           (replic.completion:functions-to-commands :bookshops.commands)
+          (replic.completion:functions-to-commands :bookshops.manager)
 
           ;; define completions.
           ;; (push '("add" . *results*) replic:*args-completions*)
