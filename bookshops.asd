@@ -40,6 +40,7 @@
   :components ((:module "src/datasources"
                 :components
                 ((:file "dilicom")
+                 (:file "dilicom-fel")
                  (:file "scraper-fr")))
 
                (:module "src"
