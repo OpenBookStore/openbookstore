@@ -111,9 +111,7 @@ Dev helpers:
                   (models:find-book :query (bookshops.utils::asciify q)))
                  (t
                   ;; XXX: pagination
-                  (subseq (models:find-book)
-                          0
-                          (min 50 (bookshops.models::count-book)))))))
+                  (listopia:take 50 (models:find-book))))))
     (render-template* +stock.html+ nil
                       :route "/stock"
                       :cards cards
