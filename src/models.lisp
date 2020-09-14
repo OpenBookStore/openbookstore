@@ -95,8 +95,8 @@ searches. This method was thought the most portable.
     ;; we don't default it to 0 (nil denotes a missing field),
     ;; and it might be useful for other objects.
     :initform nil
-    :type float
-    :col-type (or :integer :null))
+    :type (or integer float null)       ;; integer: for compatibility. Otherwise, Mito is strict about float and fails.
+    :col-type (or :integer :float :null))
 
    (date-publication
     :accessor date-publication
