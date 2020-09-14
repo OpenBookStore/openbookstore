@@ -220,6 +220,12 @@ Dev helpers:
 
 (defun start-app (&key (port *port*))
   (bookshops.models:connect)
+
+  ;; fix a puri bug. puri:parse-uri "/login?referer-route=/stock?q=lisp" fails,
+  ;; it doesn't like the last ?. See https://gitlab.common-lisp.net/clpm/puri/-/issues/2
+  (setf puri::*strict-illegal-query-characters*
+        (remove #\? puri::*strict-illegal-query-characters*))
+
   (setf *server* (make-instance 'easy-routes:routes-acceptor :port port))
   (hunchentoot:start *server*)
   (uiop:format! t "~&Application started on port ~a.~&" port))
