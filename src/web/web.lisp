@@ -203,7 +203,7 @@ Dev helpers:
   (let* ((card-id (ignore-errors
                     (parse-integer (first (str:split "-" slug)))))
          (card (when card-id
-                 (mito:find-dao 'book :id card-id))))
+                 (models:find-by :id card-id))))
     (cond
       ((null card-id)
        (render-template* +404.html+ nil))
@@ -212,7 +212,7 @@ Dev helpers:
                          :messages nil
                          :route "/stock"
                          :card card
-                         :places-copies (bookshops.models::book-places-quantities card)
+                         :places-copies (models::book-places-quantities card)
                          :raw raw))
       (t
        (render-template* +404.html+ nil)))))
