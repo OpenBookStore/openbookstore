@@ -42,6 +42,19 @@
                                :datasource (access bk :datasource))
                               :update t))))
 
+(defun print-system-info (&optional (stream t))
+  ;; see also https://github.com/40ants/cl-info
+  (format stream "~&OS: ~a ~a~&" (software-type) (software-version))
+  (format stream "~&Lisp: ~a ~a~&" (lisp-implementation-type) (lisp-implementation-version))
+  #+asdf
+  (format stream "~&ASDF: ~a~&" (asdf:asdf-version))
+  #-asdf
+  (format stream "NO ASDF!")
+  #+quicklisp
+  (format stream "~&Quicklisp: ~a~&" (ql-dist:all-dists))
+  #-quicklisp
+  (format stream "!! Quicklisp is not installed !!"))
+
 (defun main ()
 
   (unless (uiop:file-exists-p bookshops.models::*db-name*)
@@ -49,34 +62,55 @@
     (bookshops.models::ensure-tables-exist))
 
   (opts:define-opts
-      (:name :help
-             :description "print this help and exit."
-             :short #\h
-             :long "help")
+    (:name :help
+           :description "print this help and exit."
+           :short #\h
+           :long "help")
 
-      (:name :version
-             :description "print the version number and exit."
-             :short #\v
-             :long "version")
+    (:name :version
+           :description "print the version number and exit."
+           :short #\v
+           :long "version")
+    (:name :verbose
+           :description "print debug info."
+           :short #\V
+           :long "verbose")
 
     (:name :interactive
            :description "enter the interactive prompt."
            :short #\i
-           :long "interactive"))
+           :long "interactive")
+
+    (:name :web
+           :description "run the web application."
+           :short #\w
+           :long "web")
+
+    (:name :port
+           :arg-parser #'parse-integer
+           :description "set the port for the web server. You can also use the OBS_PORT environment variable."
+           :short #\p
+           :long "port"))
 
   (multiple-value-bind (options free-args)
       (handler-bind ((error #'handle-parser-error))
         (opts:get-opts))
 
+    (format t "OpenBookStore version ~a~&" +version+)
+
     (if (getf options :version)
         (progn
-          (format t "~a~&" +version+)
+          (print-system-info)
           (uiop:quit)))
 
     (if (getf options :help)
         (progn
           (opts:describe)
           (uiop:quit)))
+
+    (if (getf options :verbose)
+        (progn
+          (print-system-info)))
 
     (if (getf options :interactive)
         (progn
@@ -105,4 +139,30 @@
           (error (c)
             (progn
               (format *error-output* "~a~&" c)
-              (uiop:quit 1)))))))
+              (uiop:quit 1)))))
+
+    (if (getf options :web)
+        (progn
+          (handler-case
+              (progn
+                (bookshops-web::start-app :port (or (getf options :port)
+                                                    (ignore-errors (parse-integer (uiop:getenv "OBS_PORT")))
+                                                    bookshops-web::*port*))
+                ;; Without this, the binary exits immediately after having
+                ;; run the web server in its thread.
+                (bt:join-thread
+                 (find-if (lambda (th)
+                            (search "hunchentoot" (bt:thread-name th)))
+                          (bt:all-threads))))
+            (usocket:address-in-use-error ()
+              (format *error-output* "This port is already taken.~&"))
+            #+sbcl
+            (sb-sys:interactive-interrupt ()
+              (format *error-output* "~&Bye!~&")
+              (uiop:quit))
+            (error (c)
+              (format *error-output* "~&An error occured: ~a~&" c)
+              ;; XXX: quit also kills the current lisp process, which is
+              ;; annoying when developing with a REPL.
+              ;; (uiop:quit 1)
+              ))))))

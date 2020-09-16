@@ -92,3 +92,12 @@
   (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
                     (#:fr #:bookshops.datasources.scraper-fr))
   (:documentation "CLI interface"))
+
+(defpackage bookshops-web
+  (:use :cl)
+  (:import-from :easy-routes
+                :defroute)
+  (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
+                    (#:fr #:bookshops.datasources.scraper-fr)
+                    (#:models #:bookshops.models)
+                    (#:utils #:bookshops.utils)))

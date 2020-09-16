@@ -44,20 +44,7 @@ Build the executable:
 
     make build
 
-<!-- To build the toy Tk GUI, make sure you have Tcl and Tk installed: -->
-
-<!--     wish -->
-
-<!-- this should open a little Tk window. Otherwise, install them: -->
-
-<!--     apt install tcl tk -->
-
-<!-- then build the GUI: -->
-
-<!--     make build-gui -->
-
-
-There is a toy Tk GUI and the web view is in progress.
+There is a toy Tk GUI and the **web view** is in progress.
 
 
 ## Usage
@@ -90,19 +77,26 @@ You might need to enable terminal colors with `M-x slime-repl-ansi-on` ([see her
 
 ### Web UI
 
-Run it with:
+To run the web application:
+
+- run it from the binary. Either download it from GitLab either build it (`make build`), then run it:
+
+    ./bookshops -w [--port 8989] [--verbose]
+
+- run it from sources:
 
     make run
 
-aka `sbcl --load run.lisp`.
-
-Set the port with the environment variable `OBS_PORT` (defaults to 4242).
+aka `sbcl --load run.lisp`. You can set the port with the environment variable `OBS_PORT` (defaults to 4242).
 
 Quit with `C-d`.
 
-From the REPL, call `(bookshops-web::start-app :port 4242)`.
+- run it from the REPL:
 
-Create a superuser:
+    (bookshops-web:start-app :port 8989)
+
+
+Create a superuser from the REPL:
 
     (bookshops.models::create-superuser name email password)
 
