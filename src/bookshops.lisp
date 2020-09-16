@@ -98,71 +98,67 @@
 
     (format t "OpenBookStore version ~a~&" +version+)
 
-    (if (getf options :version)
-        (progn
-          (print-system-info)
-          (uiop:quit)))
+    (when (getf options :version)
+      (print-system-info)
+      (uiop:quit))
 
-    (if (getf options :help)
-        (progn
-          (opts:describe)
-          (uiop:quit)))
+    (when (getf options :help)
+      (opts:describe)
+      (uiop:quit))
 
-    (if (getf options :verbose)
-        (progn
-          (print-system-info)))
+    (when (getf options :verbose)
+      (print-system-info))
 
-    (if (getf options :interactive)
-        (progn
-          (format t "Initializing...~&")
-          (init)
+    (when (getf options :interactive)
+      (format t "Initializing...~&")
+      (init)
 
-          (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
+      (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
 
-          (setf replic:*prompt-prefix* (format nil "(~a) " (name (default-place))))
+      (setf replic:*prompt-prefix* (format nil "(~a) " (name (default-place))))
 
-          ;; create commands from the exported functions and variables.
-          (replic.completion:functions-to-commands :replic.base)
+      ;; create commands from the exported functions and variables.
+      (replic.completion:functions-to-commands :replic.base)
 
-          (setf replic:*help-preamble* "With cl-bookshops you can search for books by keywords or isbn, add some to your stock and explore it.")
-          (replic.completion:functions-to-commands :bookshops.commands)
-          (replic.completion:functions-to-commands :bookshops.manager)
+      (setf replic:*help-preamble* "With cl-bookshops you can search for books by keywords or isbn, add some to your stock and explore it.")
+      (replic.completion:functions-to-commands :bookshops.commands)
+      (replic.completion:functions-to-commands :bookshops.manager)
 
-          ;; define completions.
-          ;; (push '("add" . *results*) replic:*args-completions*)
+      ;; define completions.
+      ;; (push '("add" . *results*) replic:*args-completions*)
 
-          (replic:repl))
+      (replic:repl)
 
-        (handler-case
-            (if free-args
-                (search-books (str:join " " free-args)))
-          (error (c)
-            (progn
-              (format *error-output* "~a~&" c)
-              (uiop:quit 1)))))
 
-    (if (getf options :web)
-        (progn
-          (handler-case
-              (progn
-                (bookshops-web::start-app :port (or (getf options :port)
-                                                    (ignore-errors (parse-integer (uiop:getenv "OBS_PORT")))
-                                                    bookshops-web::*port*))
-                ;; Without this, the binary exits immediately after having
-                ;; run the web server in its thread.
-                (bt:join-thread
-                 (find-if (lambda (th)
-                            (search "hunchentoot" (bt:thread-name th)))
-                          (bt:all-threads))))
-            (usocket:address-in-use-error ()
-              (format *error-output* "This port is already taken.~&"))
-            #+sbcl
-            (sb-sys:interactive-interrupt ()
-              (format *error-output* "~&Bye!~&")
-              (uiop:quit))
-            (error (c)
-              (format *error-output* "~&An error occured: ~a~&" c)
-              ;; XXX: quit also kills the current lisp process, which is
-              ;; annoying when developing with a REPL.
-              ;; (uiop:quit 1)
-              ))))))
+      (handler-case
+          (if free-args
+              (search-books (str:join " " free-args)))
+        (error (c)
+          (progn
+            (format *error-output* "~a~&" c)
+            (uiop:quit 1)))))
+
+    (when (getf options :web)
+      (handler-case
+          (progn
+            (bookshops-web::start-app :port (or (getf options :port)
+                                                (ignore-errors (parse-integer (uiop:getenv "OBS_PORT")))
+                                                bookshops-web::*port*))
+            ;; Without this, the binary exits immediately after having
+            ;; run the web server in its thread.
+            (bt:join-thread
+             (find-if (lambda (th)
+                        (search "hunchentoot" (bt:thread-name th)))
+                      (bt:all-threads))))
+        (usocket:address-in-use-error ()
+          (format *error-output* "This port is already taken.~&"))
+        #+sbcl
+        (sb-sys:interactive-interrupt ()
+          (format *error-output* "~&Bye!~&")
+          (uiop:quit))
+        (error (c)
+          (format *error-output* "~&An error occured: ~a~&" c)
+          ;; XXX: quit also kills the current lisp process, which is
+          ;; annoying when developing with a REPL.
+          ;; (uiop:quit 1)
+          )))))
