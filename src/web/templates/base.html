@@ -28,67 +28,83 @@
         </div>
         <div id="navMenu" class="navbar-menu">
           <div class="navbar-start">
-              <a class="navbar-item" href="/">
-                  Home
-              </a>
+            <a class="navbar-item" href="/">
+              Home
+            </a>
+
+            <a class="navbar-item" href="/">
+
+              <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">
+                  Database
+                </a>
+
+                <div class="navbar-dropdown">
+                  <a class="navbar-item" href="/card/create">
+                    New book
+                  </a>
+                </div>
+              </div>
+            </a>
+
           </div>
         </div>
         <div class="navbar-end" >
-            <div class="navbar-item" >
-                {% if current-user %}
-                <div class="dropdown is-hoverable">
-                    <div class="dropdown-trigger" >
-                        <button class="button" aria-haspopup="true" aria-controls="profile-dropdown" >
-                            <span class="icon is-small" >
-                                <i class="fas fa-user" aria-hidden="true"></i>
-                            </span>
-                            <span>{{ current-user | user-name }}</span>
-                        </button>
-                    </div>
-                    <div class="dropdown-menu" role="menu" id="profile-dropdown">
-                        <div class="dropdown-content" >
-                            <div class="dropdown-item" >
-                                <form action="/logout" method="POST" >
-                                    <button class="button is-light">Logout</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+          <div class="navbar-item" >
+            {% if current-user %}
+            <div class="dropdown is-hoverable">
+              <div class="dropdown-trigger" >
+                <button class="button" aria-haspopup="true" aria-controls="profile-dropdown" >
+                  <span class="icon is-small" >
+                    <i class="fas fa-user" aria-hidden="true"></i>
+                  </span>
+                  <span>{{ current-user | user-name }}</span>
+                </button>
+              </div>
+              <div class="dropdown-menu" role="menu" id="profile-dropdown">
+                <div class="dropdown-content" >
+                  <div class="dropdown-item" >
+                    <form action="/logout" method="POST" >
+                      <button class="button is-light">Logout</button>
+                    </form>
+                  </div>
                 </div>
-                {% else %}
-                <form action="/login" >
-                    <input name="referer-route" type="hidden" value="{{ request-uri }}"/>
-                    <button class="button is-light" >Login</button>
-                </form>
-                {% endif %}
+              </div>
             </div>
-      </div>
+            {% else %}
+            <form action="/login" >
+              <input name="referer-route" type="hidden" value="{{ request-uri }}"/>
+              <button class="button is-light" >Login</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
     </nav>
     <!-- END NAV -->
 
-  <div class="container">
-    <div class="columns">
-      <div class="column is-3 ">
-        <aside class="menu is-hidden-mobile">
-          <p class="menu-label">
-            General
-          </p>
-          <ul class="menu-list">
-            <li><a {% if route == "/" %} class="is-active" {% endif %} href="/">Dashboard</a></li>
-            <li><a {% if route == "/stock" %} class="is-active" {% endif %} href="/stock"> Stock </a></li>
-            <li><a {% if route == "/search" %} class="is-active" {% endif %} href="/search"> Search </a></li>
-          </ul>
-        </aside>
-      </div>
+    <div class="container">
+      <div class="columns">
+        <div class="column is-3 ">
+          <aside class="menu is-hidden-mobile">
+            <p class="menu-label">
+              General
+            </p>
+            <ul class="menu-list">
+              <li><a {% if route == "/" %} class="is-active" {% endif %} href="/">Dashboard</a></li>
+              <li><a {% if route == "/stock" %} class="is-active" {% endif %} href="/stock"> Stock </a></li>
+              <li><a {% if route == "/search" %} class="is-active" {% endif %} href="/search"> Search </a></li>
+            </ul>
+          </aside>
+        </div>
 
-      <div class="column is-9">
-        {% block content %} {% endblock %}
-      </div>
+        <div class="column is-9">
+          {% block content %} {% endblock %}
+        </div>
 
+      </div>
     </div>
-  </div>
 
-</body>
+  </body>
 
   <script>
     // bulma.js: hamburger toggle for mobile.
