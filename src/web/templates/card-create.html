@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container is-fullheight" style="margin-bottom: 10em">
+  <div class="section">
+    <div class="columns is-centered">
+
+      <div class="card-content column">
+        {% for msg in messages/status %}
+        <div class="notification {{ msg.class }}">
+          <button class="delete"></button>
+          {{ msg.message }}
+        </div>
+        {% endfor %}
+
+        <div class="box content">
+        <h3 class="h3"> Create a new book </h3>
+          <form action="/card/create" method="POST">
+
+            <div class="field">
+              <div class="control">
+                <label class="label"> Title </label>
+                <input type="text" for="title" name="title" id="title"
+                    placeholder="title"
+                    required="true"
+                    class="input"/>
+              </div>
+            </div>
+
+            <div class="control">
+              <label class="label"> Authors </label>
+              <input type="text" for="authors" name="authors" id="authors"
+                  class="input"
+                  placeholder="authors"/>
+            </div>
+            <div class="control">
+              <label class="label"> Price </label>
+              <input type="text" for="price" name="price" id="price"
+                  class="input"
+                  placeholder="price"/>
+            </div>
+            <!-- <input type="text" for="title" name="title" id="title" placeholder="title"/> -->
+            <input type="submit" value="Save" class="button">
+
+          </form>
+        </div>
+
+        <!-- <div id="quantity"> -->
+        <!-- En stock: {{ card | quantity }} -->
+        <!-- </div> -->
+
+        <!-- <table id="place-copies-table" class="table"> -->
+        <!-- {% for place-copy in places-copies %} -->
+        <!-- <tr id="place-copy{{ place-copy.id }}"> -->
+        <!-- <td> -->
+        <!-- {{ place-copy | name }} -->
+        <!-- </td> -->
+        <!-- <td> -->
+        <!-- {{ place-copy | quantity }} -->
+        <!-- </td> -->
+        <!-- </tr> -->
+        <!-- {% endfor %} -->
+        <!-- </table> -->
+
+        <!-- {% block subinfo %} -->
+        <!-- TODO this is a bodge around no in boolean operator for if in djula -->
+        <!-- {% for role in current-user-roles %} -->
+        <!-- {% ifequal role "editor" %} -->
+
+        <!-- {% endifequal %} -->
+        <!-- {% endfor %} -->
+        <!-- {% endblock subinfo %} -->
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+{% block script %}
+<script>
+  window.addEventListener('load', (event) => {
+    const quantityInput = document.getElementById('quantity-input');
+    quantityInput.focus();
+    quantityInput.setSelectionRange(0, -1);
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+      $notification = $delete.parentNode;
+
+      $delete.addEventListener('click', () => {
+        $notification.parentNode.removeChild($notification);
+      });
+    });
+  });
+</script>
+{% endblock script %}
+
+{% endblock %}

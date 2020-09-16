@@ -4,6 +4,7 @@
         :bookshops.parameters)
   (:export #:isbn-p
            #:extract-float
+           #:ensure-float
            #:format-date
            #:i18n-load
            #:_)
@@ -25,6 +26,16 @@
   (ignore-errors
     ;; the regexp should be enough, given we parse a known html beforehand.
     (parse-float (ppcre:scan-to-strings "-?\\d+.?\\d*" s))))
+
+(defun ensure-float (param)
+  "Return a float from this param, if possible.
+  If it is a string, parse it for a float."
+  (typecase param
+    (string (or (ignore-errors (parse-float:parse-float param))
+                0.0))
+    (integer (coerce param 'float))
+    (float param)
+    (t (error (format nil "The parameter ~a is of type ~a and we don't know how to make it a float." param (type-of param))))))
 
 (defun _ (a) (cl-i18n:translate a))
 

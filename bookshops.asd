@@ -68,6 +68,7 @@
                (:module "src/web"
                 :components
                 ((:file "package")
+                 (:file "messages")
                  (:file "authentication")
                  (:file "web")
                  (:file "api"))))

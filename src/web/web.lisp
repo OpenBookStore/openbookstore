@@ -64,6 +64,7 @@ Dev helpers:
 (defparameter +stock.html+ (djula:compile-template* "stock.html"))
 (defparameter +card-page.html+ (djula:compile-template* "card-page.html"))
 (defparameter +card-stock.html+ (djula:compile-template* "card-stock.html"))
+(defparameter +card-create.html+ (djula:compile-template* "card-create.html"))
 
 (defparameter +404.html+ (djula:compile-template* "404.html"))
 
@@ -134,8 +135,7 @@ Dev helpers:
                           :title (format nil "OpenBookstore - search: ~a" q))
         (render-template* +search.html+ nil
                           :route "/search"
-                          :q q
-                          :messages (list "Please enter an ISBN or some keywords.")))))
+                          :q q))))
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute add-or-create-route ("/card/add-or-create/" :method :post
@@ -217,6 +217,30 @@ Dev helpers:
       (t
        (render-template* +404.html+ nil)))))
 
+(bookshops.models:define-role-access card-create-route :view :editor)
+(defroute card-create-route ("/card/create" :method :get)
+    ()
+  (describe (hunchentoot:start-session) t) ;; XXX debug
+  ;; (log:info (bookshops.messages::add-message "Hello message :)"))
+  (render-template* +card-create.html+ nil
+                    :messages/status (bookshops.messages:get-message/status)))
+
+(defroute card-create/post-route ("/card/create" :method :post)
+    ;; title is mandatory, the rest is optional.
+    (title price authors)
+  (when (str:blankp title)
+    (bookshops.messages::add-message "Please enter a title" :status :warning)
+    (hunchentoot:redirect "/card/create"))
+  (handler-case
+      (let ((book (models:make-book :title title
+                                    :authors authors
+                                    :price (utils:ensure-float price))))
+        (mito:save-dao book)
+        (bookshops.messages:add-message "The book was created succesfully.")
+        (hunchentoot:redirect "/card/create"))
+    (error (c)
+                                        ;XXX: 404 handled by hunchentoot
+      (format *error-output* c))))
 
 (defun start-app (&key (port *port*))
   (bookshops.models:connect)
@@ -233,3 +257,7 @@ Dev helpers:
 (defun stop-app ()
   ;; disconnect db ?
   (hunchentoot:stop *server*))
+
+(defun set-devel-profile ()
+  "- interactive debugger"
+  (setf hunchentoot:*catch-errors-p* nil))

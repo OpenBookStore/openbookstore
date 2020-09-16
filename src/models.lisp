@@ -460,7 +460,7 @@ searches. This method was thought the most portable.
                  :authors-ascii (bookshops.utils::asciify authors)
                  :publisher publisher
                  :publisher-ascii (bookshops.utils::asciify publisher)
-                 :price price
+                 :price (utils:ensure-float price)
                  :date-publication date-publication))
 
 (defun create-book (&rest initargs)
