@@ -1,8 +1,24 @@
 # Bookshops
 
-In development, don't look.
+In development. Starts being testable.
 
 ![](https://gitlab.com/vindarel/cl-bookshops/badges/master/pipeline.svg)
+
+<p>
+  <h3 align="center"> OpenBookStore </h3>
+  <h2 align="center"> Book management software </h2>
+</p>
+
+<p align="center">
+  <a href="https://github.com/OpenBookStore/openbookstore"><b>Homepage</b></a> |
+  <a href="https://gitlab.com/MyOpenBookStore/openbookstore/issues"><b>Issues</b></a> |
+  <a href="https://www.patreon.com/abelujo"><b>Support us on Patreon</b></a> |
+  <a href="https://liberapay.com/vindarel/donate"><b>Support us on Liberapay</b></a> |
+  <a href="/README_fr.md">Français</a>
+</p>
+
+<a href="https://www.patreon.com/bePatron?u=36390714" data-patreon-widget-type="become-patron-button">Become a Patron, it helps!</a>
+
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
@@ -10,10 +26,10 @@ In development, don't look.
 - [Bookshops](#bookshops)
     - [Installation](#installation)
     - [Usage](#usage)
-        - [Command line](#command-line)
-        - [Lisp REPL](#lisp-repl)
         - [Web UI](#web-ui)
+        - [Command line](#command-line)
         - [GUI](#gui)
+        - [Lisp REPL](#lisp-repl)
         - [Bibliographic search, adding books to your stock](#bibliographic-search-adding-books-to-your-stock)
         - [Seeing the stock, pagination](#seeing-the-stock-pagination)
         - [Places](#places)
@@ -23,6 +39,7 @@ In development, don't look.
     - [High-level goals](#high-level-goals)
     - [i18n](#i18n)
     - [Dev](#dev)
+        - [Creating custom commands for the binary application](#creating-custom-commands-for-the-binary-application)
         - [Testing](#testing)
         - [Troubleshooting](#troubleshooting)
 - [Lisp ?!](#lisp-)
@@ -34,46 +51,24 @@ In development, don't look.
 
 ## Installation
 
-Download the executable: https://gitlab.com/vindarel/cl-bookshops/pipelines (download a build artifact with the button on the right).
+Download the executable from https://gitlab.com/vindarel/cl-bookshops/pipelines (download a build artifact with the button on the right).
 
 It's a 24MB self-contained executable (for Debian GNU/Linux,
 x86/64). You don't need to install a Lisp implementation nor anything
 to run it.
 
-Build the executable:
+Alternatively, install `sbcl` with your package manager, Quicklisp, clone the repository and either build the executable:
 
     make build
 
-There is a toy Tk GUI and the **web view** is in progress.
+or run from sources:
+
+    make run  # aka sbcl --load run.lisp
+
+There is a toy Tk GUI.
 
 
 ## Usage
-
-### Command line
-
-    ./bookshops search terms
-
-get a readline interactive prompt:
-
-    ./bookshops -i
-    bookshops > help
-
-See the available commands with `help`, the documentation of a given command with `help <cmd>` (see `help help`, use TAB-completion).
-
-At any moment, quit the current prompt with `C-d` (control-d) or use:
-
-- `quit`
-
-![](search-add.png)
-
-### Lisp REPL
-
-Load `bookshops.asd` (C-c C-k in Slime), Quickload the system
-(`(ql:quickload "bookshops")`), then initialize the DB connection and
-the translations with `(bookshops:init)`, then explore commands in
-`bookshops.commands`, like `stock`.
-
-You might need to enable terminal colors with `M-x slime-repl-ansi-on` ([see here](https://github.com/enriquefernandez/slime-repl-ansi-color)).
 
 ### Web UI
 
@@ -100,6 +95,23 @@ Create a superuser from the REPL:
 
     (bookshops.models::create-superuser name email password)
 
+### Command line
+
+    ./bookshops search terms
+
+get a readline interactive prompt:
+
+    ./bookshops -i
+    bookshops > help
+
+See the available commands with `help`, the documentation of a given command with `help <cmd>` (see `help help`, use TAB-completion).
+
+At any moment, quit the current prompt with `C-d` (control-d) or use:
+
+- `quit`
+
+![](search-add.png)
+
 
 ### GUI
 
@@ -110,6 +122,15 @@ A useless Tk GUI built for learning purposes.
 or from the REPL: load `bookshops/gui` and run `bookshops.gui:main`.
 
 You can't do much !
+
+### Lisp REPL
+
+Load `bookshops.asd` (C-c C-k in Slime), Quickload the system
+(`(ql:quickload "bookshops")`), then initialize the DB connection and
+the translations with `(bookshops:init)`, then explore commands in
+`bookshops.commands`, like `stock`.
+
+You might need to enable terminal colors with `M-x slime-repl-ansi-on` ([see here](https://github.com/enriquefernandez/slime-repl-ansi-color)).
 
 
 ### Bibliographic search, adding books to your stock
@@ -330,9 +351,11 @@ To test DB operations, use our macro `with-empty-db`.
 
 # See also
 
+- https://gitlab.com/vindarel/abstock our online catalogue for public consumption
 - https://github.com/jl2/bookdb/, which searches on isbndb.com (not good enough for us and lacking prices)
-- https://gitlab.com/vindarel/abstock our online catalogue
 
 # Licence
 
 AGPLv3
+
+<a href="https://www.patreon.com/bePatron?u=36390714" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
