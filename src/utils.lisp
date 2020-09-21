@@ -3,6 +3,7 @@
         :parse-float
         :bookshops.parameters)
   (:export #:isbn-p
+           #:clean-isbn
            #:extract-float
            #:ensure-float
            #:format-date
@@ -16,9 +17,18 @@
 
 (defun isbn-p (code)
   "Return `t' if the given code (a string) looks like an ISBN (13 digits)."
-  (and (member (length code)
-               *isbn-accepted-lengths*)
-       (str:digitp code)))
+  (let ((code (str:replace-all "-" "" code)))
+    (and (member (length code)
+                 *isbn-accepted-lengths*)
+         (str:digitp code))))
+
+#+nil
+(progn
+  (assert (isbn-p "978-4567-890123")))
+
+(defun clean-isbn (isbn)
+  "Clean this ISBN of accepted symbols in the user form, but unwanted in the DB (\"-\")."
+  (str:replace-all "-" "" isbn))
 
 (defun extract-float (s)
   "Extract a float from the given string."

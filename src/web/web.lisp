@@ -227,12 +227,17 @@ Dev helpers:
 
 (defroute card-create/post-route ("/card/create" :method :post)
     ;; title is mandatory, the rest is optional.
-    (title price authors)
+    (title isbn price authors)
   (when (str:blankp title)
     (bookshops.messages::add-message "Please enter a title" :status :warning)
     (hunchentoot:redirect "/card/create"))
+  ;XXX: handle more than one validation message.
+  (when (not (bookshops.utils:isbn-p isbn))
+    (bookshops.messages::add-message (format nil "This doesn't look like an ISBN: ~a" isbn) :status :warning)
+    (hunchentoot:redirect "/card/create"))
   (handler-case
       (let ((book (models:make-book :title title
+                                    :isbn (bookshops.utils:clean-isbn isbn)
                                     :authors authors
                                     :price (utils:ensure-float price))))
         (mito:save-dao book)
