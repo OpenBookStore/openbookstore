@@ -14,6 +14,7 @@ In development. Starts being testable.
   <a href="https://gitlab.com/MyOpenBookStore/openbookstore/issues"><b>Issues</b></a> |
   <a href="https://www.patreon.com/abelujo"><b>Support us on Patreon</b></a> |
   <a href="https://liberapay.com/vindarel/donate"><b>Support us on Liberapay</b></a> |
+  <a href="https://ko-fi.com/vindarel"><b>Buy me a coffee!</b></a> |
   <a href="/README_fr.md">Français</a>
 </p>
 
@@ -358,4 +359,4 @@ To test DB operations, use our macro `with-empty-db`.
 
 AGPLv3
 
-<a href="https://www.patreon.com/bePatron?u=36390714" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
+<a href="https://www.patreon.com/bePatron?u=36390714" data-patreon-widget-type="become-patron-button">Become a Patron!</a> or [buy me a coffee :)](https://ko-fi.com/vindarel)
