@@ -5,44 +5,48 @@
 {% if current-user %}
 <p> You're logged in as {{ current-user | user-name }} </p>
 {% else %}
-<div class="container is-fullhd">
-<section class="hero is-info">
+<div class="container is-widescreen is-fullhd">
+  <section class="hero is-info">
     <div class="hero-body">
-        <div class="container">
-            <h1 class="title is-3">Login</h1>
-            <p class="subtitle is-5">Please login to continue</p>
-        </div>
+      <div class="container">
+        <h1 class="title is-3">Login</h1>
+        <p class="subtitle is-5">Please login to continue</p>
+      </div>
     </div>
-</section>
-</div>
+  </section>
 
-<div class="container">
-<form id="login" action="/login" method="POST">
-    <input name="referer-route" type="hidden" value="{{ referer-route }}"/>
-    <div class="field" >
-        <label class="label">Email</label>
-        <p class="control has-icons-left">
-            <input name="email" value="" class="input" type="text" >
-            <span class="icon is-small is-left" >
+  <div class="section">
+    <div class="columns">
+      <div class="is-3">
+        <form id="login" action="/login" method="POST">
+          <input name="referer-route" type="hidden" value="{{ referer-route }}"/>
+          <div class="field" >
+            <label class="label">Email</label>
+            <p class="control has-icons-left">
+              <input name="email" value="" class="input" type="text" >
+              <span class="icon is-small is-left" >
                 <i class="fas fa-envelope" ></i>
-            </span>
-        </p>
-    </div>
-    <div clas="field">
-        <label class="label" >Password</label>
-        <p class="control has-icons-left">
-            <input name="password" class="input" type="password" value="" >
-            <span class="icon is-small is-left" >
+              </span>
+            </p>
+          </div>
+          <div clas="field">
+            <label class="label" >Password</label>
+            <p class="control has-icons-left">
+              <input name="password" class="input" type="password" value="" >
+              <span class="icon is-small is-left" >
                 <i class="fas fa-lock" ></i>
-            </span>
-        </p>
+              </span>
+            </p>
+          </div>
+          <div class="field">
+            <p class="control">
+              <button class="button is-primary">Login</button>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
-    <div class="field">
-        <p class="control">
-            <button class="button is-primary">Login</button>
-        </p>
-    </div>
-</form>
+  </div>
 </div>
 {% endif %}
 
