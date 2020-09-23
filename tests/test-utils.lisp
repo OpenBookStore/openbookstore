@@ -30,8 +30,11 @@
        (let* ((*db-name* name))
          (connect)
          ;; catch anything to always re-connect to our real db.
-         (ensure-tables-exist)
-           (migrate-all)
-           ,@body
+         ;XXX: a verbose or debug parameter would be nice.
+         (with-output-to-string (s)
+           (let ((*standard-output* s))
+             (ensure-tables-exist)
+             (migrate-all)))
+         ,@body
 
          (setf mito.connection:*connection* connection)))))
