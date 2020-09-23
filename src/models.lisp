@@ -96,7 +96,7 @@ searches. This method was thought the most portable.
     ;; and it might be useful for other objects.
     :initform nil
     :type (or integer float null)       ;; integer: for compatibility. Otherwise, Mito is strict about float and fails.
-    :col-type (or :integer :float :null))
+    :col-type (or :float :null))        ;; (or :integer :float :null) fails in tests
 
    (date-publication
     :accessor date-publication
