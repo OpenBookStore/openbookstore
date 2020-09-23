@@ -27,15 +27,15 @@
 (defmacro with-fixtures (&body body)
   "Create books and places."
   `(progn
-     (setf *books* (list (create-book :title "test"
-                                      :title-ascii "test"
-                                      :authors "victor hugo"
-                                      :authors-ascii "victor-hugo"
+     (setf *books* (list (create-book :title "title1"
+                                      :title-ascii "title1"
+                                      :authors "author1"
+                                      :authors-ascii "author1"
                                       :isbn "9782710381419")
-                         (create-book :title "book 2"
-                                      :title-ascii "book-2"
-                                      :authors "ivan tolstoi"
-                                      :authors-ascii "ivan-tolstoi"
+                         (create-book :title "title2"
+                                      :title-ascii "title2"
+                                      :authors "author2"
+                                      :authors-ascii "author2"
                                       :isbn "9784567890123")))
      ;; contacts
      (setf *contacts* (list (create-contact "first contact")))
@@ -115,6 +115,41 @@
         (is 0 (count-dao 'book)
             "deleting a list of objects"))))
 
+(subtest "search books with permutations of keywords"
+  (with-empty-db
+    (with-fixtures
+      (let ((res (bookshops.models:find-book :query "title1")))
+        (is (length res)
+            1
+            "search one keyword")
+        (is (title (first res))
+            "title1"
+            "titles match"))
 
+      (let ((res (bookshops.models:find-book :query "title1 author1"))
+            (res2 (bookshops.models:find-book :query "author1 title1"))
+            (res3 (bookshops.models:find-book :query "title1 author2"))
+            (res4 (bookshops.models:find-book :query "author2 title1"))
+            (res5 (bookshops.models:find-book :query "titl"))
+            (res6 (bookshops.models:find-book :query "titl author2")))
+
+        (is (length res)
+            1
+            "search with title + author")
+        (is (length res2)
+            1
+            "search with author + title")
+        (is (length res3)
+            0
+            "title1 + author2 gives no results")
+        (is (length res4)
+            0
+            "author2 + title1 gives no results")
+        (is (length res5)
+            2
+            "search common title")
+        (is (length res6)
+            1
+            "narrow keyword search by and-ing each keyword")))))
 
 ;; (finalize) ;; done in the last test file (test-contacts).

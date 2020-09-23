@@ -31,6 +31,8 @@
          (connect)
          ;; catch anything to always re-connect to our real db.
          ;XXX: a verbose or debug parameter would be nice.
+         ;XXX: see *mito-migration-logger-stream* to use with
+         ; with-sql-logging
          (with-output-to-string (s)
            (let ((*standard-output* s))
              (ensure-tables-exist)

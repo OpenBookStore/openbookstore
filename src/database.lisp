@@ -16,11 +16,11 @@
                          role-copy
 ))
 
-(defun connect ()
+(defun connect (&optional (db-name *db-name*))
   "Connect to the DB."
   ;; also use mito:*connection*
   (log:debug "connecting to ~a~&" *db-name*) (force-output)
-  (setf *db* (mito:connect-toplevel :sqlite3 :database-name *db-name*)))
+  (setf *db* (mito:connect-toplevel :sqlite3 :database-name db-name)))
 
 (defun ensure-tables-exist ()
   (unless mito::*connection*
