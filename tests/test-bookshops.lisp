@@ -20,16 +20,19 @@
     (is (title book) "Antigone" "title access"))
   )
 
+(defparameter *books* nil)
+(defparameter *places* nil)
+(defparameter *contacts* nil)
+
 (defmacro with-fixtures (&body body)
   "Create books and places."
   `(progn
-     (defvar *books* nil)
-     (defvar *places* nil)
-     (defvar *contacts* nil)
      (setf *books* (list (create-book :title "test"
+                                      :authors "victor hugo"
                                       :isbn "9782710381419")
                          (create-book :title "book 2"
-                                      :isbn "978xxxxxxxxxx")))
+                                      :authors "ivan tolstoi"
+                                      :isbn "9784567890123")))
      ;; contacts
      (setf *contacts* (list (create-contact "first contact")))
      ;; places
@@ -109,31 +112,5 @@
             "deleting a list of objects"))))
 
 
-
-;; With Parachute: interactive reports on errors.
-#|
-(define-test delete
-  (with-empty-db
-    (with-book-fixtures
-      (with-place-fixtures
-        ;; delete a book.
-        (is = 1 (quantity (first *books*)))
-        (is = 2 (count-dao 'place-copies))
-        (delete-obj (first *books*))
-        (is = 0 (quantity (first *books*)))
-        (is = 1 (count-dao 'place-copies))
-        ;; delete a place.
-        (is = 2 (count-dao 'place))
-        (delete-obj (first *places*))
-        (is = 1 (count-dao 'place))
-        ;; delete a list of objects.
-        (delete-objects (append *books* *places*))
-        (is = 0 (count-dao 'place))
-        (is = 0 (count-dao 'book))))))
-
-(test 'delete :report 'interactive)
-
-(test 'delete)
-|#
 
 ;; (finalize) ;; done in the last test file (test-contacts).

@@ -34,5 +34,4 @@
            (migrate-all)
            ,@body
 
-         (setf mito.connection:*connection* connection))))
-  )
+         (setf mito.connection:*connection* connection)))))
