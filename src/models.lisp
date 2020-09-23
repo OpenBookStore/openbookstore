@@ -464,6 +464,13 @@ searches. This method was thought the most portable.
                  :date-publication date-publication))
 
 (defun create-book (&rest initargs)
+  "Create a book and save it. CAUTION: you must provide title-ascii and authors-ascii.
+  Or use make-book and save-book."
+  (unless (member :title-ascii initargs)
+    (warn "create-book: you probably forgot to give title-ascii."))
+  (unless (member :authors-ascii initargs)
+    (warn "create-book: you probably forgot to give authors-ascii."))
+  ;;
   (apply #'mito:create-dao 'book initargs))
 
 (defun save-book (book)

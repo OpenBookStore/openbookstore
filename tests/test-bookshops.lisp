@@ -28,10 +28,14 @@
   "Create books and places."
   `(progn
      (setf *books* (list (create-book :title "test"
+                                      :title-ascii "test"
                                       :authors "victor hugo"
+                                      :authors-ascii "victor-hugo"
                                       :isbn "9782710381419")
                          (create-book :title "book 2"
+                                      :title-ascii "book-2"
                                       :authors "ivan tolstoi"
+                                      :authors-ascii "ivan-tolstoi"
                                       :isbn "9784567890123")))
      ;; contacts
      (setf *contacts* (list (create-contact "first contact")))
