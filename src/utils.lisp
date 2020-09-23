@@ -40,12 +40,13 @@
 (defun ensure-float (param)
   "Return a float from this param, if possible.
   If it is a string, parse it for a float."
-  (typecase param
-    (string (or (ignore-errors (parse-float:parse-float param))
-                0.0))
-    (integer (coerce param 'float))
-    (float param)
-    (t (error (format nil "The parameter ~a is of type ~a and we don't know how to make it a float." param (type-of param))))))
+  (when param
+    (typecase param
+      (string (or (ignore-errors (parse-float:parse-float param))
+                  0.0))
+      (integer (coerce param 'float))
+      (float param)
+      (t (error (format nil "ensure-float error: the parameter ~a is of type ~a and we don't know how to make it a float." param (type-of param)))))))
 
 (defun _ (a) (cl-i18n:translate a))
 
