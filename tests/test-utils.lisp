@@ -26,17 +26,21 @@
                                (random-string 8)
                                "/"))
           (connection *db*))
-     (uiop:with-temporary-file (:pathname name :prefix prefix)
-       (let* ((*db-name* name))
-         (connect)
-         ;; catch anything to always re-connect to our real db.
-         ;XXX: a verbose or debug parameter would be nice.
-         ;XXX: see *mito-migration-logger-stream* to use with
-         ; with-sql-logging
-         (with-output-to-string (s)
-           (let ((*standard-output* s))
-             (ensure-tables-exist)
-             (migrate-all)))
-         ,@body
+     (unwind-protect
+          (uiop:with-temporary-file (:pathname name :prefix prefix)
+            (let* ((*db-name* name))
+              (connect)
+              ;; catch anything to always re-connect to our real db.
+                                        ;XXX: a verbose or debug parameter would be nice.
+                                        ;XXX: see *mito-migration-logger-stream* to use with
+                                        ; with-sql-logging
+                                        ;TODO: UNWIND-PROTECT
+              (with-output-to-string (s)
+                (let ((*standard-output* s))
+                  (ensure-tables-exist)
+                  (migrate-all)))
 
-         (setf mito.connection:*connection* connection)))))
+              ,@body))
+
+       ;; (setf *db* (mito:connect-toplevel :sqlite3 :database-name db-name))
+       (connect))))
