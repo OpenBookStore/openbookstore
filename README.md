@@ -1,24 +1,25 @@
-# Bookshops
-
-In development. Starts being testable.
 
 ![](https://gitlab.com/vindarel/cl-bookshops/badges/master/pipeline.svg)
 
+[![Gitter](https://badges.gitter.im/openbookstore-developers/community.svg)](https://gitter.im/openbookstore-developers/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
+
 <p>
-  <h3 align="center"> OpenBookStore </h3>
-  <h2 align="center"> Book management software </h2>
+  <h2 align="center"> OpenBookStore </h2>
+  <h3 align="center"> Book management software </h3>
 </p>
 
 <p align="center">
   <a href="https://github.com/OpenBookStore/openbookstore"><b>Homepage</b></a> |
   <a href="https://gitlab.com/MyOpenBookStore/openbookstore/issues"><b>Issues</b></a> |
+  <a href="https://gitter.im/openbookstore-developers/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link"><b>Gitter chat</b></a> |
   <a href="https://www.patreon.com/abelujo"><b>Support us on Patreon</b></a> |
   <a href="https://liberapay.com/vindarel/donate"><b>Support us on Liberapay</b></a> |
   <a href="https://ko-fi.com/vindarel"><b>Buy me a coffee!</b></a> |
   <a href="/README_fr.md">Français</a>
 </p>
 
-<a href="https://www.patreon.com/bePatron?u=36390714" data-patreon-widget-type="become-patron-button">Become a Patron, it helps!</a>
+In development. Starts being testable.
 
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
