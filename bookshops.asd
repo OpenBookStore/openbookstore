@@ -22,7 +22,6 @@
                :can
                :rutils
                :str
-               :listopia  ;; list manipulation
                :local-time
                :local-time-duration
                :cl-ppcre

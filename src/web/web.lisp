@@ -112,7 +112,7 @@ Dev helpers:
                   (models:find-book :query (bookshops.utils::asciify q)))
                  (t
                   ;; XXX: pagination
-                  (listopia:take 50 (models:find-book))))))
+                  (alexandria-2:subseq* (models:find-book) 0 50)))))
     (render-template* +stock.html+ nil
                       :route "/stock"
                       :cards cards

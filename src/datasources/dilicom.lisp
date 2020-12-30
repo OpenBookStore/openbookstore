@@ -27,6 +27,7 @@ TODO: password and user in config.lisp
 (defvar *password* nil
   "Dilicom user's password.")
 
+;XXX: merged upstream in str.
 (defun replace-pairs (pairs str)
   "Replace all associations in pairs (plist) and return a new string.
 
