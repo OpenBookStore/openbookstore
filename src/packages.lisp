@@ -17,19 +17,27 @@
            :find-book :find-by :find-existing :find-book-noisbn :last-books
            :title :details-url :authors :cover-url :isbn :price
            :print-book :print-book-details
+           :print-obj
            :count-book
+           :date-publication
            ;; book methods
            :save-book :create-book
            :quantity :set-quantity
            :delete-books :delete-obj :delete-objects
+
            ;; places
-           :place :place-copies
+           :place :place-copies :place-copies-book
            :make-place :create-place :current-place :save-place :print-place
            :find-places :find-place-by
            :default-place
            :add-to :remove-from :move
            :*current-place*
            :place-copy-quantity
+
+           ;; lists, baskets
+           :find-baskets
+           :print-basket
+
            ;; authentication
            :user
            :user-name
@@ -42,6 +50,8 @@
 
            :create-user
            :create-role
+           :create-contact
+           :find-contacts :find-contact-by :print-contact
            :add-role
            :inherit-role
            :login

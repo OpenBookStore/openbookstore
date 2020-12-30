@@ -138,7 +138,7 @@
   (mapcar #'name (bookshops.models::find-baskets)))
 
 (defun baskets (&optional name)
-  (let ((bookshops.models:*print-details* (not (str:emptyp name))))
+  (let ((bookshops.models::*print-details* (not (str:emptyp name))))
     (mapcar #'print-basket (find-baskets))))
 
 (replic.completion:add-completion "baskets" #'basket-names)
@@ -387,7 +387,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
 (defun loans (&optional name)
   ;TODO: filter by name
   "Print who borrowed what book and since when, ordered by date (oldest first)."
-  (setf *last-page* (bookshops.models:loans :contact name)))
+  (setf *last-page* (bookshops.models::loans :contact name)))
 
 (replic.completion:add-completion "contacts" #'contact-names)
 (replic.completion:add-completion "loans" #'contact-names)
@@ -401,7 +401,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
     (warn "this is actually untested :D")
     (setf contact (first (find-contact-by :name contact))))
   (let ((book (find-by :id bk)))
-    (bookshops.models:receive book contact)))
+    (bookshops.models::receive book contact)))
 
 (replic.completion:add-completion "receive" (lambda ()
                                               (append (last-page-book-ids)
@@ -432,7 +432,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
         (format t "We found more than one contact matching this query. Please adjust it.")
         (progn
           (setf contact (first res))
-          (bookshops.models:lend book contact)
+          (bookshops.models::lend book contact)
           (format t "Lended ~a to ~a~&" (title book) (name contact))))))
 
 (replic.completion:add-completion "lend" (lambda ()
