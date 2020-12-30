@@ -4,7 +4,13 @@
   (:import-from #:local-time #:encode-timestamp #:+utc-zone+)
   (:import-from #:alexandria #:make-keyword #:ensure-list)
   (:import-from #:str #:trim-right)
-  (:import-from #:split-sequence #:split-sequence))
+  (:import-from #:split-sequence #:split-sequence)
+  (:documentation "Status: UNUSED. This is a parser of Dilicom's FORMAT PLAT text files to extract the bibliographic information. This format is used by the 'FEL à la demande' by FTP. The WEB SERVICE uses another format, and is already functioning.
+  We aimed to interface with the Belgium data provider, La Banque du Livre (its own entity, but technically dependent of the french Dilicom).
+  Unfortunately, Jason's work can not be used because, despite their claims, the FEL by FTP has a long latency, of the order of seconds, sometimes more than 20 seconds. Our software is modeled after quick response times, for the bookseller to scan books at hands and see their data instantly. This works with the WEB SERVICE, but not the FTP.
+  I spare you the communication problems but, in the end, when we at least got a FTP access and demonstrated the latency to the user support, we did not carry on working on this code.
+
+  Future work: La Banque du Livre might deploy the WEB SERVICE in 2021."))
 
 (in-package  #:bookshops.datasources.dilicom-flat-text)
 
