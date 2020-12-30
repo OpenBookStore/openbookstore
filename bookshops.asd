@@ -41,6 +41,7 @@
   :components ((:module "src/datasources"
                 :components
                 ((:file "dilicom")
+                 (:file "dilicom-flat-text")
                  (:file "scraper-fr")))
 
                (:module "src"
