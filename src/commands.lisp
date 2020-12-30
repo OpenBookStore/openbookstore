@@ -2,6 +2,7 @@
   (:use :cl
         :mito
         :cl-ansi-text)
+  (:local-nicknames (:models :bookshops.models))
   (:shadow :search
            :delete)
   (:import-from :bookshops
@@ -9,49 +10,8 @@
                 :_)
 
   (:import-from :bookshops.models
-                :add-to
-                :book
-                :make-book
-                :save-book
-                :find-book
-                :find-book-noisbn
-                :find-by
-                :print-obj
-                :print-book-details
-                :count-book
-                :title
-                :isbn
-                :date-publication
-                :publisher
-                :authors
-                :quantity
-                :add-to
-                :set-quantity
-                :delete-books
-                :delete-objects
-                :price
-                ;; places
-                :current-place
-                :place-copies-book
-                :place
-                :print-place
-                :name
-                :find-places
-                :find-place-by
-                :default-place
-                :*current-place*
-                ;; contacts
-                :create-contact
-                :find-contacts
-                :find-contact-by
-                :print-contact
-
-                ;; baskets
-                :find-baskets
-                :print-basket
                 ;; utils
-                :print-quantity-red-green
-                )
+                print-quantity-red-green)
 
   (:export :main
            :search
@@ -116,13 +76,13 @@
     (mapcar (lambda (it)
               (format t "~2@a- ~a, ~a~t~$ ~tstock: x~a~&"
                       i
-                      (blue (title it))
-                      (authors it)
-                      (price it)
-                      (print-quantity-red-green (quantity it)))
+                      (blue (models:title it))
+                      (models:authors it)
+                      (models:price it)
+                      (print-quantity-red-green (models:quantity it)))
               (format t "~t ed: ~a, ~a~&"
-                      (publisher it)
-                      (isbn it))
+                      (models:publisher it)
+                      (models:isbn it))
               (decf i))
             (reverse results))))
 
@@ -131,15 +91,15 @@
   (mapcan (lambda (it)
             (list (prin1-to-string (object-id it))
                   ;TODO: TAB-completing a string fails.
-                  (format nil "\"~a\"" (title it))))
+                  (format nil "\"~a\"" (models:title it))))
           *last-page*))
 
 (defun basket-names ()
-  (mapcar #'name (bookshops.models::find-baskets)))
+  (mapcar #'name (models:find-baskets)))
 
 (defun baskets (&optional name)
-  (let ((bookshops.models::*print-details* (not (str:emptyp name))))
-    (mapcar #'print-basket (find-baskets))))
+  (let ((models::*print-details* (not (str:emptyp name))))
+    (mapcar #'models:print-basket (models:find-baskets))))
 
 (replic.completion:add-completion "baskets" #'basket-names)
 
@@ -156,9 +116,9 @@ By default, add to the stock. If an optional list name is given, add it to the l
     (format t "Please do a search before.~&"))
   (when *last-results*
     (let* ((bk (nth index *last-results*)))
-      (format t "Registering ~a..." (title bk))
-      (let ((new (save-book bk)))
-        (add-to (default-place) new)
+      (format t "Registering ~a..." (models:title bk))
+      (let ((new (models:save-book bk)))
+        (models:add-to (models:default-place) new)
         (format t "done. id: ~a~&" (object-id new))))))
 
 (defun total-pages (total)
@@ -195,13 +155,13 @@ By default, add to the stock. If an optional list name is given, add it to the l
           page
           (total-pages (length seq)))
   (mapcar (lambda (it)
-            (print-obj it))
+            (models:print-obj it))
           *last-page*))
 
 (defun stock (&optional title-kw &rest rest)
   "Show our stock (books in DB)."
   (let* ((query (if title-kw (str:join "%" (cons title-kw rest))))
-         (results (find-book :query query)))
+         (results (models:find-book :query query)))
     (setf *last-search* query)
     (print-page results *current-page*)))
 
@@ -214,7 +174,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
     (when (stringp pk/title)
       (setf pk (ignore-errors
                  (parse-integer pk/title))))
-    (print-book-details (or pk pk/title))))
+    (models:print-book-details (or pk pk/title))))
 
 ;; Get a list of ids of the last search.
 ;; Specially handy when we have filtered the search.
@@ -226,24 +186,24 @@ By default, add to the stock. If an optional list name is given, add it to the l
    Prints the total number of books and ones without isbn.
 
    If given an argument (use the TAB key to choose it), print the list of results."
-  (format t "Books in stock: ~a~&" (count-book))
-  (let ((res (find-book-noisbn)))
-    (format t "Books without isbn: ~a (~,2f%)~&" (length res) (percentage (length res) (count-book)))
+  (format t "Books in stock: ~a~&" (models:count-book))
+  (let ((res (models:find-book-noisbn)))
+    (format t "Books without isbn: ~a (~,2f%)~&" (length res) (percentage (length res) (models:count-book)))
     (str:string-case arg
       ("noisbn"
        (setf *current-page* 1)
        (format t "-----------------~&")
        (print-page res))
       ("negative"
-       (let ((negative (bookshops.models:negative-quantities)))
+       (let ((negative (models:negative-quantities)))
          (format t "~a book(s) have a negative stock:~&" (length negative))
          (mapcar (lambda (it)
                    (format t "~2a- ~35a ~2a- ~20a: x~a~&"
-                           (object-id (place-copies-book it))
-                           (title it)
-                           (object-id (place it))
-                           (name it)
-                           (print-quantity-red-green (quantity it))))
+                           (object-id (models:place-copies-book it))
+                           (models:title it)
+                           (object-id (models:place it))
+                           (models:name it)
+                           (print-quantity-red-green (models:quantity it))))
                  negative))))))
 
 (replic.completion:add-completion "stats" '("noisbn" "negative"))
@@ -281,7 +241,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
     (if (str:blank? quantity)
         (setf quantity 0)
         (setf quantity (parse-integer quantity)))
-    (make-book :title title :authors authors :price price)))
+    (models:make-book :title title :authors authors :price price)))
 
 (defun create-book ()
   "Create a new book."
@@ -289,11 +249,11 @@ By default, add to the stock. If an optional list name is given, add it to the l
   ;; completion of fields etc.
   (let (bk)
     (setf bk (create-book-form))
-    (save-book bk)
-    (add-to (default-place) bk)
+    (models:save-book bk)
+    (models:add-to (models:default-place) bk)
     ;; set this for completion of ids of other commands.
     (setf *last-page* (list bk))
-    (print-obj bk)))
+    (models:print-obj bk)))
 
 (defun create-place ()
   "Interactively create a new place."
@@ -301,7 +261,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
     (setf name (rl:readline :prompt (str:concat "Name" (cl-ansi-text:red "*") " ? ")))
     (when (str:blank? name)
       (error "The name field is mandatory, please try again."))
-    (bookshops.models::create-place name)))
+    (models::create-place name)))
 
 (replic.completion:add-completion "create" '("book"
                                              "place"))
@@ -316,9 +276,9 @@ By default, add to the stock. If an optional list name is given, add it to the l
   ;;   (error "foo"))
   (let* ((what (str:string-case what
                  ("books"
-                  #'find-book)
+                  #'models:find-book)
                  ("places"
-                  #'find-places)
+                  #'models:find-places)
                  (t
                   (error "We don't know how to delete '~a'. Please give one of 'books', 'places' as the first argument (use TAB-completion)." what))))
          (objlist (when kw
@@ -329,7 +289,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
           (finish-output)
           ;TODO: confirm: use eval in the repl, readline in terminal.
           (when (replic:confirm :prompt (_ "Do you want to delete all of these ?"))
-            (delete-objects objlist)))
+            (models:delete-objects objlist)))
         (format t (_ "~&No results, nothing to do.~&")))))
 
 (replic.completion:add-completion "delete" '("books"
@@ -346,14 +306,14 @@ By default, add to the stock. If an optional list name is given, add it to the l
   ;; a name can be of many words. Join them.
   (when rest
     (setf name (cons name rest)))
-  (let ((bookshops.models::*print-details* name))
-    (mapcar #'print-place (find-places name))))
+  (let ((models::*print-details* name))
+    (mapcar #'models:print-place (models:find-places name))))
 
 (defun place-names ()
-  (mapcar #'name (bookshops.models:find-places)))
+  (mapcar #'name (models:find-places)))
 
 (defun contact-names ()
-  (mapcar #'name (bookshops.models:find-contacts)))
+  (mapcar #'name (models:find-contacts)))
 
 (defun parse-quantity (rest)
   "Given a list of strings, extract the integer if the last element starts with an x.
@@ -368,26 +328,26 @@ By default, add to the stock. If an optional list name is given, add it to the l
   The place of origin is the current one we are in. Change it with the command 'inside ...' (use TAB completion again)."
   (when (stringp bk)
     (setf bk (parse-integer bk)))
-  (let* ((book (find-by :id bk))
+  (let* ((book (models:find-by :id bk))
          (quantity (or (parse-quantity rest)
                        1))
          (name (if (str:starts-with? "x" (car (last rest)))
                    (cons name (butlast rest))
                    (cons name rest)))
-         (place (find-place-by :name (str:unwords name))))
-    (bookshops.models:move book place :quantity quantity)))
+         (place (models:find-place-by :name (str:unwords name))))
+    (models:move book place :quantity quantity)))
 
 (replic.completion:add-completion "move" #'place-names)
 
 (defun contacts (&optional name)
   "Show our contacts and the books they borrowed."
-  (let ((bookshops.models::*print-details* t))
-    (mapcar #'print-contact (find-contacts name))))
+  (let ((models::*print-details* t))
+    (mapcar #'models:print-contact (models:find-contacts name))))
 
 (defun loans (&optional name)
   ;TODO: filter by name
   "Print who borrowed what book and since when, ordered by date (oldest first)."
-  (setf *last-page* (bookshops.models::loans :contact name)))
+  (setf *last-page* (models::loans :contact name)))
 
 (replic.completion:add-completion "contacts" #'contact-names)
 (replic.completion:add-completion "loans" #'contact-names)
@@ -399,9 +359,9 @@ By default, add to the stock. If an optional list name is given, add it to the l
   (when (and contact
              (stringp contact))
     (warn "this is actually untested :D")
-    (setf contact (first (find-contact-by :name contact))))
-  (let ((book (find-by :id bk)))
-    (bookshops.models::receive book contact)))
+    (setf contact (first (models:find-contact-by :name contact))))
+  (let ((book (models:find-by :id bk)))
+    (models::receive book contact)))
 
 (replic.completion:add-completion "receive" (lambda ()
                                               (append (last-page-book-ids)
@@ -418,8 +378,8 @@ By default, add to the stock. If an optional list name is given, add it to the l
     (setf bk (parse-integer bk)))
   (when rest
     (setf name (str:unwords (cons name rest))))
-  (let* ((book (find-by :id bk))
-         (res (find-contact-by :name name))
+  (let* ((book (models:find-by :id bk))
+         (res (models:find-contact-by :name name))
          contact)
     (if res
         (setf contact (first res))
@@ -427,13 +387,13 @@ By default, add to the stock. If an optional list name is given, add it to the l
         (when (or *yes-p*
                   (replic:confirm :prompt (format nil "Create the new contact ~a ?~&" name)))
           (log:info "Creating new contact: ~a~&" name)
-          (push (create-contact name) res)))
+          (push (models:create-contact name) res)))
     (if (> (length res) 1)
         (format t "We found more than one contact matching this query. Please adjust it.")
         (progn
           (setf contact (first res))
-          (bookshops.models::lend book contact)
-          (format t "Lended ~a to ~a~&" (title book) (name contact))))))
+          (models::lend book contact)
+          (format t "Lended ~a to ~a~&" (models:title book) (name contact))))))
 
 (replic.completion:add-completion "lend" (lambda ()
                                            (append (last-page-book-ids)
@@ -450,12 +410,12 @@ By default, add to the stock. If an optional list name is given, add it to the l
   (if rest
       ;; The name of the place can be of several words.
       (let* ((name (str:unwords rest))
-             (place (find-place-by :name name)))
-        (setf *current-place* place)
-        (setf replic:*prompt-prefix* (format nil "(~a) " (name *current-place*)))
+             (place (models:find-place-by :name name)))
+        (setf models:*current-place* place)
+        (setf replic:*prompt-prefix* (format nil "(~a) " (models:name models:*current-place*)))
         (format t "Now inside ~a.~&" name))
       (progn
-        (format t "Current place: ~a.~&" (name (current-place))))))
+        (format t "Current place: ~a.~&" (name (models:current-place))))))
 
 (replic.completion:add-completion "places" #'place-names)
 (replic.completion:add-completion "inside" #'place-names)
@@ -475,4 +435,4 @@ By default, add to the stock. If an optional list name is given, add it to the l
   (setf *last-search* nil)
   (setf *page-size* 15)
   (setf *current-page* 1)
-  (setf *current-place* (default-place)))
+  (setf models:*current-place* (models:default-place)))
