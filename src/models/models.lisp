@@ -521,18 +521,6 @@ searches. This method was thought the most portable.
   (mito:select-dao 'book
     (when (str:non-blank-string-p query)
       (sxql:where
-       #| The goal is to mimick a SQL like so:
-
-       for pythonista: it's the output of a Django query using a chain of filter()
-       and Q queries:
-       (Q(title__like="" | Q(authors__like="")):
-
-       SELECT DISTINCT ... FROM "card" LEFT OUTER JOIN ...
-       WHERE
-       (("card"."title_ascii" LIKE %hommes% ESCAPE '\' OR "card"."title" LIKE %hommes% ESCAPE '\' OR "author"."name" LIKE %hommes% ESCAPE '\' OR "author"."name_ascii" LIKE %hommes% ESCAPE '\')
-        AND ("card"."title_ascii" LIKE %femmes% ESCAPE '\' OR "card"."title" LIKE %femmes% ESCAPE '\' OR T5."name" LIKE %femmes% ESCAPE '\' OR T5."name_ascii" LIKE %femmes% ESCAPE '\')) ORDER BY "card"."created" DESC LIMIT 3
-
-       |#
        `(:and
          ,@(loop for word in (str:words query)
               :collect `(:or (:like :title-ascii ,(str:concat "%" word "%"))

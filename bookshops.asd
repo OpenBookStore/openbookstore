@@ -51,15 +51,18 @@
                  (:file "utils")
                  ;; they depend on the above.
                  (:file "packages")
-                 (:file "models")
-                 (:file "models-utils")
                  (:file "authentication")
                  (:file "manager")
-                 (:file "baskets")
-                 (:file "contacts")
                  (:file "bookshops")
                  (:file "commands")
                  (:file "database")))
+
+               (:module "src/models"
+                :components
+                ((:file "models")
+                 (:file "models-utils")
+                 (:file "baskets")
+                 (:file "contacts")))
 
                ;; One-off utility "scripts" to work on the DB.
                (:module "src/management"
