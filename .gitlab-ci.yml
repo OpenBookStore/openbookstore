@@ -1,8 +1,8 @@
 image: daewok/lisp-devel
 
 stages:
-  - build
   - test  # looks like current tests run forever in the CI.
+  - build
 
 # We need to install (clone) libraries not in Quicklisp.
 before_script:
@@ -12,6 +12,7 @@ before_script:
 
   # QA tools:
   - git clone https://github.com/vindarel/colisper ~/colisper
+  - chmod +x ~/colisper/colisper.sh
   - alias colisper=~/colisper/colisper.sh
 
 qa:
@@ -19,6 +20,7 @@ qa:
   stage: test
   script:
     - cd src/ && colisper
+    - cd src/ && ~/colisper/colisper.sh
 
 build:
   stage: build
