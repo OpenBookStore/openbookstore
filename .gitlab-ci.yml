@@ -10,6 +10,16 @@ before_script:
   - apt-get install -y git-core
   - make install
 
+  # QA tools:
+  - git clone https://github.com/vindarel/colisper ~/colisper
+  - alias colisper=~/colisper/colisper.sh
+
+qa:
+  allow_failure: true
+  stage: test
+  script:
+    - cd src/ && colisper
+
 build:
   stage: build
   script:
