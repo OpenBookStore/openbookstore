@@ -19,7 +19,6 @@ qa:
   allow_failure: true
   stage: test
   script:
-    - cd src/ && colisper
     - cd src/ && ~/colisper/colisper.sh
 
 build:
