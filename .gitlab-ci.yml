@@ -12,6 +12,8 @@ before_script:
 
   # QA tools:
   # install Comby:
+  - apt-get install -y sudo
+  - adduser lisp sudo
   # - bash <(curl -sL get.comby.dev)
   - bash <(curl -sL https://raw.githubusercontent.com/vindarel/comby/set-release-1.0.0/scripts/install.sh)
   # install Colisper:
