@@ -68,6 +68,20 @@ Dev helpers:
 
 (defparameter +404.html+ (djula:compile-template* "404.html"))
 
+;;;
+;;; Serve static assets
+;;;
+(defparameter *default-static-directory* "src/static/"
+  "The directory where to serve static assets from (STRING). If it starts with a slash, it is an absolute directory. Otherwise, it will be a subdirectory of where the system :abstock is installed.
+  Static assets are reachable under the /static/ prefix.")
+
+(defun serve-static-assets ()
+  ;TODO: does not load our openbookstore.js file.
+  (push (hunchentoot:create-folder-dispatcher-and-handler
+         "/static/" (merge-pathnames *default-static-directory*
+                                     (asdf:system-source-directory :bookshops)))
+        hunchentoot:*dispatch-table*))
+
 ;;; search
 ;;; TODO find somewhere better to put search functionatlity this.
 (defvar *search-cache* (cacle:make-cache 5000 '%search-datasources :test 'equal
@@ -255,8 +269,9 @@ Dev helpers:
   (setf puri::*strict-illegal-query-characters*
         (remove #\? puri::*strict-illegal-query-characters*))
 
-  (setf *server* (make-instance 'easy-routes:routes-acceptor :port port))
+  (setf *server* (make-instance 'easy-routes:easy-routes-acceptor :port port))
   (hunchentoot:start *server*)
+  (serve-static-assets)
   (uiop:format! t "~&Application started on port ~a.~&" port))
 
 (defun stop-app ()
