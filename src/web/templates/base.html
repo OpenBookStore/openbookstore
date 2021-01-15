@@ -10,6 +10,11 @@
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/notiflix@2.1.3/dist/AIO/notiflix-aio-2.1.3.min.js"></script>
 
+    <!-- Buefy -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.3.45/css/materialdesignicons.min.css">
+    <script src="https://unpkg.com/buefy/dist/components/autocomplete"></script>
+
     <!-- The app -->
     <script defer src="/static/openbookstore.js"></script>
 
@@ -49,8 +54,17 @@
               </div>
             </a>
 
+            <div class="navbar-item field">
+              <p class="control has-icons-right">
+                <input class="input" type="search" placeholder="Search...">
+                <span class="icon is-small is-right">
+                </span>
+              </p>
+            </div>
+
           </div>
         </div>
+
         <div class="navbar-end" >
           <div class="navbar-item" >
             {% if current-user %}
