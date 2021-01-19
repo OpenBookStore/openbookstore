@@ -75,6 +75,16 @@ or run from sources:
 
 There is a toy Tk GUI.
 
+### Database initialization
+
+From the REPL:
+
+    (bookshops.models::ensure-tables-exist)
+    (bookshops.models::bootstrap-base-roles)
+
+Create a superuser:
+
+    (bookshops.models::create-superuser name email password)
 
 ## Usage
 
@@ -98,10 +108,7 @@ Quit with `C-d`.
 
     (bookshops-web:start-app :port 8989)
 
-
-Create a superuser from the REPL:
-
-    (bookshops.models::create-superuser name email password)
+- initialize the database if not already done, see above.
 
 ### Command line
 
