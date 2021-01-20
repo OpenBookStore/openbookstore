@@ -52,7 +52,7 @@
 
 ;;; TODO maybe it will be better to wrap hunchentoot:redirect later on
 ;;; (for this use case anyways) so that can ensure parmeters exist without
-;;; potentially clobering existing params.
+;;; potentially clobbering existing params.
 (defun login-redirect ()
   (hunchentoot:redirect (format nil "/login?referer-route=~a" (hunchentoot:request-uri*))))
 
