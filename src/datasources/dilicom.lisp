@@ -1,6 +1,7 @@
 (defpackage bookshops.datasources.dilicom
   (:use :cl)
-  (:export :search-books)
+  (:export :search-books
+           :available-p)
   (:documentation "Search books by ISBN (and ISBN only, no free search) with the \"FEL à la demande\" by Dilicom, the professional provider."))
 
 (in-package :bookshops.datasources.dilicom)
@@ -26,6 +27,10 @@ TODO: password and user in config.lisp
 
 (defvar *password* nil
   "Dilicom user's password.")
+
+(defun available-p ()
+  "Is Dilicom configured and likely to be available?"
+  (and *user* *password*))
 
 ;XXX: merged upstream in str.
 (defun replace-pairs (pairs str)
