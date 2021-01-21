@@ -29,7 +29,7 @@
                :parse-float
                ;; cache
                :cacle
-
+               :cl-json
                ;; web app
                :hunchentoot
                :easy-routes

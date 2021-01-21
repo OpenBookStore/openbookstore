@@ -29,13 +29,17 @@ Dev helpers:
 (djula:def-filter :price (val)
   (format nil "~,2F" val))
 
-(djula:def-filter :url (card)
+(defun card-url (card)
   "Create a full URL to uniquely identify this card."
+  (declare (type models:book card))
   (format nil "/~a/~a-~a"
           "card"                       ; this can be translated
           (mito:object-id card)
           ;; the slug won't actually be read back, only the id.
           (slug:slugify (models:title card))))
+
+(djula:def-filter :url (card)
+  (card-url card))
 
 (djula:def-filter :quantity (card)
   (typecase card
@@ -150,6 +154,42 @@ Dev helpers:
         (render-template* +search.html+ nil
                           :route "/search"
                           :q q))))
+
+(defun quick-search (q)
+  (if (utils:isbn-p q)
+      (alexandria:if-let
+          (found (models:find-by :isbn q))
+        ;; :go tells the front end to immediately jump to this URL
+        (list :go (card-url found))
+        ;; If we find an isbn that is not in the db...
+        (let*
+            ((found (if (dilicom:available-p)
+                        (dilicom:search-books (list q))
+                        (fr:books q)))
+             (found (car found))
+             (title (gethash :title found))
+             (isbn (bookshops.utils:clean-isbn (gethash :isbn found)))
+             (authors (gethash :authors found ""))
+             (price (gethash :price found ""))
+             (price (utils:ensure-float price))
+             (book (models:make-book :title title :isbn isbn :authors authors :price price)))
+          ;; WARNING! We are going to insert...
+          (when book
+            (mito:save-dao book)
+            (list :go (card-url book)))))
+        ;;Not an ISBN, so local keyword search
+        (list :results
+              (mapcar (lambda (book)
+                        (let ((data (make-hash-table)))
+                          (setf (gethash :url data) (card-url book))
+                          (setf (gethash :title data) (models:title book))
+                          data))
+                      (models:find-book :query (bookshops.utils::asciify q))))))
+
+(bookshops.models:define-role-access quick-search-route :view :editor)
+(defroute quick-search-route
+    ("/quick-search" :decorators ((@check-roles stock-route) (easy-routes:@json))) (&get q)
+  (cl-json:encode-json-plist-to-string (quick-search q)))
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute add-or-create-route ("/card/add-or-create/" :method :post

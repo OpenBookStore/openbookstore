@@ -13,7 +13,11 @@
     <!-- Buefy -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.js"></script>
     <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.3.45/css/materialdesignicons.min.css">
-    <script src="https://unpkg.com/buefy/dist/components/autocomplete"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+		<link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+    <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+
 
     <!-- The app -->
     <script defer src="/static/openbookstore.js"></script>
@@ -54,9 +58,18 @@
               </div>
             </a>
 
-            <div class="navbar-item field">
+            <div id ="quick-search" class="navbar-item field">
               <p class="control has-icons-right">
-                <input class="input" type="search" placeholder="Search...">
+                  <!--  <input class="input" type="search" placeholder="Search..."> -->
+                  <b-autocomplete placeholder="ISBN or Keywords..."
+                                  v-model="name"
+                                  field="title"
+                                  :data ="data"
+                                  :loading="isFetching"
+                                  @typing="getAsyncData"
+                                  @select="option => itemSelected(option)"
+                  ><template slot-scope="props">{$ {{ props.option.title }} $}</template>
+                  </b-autocomplete>
                 <span class="icon is-small is-right">
                 </span>
               </p>
