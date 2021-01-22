@@ -53,6 +53,12 @@ In development. Starts being testable.
 
 ## Installation
 
+### Dependencies
+
+`make run` uses `rlwrap`; install it with your package manager (on Debian, `apt install rlwrap`).
+
+### Openbookstore
+
 Download the executable from https://gitlab.com/vindarel/cl-bookshops/pipelines (download a build artifact with the button on the right).
 
 It's a 24MB self-contained executable (for Debian GNU/Linux,
