@@ -79,8 +79,7 @@ There is a toy Tk GUI.
 
 From the REPL:
 
-    (bookshops.models::ensure-tables-exist)
-    (bookshops.models::bootstrap-base-roles)
+    (bookshops.models::initialize-database)
 
 Create a superuser:
 
