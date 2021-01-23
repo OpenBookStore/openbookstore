@@ -18,7 +18,7 @@ See also:
 * `authentication.lisp`: defines the `user`, `role`, `user-role`,
   `role-copy` classes, and associated actions, in package
   `bookshops.models`):
-  
+
     * `create-user`, `create-superuser`, `create-role`, `login` (just
       returns the user object if password is correct), `get-user`,
       `search-user` (find user by name or mail), `is-superuser`,
@@ -39,4 +39,3 @@ See also:
     * defines `render-template*` macro: used in `web/web.lisp` and `web/authentication.lisp`
 
 * `../tests/test-authentication.lisp`: tests, obviously, are more needed?
-

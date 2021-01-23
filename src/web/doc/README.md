@@ -22,6 +22,10 @@ With "FEL à la demande" we can search by ISBN, and not do a free search.
 We can't get the cover nor the summary either, but we have additional information:
 
 - the availability
+- the VAT
+- the CLIL theme
+- the provider(s) (by its code)
+- and more
 
 
 # Seeing one's stock
