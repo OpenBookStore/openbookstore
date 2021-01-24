@@ -95,11 +95,13 @@ Dev helpers:
 (defun %search-datasources (q)
   (declare (type string q))
   (cond
-    ;; ISBN? Dilicom search.
+    ;; ISBN? Search on Dilicom if possible, otherwise use the default datasource.
     ((bookshops.utils:isbn-p q)
-     (values (dilicom:search-books (list q)) 1))
+     (if (dilicom:available-p)
+         (values (dilicom:search-books (list q)) 1)
+         (values (fr:books q) 1)))
 
-    ;; Free search? Other datasources.
+    ;; Free search? Default datasource.
     ((not (str:blank? q))
      (values (fr:books q) 1))
 
