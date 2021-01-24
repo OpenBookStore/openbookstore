@@ -69,6 +69,7 @@ Dev helpers:
 (defparameter +card-page.html+ (djula:compile-template* "card-page.html"))
 (defparameter +card-stock.html+ (djula:compile-template* "card-stock.html"))
 (defparameter +card-create.html+ (djula:compile-template* "card-create.html"))
+(defparameter +receive.html+ (djula:compile-template* "receive.html"))
 
 (defparameter +404.html+ (djula:compile-template* "404.html"))
 
@@ -186,6 +187,28 @@ Dev helpers:
                           data))
                       (models:find-book :query (bookshops.utils::asciify q))))))
 
+(defun get-or-search (q)
+  "If q is an ISBN, search in our DB first. If nothing is found, search for it.
+  If q is a keyword, search only in our DB.
+  Return 1 book object."
+  (if (utils:isbn-p q)
+      (let ((found (models:find-by :isbn q)))
+        (if found
+            found
+            (let* ((res (search-datasources q))
+                   (found (first res)))
+              (if res
+                  (progn
+                    (log:info found)
+                    ;; It's an ISBN search: we pick the first result.
+                    (first
+                     (models::check-in-stock
+                      (list
+                       (models:make-book :title (access found :title)
+                                         :price (access found :price))))))
+                  :notfound))))
+      :free-search-not-implemented))
+
 (bookshops.models:define-role-access quick-search-route :view :editor)
 (defroute quick-search-route
     ("/quick-search" :decorators ((@check-roles stock-route) (easy-routes:@json))) (&get q)
@@ -300,6 +323,14 @@ Dev helpers:
     (error (c)
                                         ;XXX: 404 handled by hunchentoot
       (format *error-output* c))))
+
+(defroute receive-route ("/receive" :method :get) ()
+  (render-template* +receive.html+ nil
+                    :route "/receive"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Start-up functions.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun start-app (&key (port *port*))
   (bookshops.models:connect)

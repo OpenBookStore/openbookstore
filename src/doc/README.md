@@ -39,4 +39,6 @@ We can click on a search result to see the book's own page.
 
 On a book's page, use the "+1" (and even "-1") button.
 
+See the **Receive menu** to scan books in a row (on development).
+
 TODO: on search results, use similar buttons.
