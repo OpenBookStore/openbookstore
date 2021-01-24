@@ -33,7 +33,7 @@
        for elt = (find (isbn book) data
                        :key (lambda (it) (access it :isbn))
                        :test #'string-equal)
-       ;; do (format t "book isbn: ~a, elt found: ~a~&" (isbn book) elt)
+       ;; do (format t "book isbn: ~a, elt found: ~a~&, quantity in stock: ~a" (isbn book) elt (quantity book))
        do (setf (access elt :in-stock)
                 (quantity book))
        do (setf (access elt :id)

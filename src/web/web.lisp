@@ -108,11 +108,17 @@ Dev helpers:
     (t (values nil 1))))
 
 (defun search-datasources (query)
+  "Search on Dilicom if possible (ISBN only), otherwise search on the default datasource.
+  After the search, we check if we have these books in our DB. If so, we augment their data with a `quantity' field.
+  Results are cached for a day.
+  QUERY can be an ISBN or keywords."
   (cacle:with-cache-fetch res (*search-cache* query)
     (when res
-      (bookshops.models::check-in-stock res))))
+      (models::check-in-stock res))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Routes.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (bookshops.models:define-role-access home-route :view :visitor)
 (defroute home-route ("/" :decorators ((@check-roles stock-route))) ()
   (render-template* +dashboard.html+ nil
@@ -159,6 +165,11 @@ Dev helpers:
                           :q q))))
 
 (defun quick-search (q)
+  "Either search an ISBN in our DB first, then on a datasource (and on that case, create a card object).
+  either search by keywords in our DB.
+  Return a plist:
+  - :GO + card base URL if we got a result by ISBN
+  - :RESULTS + JSON of books."
   (if (utils:isbn-p q)
       (alexandria:if-let
           (found (models:find-by :isbn q))
@@ -171,7 +182,7 @@ Dev helpers:
                         (fr:books q)))
              (found (car found))
              (title (gethash :title found))
-             (isbn (bookshops.utils:clean-isbn (gethash :isbn found)))
+             (isbn (utils:clean-isbn (gethash :isbn found)))
              (authors (gethash :authors found ""))
              (price (gethash :price found ""))
              (price (utils:ensure-float price))
@@ -180,14 +191,14 @@ Dev helpers:
           (when book
             (mito:save-dao book)
             (list :go (card-url book)))))
-        ;;Not an ISBN, so local keyword search
-        (list :results
-              (mapcar (lambda (book)
-                        (let ((data (make-hash-table)))
-                          (setf (gethash :url data) (card-url book))
-                          (setf (gethash :title data) (models:title book))
-                          data))
-                      (models:find-book :query (bookshops.utils::asciify q))))))
+      ;;Not an ISBN, so local keyword search
+      (list :results
+            (mapcar (lambda (book)
+                      (let ((data (make-hash-table)))
+                        (setf (gethash :url data) (card-url book))
+                        (setf (gethash :title data) (models:title book))
+                        data))
+                    (models:find-book :query (bookshops.utils::asciify q))))))
 
 (defun get-or-search (q)
   "If q is an ISBN, search in our DB first. If nothing is found, search for it.

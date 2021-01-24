@@ -5,8 +5,8 @@ OpenBookStore web client
 
 The web interface currently allows:
 
-- to search one ISBN on Dilicom
-- to search by keyword with some web scraping (currently on a french datasource).
+- to search one ISBN
+- to search by keyword.
 
 When searching books in the "Search" menu, we get:
 
@@ -15,17 +15,24 @@ When searching books in the "Search" menu, we get:
 
 ## Dilicom
 
-Dilicom is a french book data provider.
+Dilicom is a french book data provider. We support its "FEL à la demande" web service. Support for the "FEL complet" is in study phase.
 
 With "FEL à la demande" we can search by ISBN, and not do a free search.
 
-We can't get the cover nor the summary either, but we have additional information:
+We can't get the cover nor the summary either (those are additional commercial services), but we have additional information:
 
 - the availability
 - the VAT
 - the CLIL theme
 - the provider(s) (by its code)
 - and more
+
+# Quick search
+
+On the menu bar, the input widget allows you to:
+
+- type a few letters and have completion of the books you have in your stock
+- scan **any** ISBN. If you don't have it in stock, we get it from a data source.
 
 
 # Seeing one's stock
