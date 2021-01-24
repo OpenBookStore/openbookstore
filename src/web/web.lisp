@@ -156,6 +156,17 @@ Dev helpers:
                           :q q))))
 
 (defun quick-search (q)
+  "Accepts a search string.
+
+If the string appears to represent an ISBN, searches locally first then on remote data sources for the book matching the ISBN. If the book is found remotely, a new card is created for it locally. Return value is a plist containing a single card URL under the keyword :go. If no book is found for the ISBN, the search terminates and returns NIL.
+
+For all other (non-ISBN) queries, a local search is made. It may return multiple results, structured as such:
+
+'(:results (#<hash-table :title \"...\" :url \"...\">
+            #<hash-table :title \"...\" :url \"...\">
+           ...))
+
+The inner per-book results are hash tables and the outer structure is a plist. Hash tables are used for the inner structures to facilitate conversion to JSON."
   (if (utils:isbn-p q)
       (alexandria:if-let
           (found (models:find-by :isbn q))
