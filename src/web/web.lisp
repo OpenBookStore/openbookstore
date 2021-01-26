@@ -186,7 +186,11 @@ Dev helpers:
              (authors (gethash :authors found ""))
              (price (gethash :price found ""))
              (price (utils:ensure-float price))
-             (book (models:make-book :title title :isbn isbn :authors authors :price price)))
+             (book (models:make-book :title title
+                                     :isbn isbn
+                                     :authors authors
+                                     :price price
+                                     :cover-url (access found :cover-url))))
           ;; WARNING! We are going to insert...
           (when book
             (mito:save-dao book)
