@@ -53,6 +53,12 @@ In development. Starts being testable.
 
 ## Installation
 
+### Dependencies
+
+`make run` uses `rlwrap`; install it with your package manager (on Debian, `apt install rlwrap`).
+
+### Openbookstore
+
 Download the executable from https://gitlab.com/vindarel/cl-bookshops/pipelines (download a build artifact with the button on the right).
 
 It's a 24MB self-contained executable (for Debian GNU/Linux,
@@ -69,6 +75,15 @@ or run from sources:
 
 There is a toy Tk GUI.
 
+### Database initialization
+
+From the REPL:
+
+    (bookshops.models::initialize-database)
+
+Create a superuser:
+
+    (bookshops.models::create-superuser name email password)
 
 ## Usage
 
@@ -92,10 +107,7 @@ Quit with `C-d`.
 
     (bookshops-web:start-app :port 8989)
 
-
-Create a superuser from the REPL:
-
-    (bookshops.models::create-superuser name email password)
+- initialize the database if not already done, see above.
 
 ### Command line
 

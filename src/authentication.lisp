@@ -126,6 +126,10 @@ It is permitted for a role to appear more than once in the result."
                (mito-auth:auth user password))
       user)))
 
+(defun get-user (name)
+  "Return the user with the given username"
+  (mito:find-dao 'user :name name))
+
 (defmacro define-role (name (&rest inherits))
   `(progn
      (create-role ',name)

@@ -37,3 +37,8 @@
   (define-role :editor (:vendor))
   (define-role :admin (:editor))
   t)
+
+(defun initialize-database ()
+  (ensure-tables-exist)
+  (bootstrap-base-roles))
+

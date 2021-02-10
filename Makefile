@@ -29,7 +29,7 @@ install:
 	git clone https://github.com/vindarel/cl-str/ ~/quicklisp/local-projects/cl-str/
 
 run:
-	sbcl --load run.lisp
+	rlwrap sbcl --load run.lisp
 
 # Workflow:
 # - update

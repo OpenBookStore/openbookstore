@@ -8,3 +8,6 @@
 .#*
 *mo/
 /config.lisp
+/db.db
+/db.db-journal
+/bookshops

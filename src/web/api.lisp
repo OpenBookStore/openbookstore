@@ -19,3 +19,18 @@
      (bookshops.models:add-to (bookshops.models:default-place)
                               card
                               :quantity -1))))
+
+(defroute api-receive-card ("/api/receive" :method :post)
+    (&post (counter :parameter-type 'integer)
+           isbn)
+  "Receive an ISBN, look for it and return the full data.
+  The counter is used on the client side to update the corresponding node.
+  TODO: actually add in stock :)"
+  (setf (hunchentoot:content-type*) "application/json")
+  ;; (sleep 1)
+  (cl-json:encode-json-plist-to-string
+   (print (if (and isbn (not (str:blankp isbn)))
+              (list :counter counter
+                    :card (get-or-search isbn))
+              (list :counter counter
+                    :card "no isbn")))))

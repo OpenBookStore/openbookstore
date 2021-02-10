@@ -652,12 +652,10 @@ searches. This method was thought the most portable.
   (if (= (mito:object-id from) (mito:object-id to))
       (format t (utils:_ "No need to move this book from and to the same place (~a).~&")
               (name to))
-      (progn
-        (if (remove-from from bk :quantity quantity)
-            (progn
-              (add-to to bk :quantity quantity)
-              (format t "Moved ~a cop~:@p of '~a' from ~a to ~a.~&"
-                      quantity (title bk) (name from) (name to)))))))
+      (when (remove-from from bk :quantity quantity)
+        (add-to to bk :quantity quantity)
+        (format t "Moved ~a cop~:@p of '~a' from ~a to ~a.~&"
+                quantity (title bk) (name from) (name to)))))
 
 ;;
 ;; Some stats, observing the stock.

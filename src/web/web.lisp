@@ -69,6 +69,7 @@ Dev helpers:
 (defparameter +card-page.html+ (djula:compile-template* "card-page.html"))
 (defparameter +card-stock.html+ (djula:compile-template* "card-stock.html"))
 (defparameter +card-create.html+ (djula:compile-template* "card-create.html"))
+(defparameter +receive.html+ (djula:compile-template* "receive.html"))
 
 (defparameter +404.html+ (djula:compile-template* "404.html"))
 
@@ -94,22 +95,30 @@ Dev helpers:
 (defun %search-datasources (q)
   (declare (type string q))
   (cond
-    ;; ISBN? Dilicom search.
+    ;; ISBN? Search on Dilicom if possible, otherwise use the default datasource.
     ((bookshops.utils:isbn-p q)
-     (values (dilicom:search-books (list q)) 1))
+     (if (dilicom:available-p)
+         (values (dilicom:search-books (list q)) 1)
+         (values (fr:books q) 1)))
 
-    ;; Free search? Other datasources.
+    ;; Free search? Default datasource.
     ((not (str:blank? q))
      (values (fr:books q) 1))
 
     (t (values nil 1))))
 
 (defun search-datasources (query)
+  "Search on Dilicom if possible (ISBN only), otherwise search on the default datasource.
+  After the search, we check if we have these books in our DB. If so, we augment their data with a `quantity' field.
+  Results are cached for a day.
+  QUERY can be an ISBN or keywords."
   (cacle:with-cache-fetch res (*search-cache* query)
     (when res
-      (bookshops.models::check-in-stock res))))
+      (models::check-in-stock res))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Routes.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (bookshops.models:define-role-access home-route :view :visitor)
 (defroute home-route ("/" :decorators ((@check-roles stock-route))) ()
   (render-template* +dashboard.html+ nil
@@ -156,17 +165,11 @@ Dev helpers:
                           :q q))))
 
 (defun quick-search (q)
-  "Accepts a search string.
-
-If the string appears to represent an ISBN, searches locally first then on remote data sources for the book matching the ISBN. If the book is found remotely, a new card is created for it locally. Return value is a plist containing a single card URL under the keyword :go. If no book is found for the ISBN, the search terminates and returns NIL.
-
-For all other (non-ISBN) queries, a local search is made. It may return multiple results, structured as such:
-
-'(:results (#<hash-table :title \"...\" :url \"...\">
-            #<hash-table :title \"...\" :url \"...\">
-           ...))
-
-The inner per-book results are hash tables and the outer structure is a plist. Hash tables are used for the inner structures to facilitate conversion to JSON."
+  "Either search an ISBN in our DB first, then on a datasource (and on that case, create a card object).
+  either search by keywords in our DB.
+  Return a plist:
+  - :GO + card base URL if we got a result by ISBN
+  - :RESULTS + JSON of books."
   (if (utils:isbn-p q)
       (alexandria:if-let
           (found (models:find-by :isbn q))
@@ -179,23 +182,49 @@ The inner per-book results are hash tables and the outer structure is a plist. H
                         (fr:books q)))
              (found (car found))
              (title (gethash :title found))
-             (isbn (bookshops.utils:clean-isbn (gethash :isbn found)))
+             (isbn (utils:clean-isbn (gethash :isbn found)))
              (authors (gethash :authors found ""))
              (price (gethash :price found ""))
              (price (utils:ensure-float price))
-             (book (models:make-book :title title :isbn isbn :authors authors :price price)))
+             (book (models:make-book :title title
+                                     :isbn isbn
+                                     :authors authors
+                                     :price price
+                                     :cover-url (access found :cover-url))))
           ;; WARNING! We are going to insert...
           (when book
             (mito:save-dao book)
             (list :go (card-url book)))))
-        ;;Not an ISBN, so local keyword search
-        (list :results
-              (mapcar (lambda (book)
-                        (let ((data (make-hash-table)))
-                          (setf (gethash :url data) (card-url book))
-                          (setf (gethash :title data) (models:title book))
-                          data))
-                      (models:find-book :query (bookshops.utils::asciify q))))))
+      ;;Not an ISBN, so local keyword search
+      (list :results
+            (mapcar (lambda (book)
+                      (let ((data (make-hash-table)))
+                        (setf (gethash :url data) (card-url book))
+                        (setf (gethash :title data) (models:title book))
+                        data))
+                    (models:find-book :query (bookshops.utils::asciify q))))))
+
+(defun get-or-search (q)
+  "If q is an ISBN, search in our DB first. If nothing is found, search for it.
+  If q is a keyword, search only in our DB.
+  Return 1 book object."
+  (if (utils:isbn-p q)
+      (let ((found (models:find-by :isbn q)))
+        (if found
+            found
+            (let* ((res (search-datasources q))
+                   (found (first res)))
+              (if res
+                  (progn
+                    (log:info found)
+                    ;; It's an ISBN search: we pick the first result.
+                    (first
+                     (models::check-in-stock
+                      (list
+                       (models:make-book :title (access found :title)
+                                         :price (access found :price))))))
+                  :notfound))))
+      :free-search-not-implemented))
 
 (bookshops.models:define-role-access quick-search-route :view :editor)
 (defroute quick-search-route
@@ -311,6 +340,14 @@ The inner per-book results are hash tables and the outer structure is a plist. H
     (error (c)
                                         ;XXX: 404 handled by hunchentoot
       (format *error-output* c))))
+
+(defroute receive-route ("/receive" :method :get) ()
+  (render-template* +receive.html+ nil
+                    :route "/receive"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Start-up functions.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun start-app (&key (port *port*))
   (bookshops.models:connect)

@@ -107,6 +107,8 @@
   (:use :cl)
   (:import-from :easy-routes
                 :defroute)
+  (:import-from :access
+                :access)
   (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
                     (#:fr #:bookshops.datasources.scraper-fr)
                     (#:models #:bookshops.models)
