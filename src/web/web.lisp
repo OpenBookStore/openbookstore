@@ -87,35 +87,6 @@ Dev helpers:
                                      (asdf:system-source-directory :bookshops)))
         hunchentoot:*dispatch-table*))
 
-;;; search
-;;; TODO find somewhere better to put search functionatlity this.
-(defvar *search-cache* (cacle:make-cache 5000 '%search-datasources :test 'equal
-                                         :lifetime (* 24 3600)))
-
-(defun %search-datasources (q)
-  (declare (type string q))
-  (cond
-    ;; ISBN? Search on Dilicom if possible, otherwise use the default datasource.
-    ((bookshops.utils:isbn-p q)
-     (if (dilicom:available-p)
-         (values (dilicom:search-books (list q)) 1)
-         (values (fr:books q) 1)))
-
-    ;; Free search? Default datasource.
-    ((not (str:blank? q))
-     (values (fr:books q) 1))
-
-    (t (values nil 1))))
-
-(defun search-datasources (query)
-  "Search on Dilicom if possible (ISBN only), otherwise search on the default datasource.
-  After the search, we check if we have these books in our DB. If so, we augment their data with a `quantity' field.
-  Results are cached for a day.
-  QUERY can be an ISBN or keywords."
-  (cacle:with-cache-fetch res (*search-cache* query)
-    (when res
-      (models::check-in-stock res))))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Routes.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -163,68 +134,6 @@ Dev helpers:
         (render-template* +search.html+ nil
                           :route "/search"
                           :q q))))
-
-(defun quick-search (q)
-  "Either search an ISBN in our DB first, then on a datasource (and on that case, create a card object).
-  either search by keywords in our DB.
-  Return a plist:
-  - :GO + card base URL if we got a result by ISBN
-  - :RESULTS + JSON of books."
-  (if (utils:isbn-p q)
-      (alexandria:if-let
-          (found (models:find-by :isbn q))
-        ;; :go tells the front end to immediately jump to this URL
-        (list :go (card-url found))
-        ;; If we find an isbn that is not in the db...
-        (let*
-            ((found (if (dilicom:available-p)
-                        (dilicom:search-books (list q))
-                        (fr:books q)))
-             (found (car found))
-             (title (gethash :title found))
-             (isbn (utils:clean-isbn (gethash :isbn found)))
-             (authors (gethash :authors found ""))
-             (price (gethash :price found ""))
-             (price (utils:ensure-float price))
-             (book (models:make-book :title title
-                                     :isbn isbn
-                                     :authors authors
-                                     :price price
-                                     :cover-url (access found :cover-url))))
-          ;; WARNING! We are going to insert...
-          (when book
-            (mito:save-dao book)
-            (list :go (card-url book)))))
-      ;;Not an ISBN, so local keyword search
-      (list :results
-            (mapcar (lambda (book)
-                      (let ((data (make-hash-table)))
-                        (setf (gethash :url data) (card-url book))
-                        (setf (gethash :title data) (models:title book))
-                        data))
-                    (models:find-book :query (bookshops.utils::asciify q))))))
-
-(defun get-or-search (q)
-  "If q is an ISBN, search in our DB first. If nothing is found, search for it.
-  If q is a keyword, search only in our DB.
-  Return 1 book object."
-  (if (utils:isbn-p q)
-      (let ((found (models:find-by :isbn q)))
-        (if found
-            found
-            (let* ((res (search-datasources q))
-                   (found (first res)))
-              (if res
-                  (progn
-                    (log:info found)
-                    ;; It's an ISBN search: we pick the first result.
-                    (first
-                     (models::check-in-stock
-                      (list
-                       (models:make-book :title (access found :title)
-                                         :price (access found :price))))))
-                  :notfound))))
-      :free-search-not-implemented))
 
 (bookshops.models:define-role-access quick-search-route :view :editor)
 (defroute quick-search-route

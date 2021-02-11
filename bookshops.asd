@@ -74,6 +74,7 @@
                 ((:file "package")
                  (:file "messages")
                  (:file "authentication")
+                 (:file "search")
                  (:file "web")
                  (:file "api"))))
 

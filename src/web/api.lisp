@@ -24,13 +24,20 @@
     (&post (counter :parameter-type 'integer)
            isbn)
   "Receive an ISBN, look for it and return the full data.
-  The counter is used on the client side to update the corresponding node.
-  TODO: actually add in stock :)"
+  The counter is used on the client side to update the corresponding node."
+  ;;Changes:
+  ;; - Should add a card for new ISBNs automatically
+  ;; - Check-in-stock is not done by search anymore. Done here.
+  ;; - Adding keyword search should be easy: just remove :remote-key and
+  ;;   :local-key parameters below.
   (setf (hunchentoot:content-type*) "application/json")
   ;; (sleep 1)
   (cl-json:encode-json-plist-to-string
    (print (if (and isbn (not (str:blankp isbn)))
               (list :counter counter
-                    :card (get-or-search isbn))
+                    :card
+                    (models::check-in-stock
+                     (get-or-search isbn :remote-key nil :local-key nil
+                                         :save t :multiple nil)))
               (list :counter counter
                     :card "no isbn")))))

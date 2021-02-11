@@ -1,0 +1,130 @@
+(in-package :bookshops-web)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Tools for web searches
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Low level stuff
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defvar *isbn-search-cache*
+  (cacle:make-cache 5000 '%isbn-search-datasources :test 'equal :lifetime (* 24 3600)))
+
+(defvar *key-search-cache*
+  (cacle:make-cache 5000 '%key-search-datasources :test 'equal :lifetime (* 24 3600)))
+
+(defun %isbn-search-datasources (q)
+  (declare (type string q))
+  (values
+   (if (dilicom:available-p)
+       (dilicom:search-books (list q))
+       (fr:books q))
+   1))
+
+(defun %key-search-datasources (q)
+  (declare (type string q))
+  (values (fr:books q) 1))
+
+(defun remote-isbn-search (q)
+  (declare (type string q))
+  (cacle:cache-fetch *isbn-search-cache* q))
+
+(defun remote-key-search (q)
+  (declare (type string q))
+  (cacle:cache-fetch *key-search-cache* q))
+
+;;; Note: the local functions return lists of book objects, not lists of hash tables.
+
+(defun local-isbn-search (q)
+  (declare (type string q))
+  (list (models:find-by :isbn q)))
+
+(defun local-key-search (q)
+  (declare (type string q))
+  (models:find-book :query (bookshops.utils::asciify q)))
+
+(defun save-remote-find (find &key (save t))
+  "Convert a remote search result into a book object and optionally save."
+  (declare (type hash-table find))
+  (let*
+      ((found find)
+       (title (gethash :title found))
+       (isbn (utils:clean-isbn (gethash :isbn found)))
+       (authors (gethash :authors found ""))
+       (price (gethash :price found ""))
+       (price (utils:ensure-float price))
+       (book (models:make-book :title title
+                               :isbn isbn
+                               :authors authors
+                               :price price
+                               :cover-url (access found :cover-url))))
+    (when (and save book)
+      (mito:save-dao book))
+    book))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Higher level search funcs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defun search-datasources (q)
+  "Search on Dilicom if possible (ISBN only), otherwise search on the default datasource.
+  After the search, we check if we have these books in our DB. If so, we augment their data with a `quantity' field.
+  Results are cached for a day.
+  QUERY can be an ISBN or keywords."
+  (declare (type string q))
+  (models::check-in-stock
+   (cond
+     ((bookshops.utils:isbn-p q) (remote-isbn-search q))
+     ((not (str:blank? q)) (remote-key-search q))
+     (t nil))))
+
+(defun get-or-search (q &key (remote-key t) (remote-isbn t) (local-key t) (local-isbn t)
+                          save (multiple t))
+  "General search function. Will perform an ISBN or keyword search, both local and remote. ISBN searches will be performed before keyword, and local searches will be performed before remote. Search will stop on the first kind of search that returns a result.
+
+Any of :remote-key, :remote-isbn, :local-key or :local-isbn may be set to NIL to stop that particular search. If results are found, a list of book objects will be returned, unless :multiple NIL is set, in which case a single book object will be returned.
+
+Cards will be created for remote finds if :save is set T."
+  (declare (type string q))
+  (let ((res
+          (if (utils:isbn-p q)
+              (alexandria:if-let
+                  (found (and local-isbn (local-isbn-search q)))
+                found
+                (alexandria:when-let*
+                    ((found (and remote-isbn (remote-isbn-search q)))
+                     (book (save-remote-find (car found) :save save)))
+                  (list book)))
+              (alexandria:if-let
+                  (found (and local-key (local-key-search q)))
+                found
+                (alexandria:when-let*
+                    ((found (and remote-key (remote-key-search q)))
+                     (books (mapcar (lambda (b) (save-remote-find b :save save))
+                                    ;;Only save what we are going to return
+                                    (if multiple found (list (car found))))))
+                  books)))))
+    (when res (if multiple res (car res)))))
+
+(defun quick-search (q)
+  "Either search an ISBN in our DB first, then on a datasource (and on that case, create a card object).
+  either search by keywords in our DB.
+  Return a plist:
+  - :GO + card base URL if we got a result by ISBN
+  - :RESULTS + JSON of books."
+  (let ((res (get-or-search q :remote-key nil :save t)))
+    (if (< 1 (length res))
+        (list :results
+              (mapcar (lambda (book)
+                        (let ((data (make-hash-table)))
+                          (setf (gethash :url data) (card-url book))
+                          (setf (gethash :title data) (models:title book))
+                          data))
+                      res))
+        (when res
+          (list :go (card-url (car res)))))))
+
