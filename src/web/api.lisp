@@ -37,7 +37,17 @@
               (list :counter counter
                     :card
                     (models::check-in-stock
-                     (get-or-search isbn :remote-key nil :local-key nil
-                                         :save t :multiple nil)))
+                     (get-or-search-single isbn :remote-key nil :local-key nil
+                                         :save t )))
               (list :counter counter
                     :card "no isbn")))))
+
+(bookshops.models:define-role-access api-quick-search :view :editor)
+(defroute api-quick-search
+    ("/api/quick-search" :decorators ((@check-roles stock-route) (easy-routes:@json))) (&get q)
+  (cl-json:encode-json-plist-to-string (quick-search q)))
+
+;;(bookshops.models:define-role-access api-sell-search :view :editor)
+(defroute api-sell-search
+    ("/api/sell-search" :decorators ((@check-roles stock-route) (easy-routes:@json))) (&get q)
+  (cl-json:encode-json-plist-to-string (sell-search q)))

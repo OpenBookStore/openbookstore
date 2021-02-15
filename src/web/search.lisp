@@ -82,33 +82,40 @@
      ((not (str:blank? q)) (remote-key-search q))
      (t nil))))
 
-(defun get-or-search (q &key (remote-key t) (remote-isbn t) (local-key t) (local-isbn t)
-                          save (multiple t))
+(defvar *single-result* nil)
+
+(defun get-or-search (q &key (remote-key t) (remote-isbn t)
+                          (local-key t) (local-isbn t) save)
   "General search function. Will perform an ISBN or keyword search, both local and remote. ISBN searches will be performed before keyword, and local searches will be performed before remote. Search will stop on the first kind of search that returns a result.
 
 Any of :remote-key, :remote-isbn, :local-key or :local-isbn may be set to NIL to stop that particular search. If results are found, a list of book objects will be returned, unless :multiple NIL is set, in which case a single book object will be returned.
 
 Cards will be created for remote finds if :save is set T."
   (declare (type string q))
-  (let ((res
-          (if (utils:isbn-p q)
-              (alexandria:if-let
-                  (found (and local-isbn (local-isbn-search q)))
-                found
-                (alexandria:when-let*
-                    ((found (and remote-isbn (remote-isbn-search q)))
-                     (book (save-remote-find (car found) :save save)))
-                  (list book)))
-              (alexandria:if-let
-                  (found (and local-key (local-key-search q)))
-                found
-                (alexandria:when-let*
-                    ((found (and remote-key (remote-key-search q)))
-                     (books (mapcar (lambda (b) (save-remote-find b :save save))
-                                    ;;Only save what we are going to return
-                                    (if multiple found (list (car found))))))
-                  books)))))
-    (when res (if multiple res (car res)))))
+  (if (utils:isbn-p q)
+      (alexandria:if-let
+          (found (and local-isbn (local-isbn-search q)))
+        found
+        (alexandria:when-let*
+            ((found (and remote-isbn (remote-isbn-search q)))
+             (book (save-remote-find (car found) :save save)))
+          (list book)))
+      (alexandria:if-let
+          (found (and local-key (local-key-search q)))
+        found
+        (alexandria:when-let*
+            ((found (and remote-key (remote-key-search q)))
+             (books (mapcar (lambda (b) (save-remote-find b :save save))
+                            ;;Only save what we are going to return
+                            (if *single-result* (list (car found)) found))))
+          books))))
+
+(defun get-or-search-single (q &key (remote-key t) (remote-isbn t)
+                                 (local-key t) (local-isbn t) save)
+  (let ((*single-result* t))
+    (car (get-or-search q :remote-key remote-key :remote-isbn remote-isbn :local-key local-key
+                      :local-isbn local-isbn :save save))))
+
 
 (defun quick-search (q)
   "Either search an ISBN in our DB first, then on a datasource (and on that case, create a card object).
@@ -127,4 +134,23 @@ Cards will be created for remote finds if :save is set T."
                       res))
         (when res
           (list :go (card-url (car res)))))))
+
+(defun sell-search (q)
+  (let ((res (get-or-search q :remote-key nil :remote-isbn nil)))
+    (cond
+      ((< 1 (length res))
+       (list :options
+             (mapcar (lambda (book)
+                       (let ((data (make-hash-table)))
+                         (setf (gethash :card data) book)
+                         (setf (gethash :title data) (models:title book))
+                         data))
+                     res)))
+      ((eq 1 (length res))
+       (list :card (car res)))
+      (t (list :error
+               (if (utils:isbn-p q)
+                   ;; Where should _ come from?
+                   (bookshops::_ "No book found for ISBN")
+                   (bookshops::_ "No matches found in store")))))))
 

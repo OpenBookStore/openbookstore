@@ -1,4 +1,8 @@
 Vue.use(Buefy.Autocomplete);
+Vue.use(Buefy.Input);
+Vue.use(Buefy.Numberinput);
+Vue.use(Buefy.Field);
+Vue.use(Buefy.Button);
 
 const qsearchData = {
     data() {
@@ -15,13 +19,13 @@ const qsearchData = {
                 this.data = [];
                 return;
             }
-            // Is the user input a number?
+            // Is the user inputting a number?
             if (/^\d+$/.test(name) && name.length < 13) {
                 this.data = [];
                 return;
             }
             this.isFetching = true;
-            this.$http.get(`/quick-search?q=${name}`)
+            this.$http.get(`/api/quick-search?q=${name}`)
                 .then(({ data }) => {
                     // here we go elsewhere if appropriate.
                     if (data && data.hasOwnProperty("go")) {
@@ -117,3 +121,108 @@ if (document.getElementById('vue-receive')) {
     var vm = new Vue(receivePage);
     vm.$mount('#vue-receive');
 }
+
+
+
+////////////////////////////////////////////////////////////////////
+/// Sell menu
+////////////////////////////////////////////////////////////////////
+
+Vue.component('bookstore-card', {
+    props: ['card'],
+    template:
+    " \
+    <div class='media'> \
+      <div class='media-left'> \
+        <p class='image is-64x64'> \
+          <img v-bind:src='card.coverUrl'> \
+        </p> \
+      </div> \
+      <div class='media-content'> \
+        <div class='content'> \
+          <span class='title is-6'> {{ card.title }} </span> \
+          <div> {{ card.authors }} </div> \
+          <span class='has-text-grey-light'> {{ card.isbn }} </span> \
+          <span> éd. {{ _.upperFirst(card.publisher) }} </span> \
+          <p> \
+          </p> \
+        </div> \
+      </div> \
+      <div class='media-right'> \
+          <div class='level'> \
+              <span class='level-item' name='price'> {{ card.price }} €</span> \
+          </div> \
+      </div> \
+    </div> \
+"
+})
+
+const sellPage = {
+    data () {
+        return {
+            books: [{error: null, card: null, input: "", quantity: 1, show: false}],
+            suggestions: [],
+            search: "",
+            selected: null,
+            isFetching: false
+        };
+    },
+    methods: {
+        getAsyncData: _.debounce (function (input) {
+            if (!input.length) {
+                this.suggestions = [];
+                return;
+            }
+            // Is the user inputting a number?
+            if (/^\d+$/.test(input)) {
+                if (input.length < 13) {
+                    this.suggestions = [];
+                    return;
+                } else {
+                    this.newCard({input});
+                }
+            }
+            this.isFetching = true;
+            this.$http.get(`/api/sell-search?q=${input}`)
+                .then(({ data }) => {
+                    if (data && data.hasOwnProperty("card")) {
+                        this.newCard({ card: data.card, input });
+                    } else if (data && data.hasOwnProperty("options")) {
+                        this.suggestions = [];
+                        data.options.forEach((item) => this.suggestions.push(item));
+                    } else if (data && data.hasOwnProperty("error")) {
+                        this.newCard({ error: data.error, input });
+                    }
+                })
+                .catch((error) => {
+                    this.suggestions = [];
+                    throw error;
+                })
+                .finally(() => {
+                    this.isFetching = false;
+                });
+        }, 500),
+        itemSelected: function (item) {
+            if (item) {
+                this.newCard({ card: item.card });
+            }
+        },
+        removeBook: function (index) {
+            this.books[index].show = false;
+        },
+        newCard: function (params) {
+            params.show = true;
+            params.quantity = 1;
+            this.books.push(params);
+            setTimeout(function() {this.search = "";}.bind(this));
+        }
+    }
+}
+
+
+if (document.getElementById('vue-sell')) {
+    var vsell = new Vue(sellPage);
+    vsell.$mount('#vue-sell');
+}
+
+

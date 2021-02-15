@@ -62,7 +62,8 @@
                 ((:file "models")
                  (:file "models-utils")
                  (:file "baskets")
-                 (:file "contacts")))
+                 (:file "contacts")
+                 (:file "sell")))
 
                ;; One-off utility "scripts" to work on the DB.
                (:module "src/management"

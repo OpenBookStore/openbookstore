@@ -70,6 +70,7 @@ Dev helpers:
 (defparameter +card-stock.html+ (djula:compile-template* "card-stock.html"))
 (defparameter +card-create.html+ (djula:compile-template* "card-create.html"))
 (defparameter +receive.html+ (djula:compile-template* "receive.html"))
+(defparameter +sell.html+ (djula:compile-template* "sell.html"))
 
 (defparameter +404.html+ (djula:compile-template* "404.html"))
 
@@ -134,11 +135,6 @@ Dev helpers:
         (render-template* +search.html+ nil
                           :route "/search"
                           :q q))))
-
-(bookshops.models:define-role-access quick-search-route :view :editor)
-(defroute quick-search-route
-    ("/quick-search" :decorators ((@check-roles stock-route) (easy-routes:@json))) (&get q)
-  (cl-json:encode-json-plist-to-string (quick-search q)))
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute add-or-create-route ("/card/add-or-create/" :method :post
@@ -253,6 +249,10 @@ Dev helpers:
 (defroute receive-route ("/receive" :method :get) ()
   (render-template* +receive.html+ nil
                     :route "/receive"))
+
+(defroute sell-route ("/sell" :method :get) ()
+  (render-template* +sell.html+ nil
+                    :route "/sell"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Start-up functions.

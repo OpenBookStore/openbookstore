@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+
+<div id="vue-sell">
+
+    <div class="field has-addons">
+        <div class="control is-expanded">
+            <h3>Items to Sell:</h3>
+            <div v-for="(book, index) in books" :key="index">
+                <div class="box content" v-if="book.show">
+                    <div class="tile is-ancestor">
+                        <div class="tile">
+                        <b-field label="Input" v-if="book.error"
+                             type="is-danger"
+                             :message="book.error">
+                        <b-input :value="book.input"></b-input>
+                    </b-field>
+                    <b-field label="Input"
+                             v-else-if="book.card && book.input && book.input.length > 0"
+                             type="is-success">
+                        <b-input disabled :value="book.input"></b-input>
+                    </b-field>
+                    <b-field label="Input" v-else-if="book.input && !book.card">
+                        <b-input loading :value="book.input"></b-input>
+                    </b-field>
+                        </div>
+
+                        <div class="tile" >
+                    <b-field label="Quantity" v-if="book.card">
+                        <b-numberinput v-model="book.quantity"></b-numberinput>
+                    </b-field>
+                        </div>
+                        <div class="tile" >
+                    <b-button type="is-danger" @click="removeBook(index)" outlined>Remove</b-button>
+                        </div>
+                    </div>
+                    <bookstore-card v-if="book.card"
+                                v-bind:key="index"
+                                v-bind:card="book.card">
+                    </bookstore-card>
+                </div>
+            </div>
+
+            <h3>Add a book</h3>
+            <b-autocomplete placeholder="ISBN or Keywords..."
+                            v-model="search"
+                            field="title"
+                            :data="suggestions"
+                            :loading="isFetching"
+                            @typing="getAsyncData"
+                            @select="option => itemSelected(option)"
+            ><template slot-scope="props">{$ {{ props.option.title }} $}</template>
+            </b-autocomplete>
+        </div>
+    </div>
+
+
+
+</div>
+
+{% endblock %}
+
+
+
