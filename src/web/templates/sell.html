@@ -10,6 +10,10 @@
 
     <div class="field has-addons">
         <div class="control is-expanded">
+            <div>
+                <b-field label="Client"><b-input model="client" ></b-input></b-field>
+                <b-datepicker v-model="sellDate" icon="calendar-today"></b-datepicker>
+
             <h3>Items to Sell:</h3>
             <div v-for="(book, index) in books" :key="index">
                 <div class="box content" v-if="book.show">
@@ -18,7 +22,7 @@
                         <b-field label="Input" v-if="book.error"
                              type="is-danger"
                              :message="book.error">
-                        <b-input :value="book.input"></b-input>
+                        <b-input disabled :value="book.input"></b-input>
                     </b-field>
                     <b-field label="Input"
                              v-else-if="book.card && book.input && book.input.length > 0"
@@ -26,7 +30,7 @@
                         <b-input disabled :value="book.input"></b-input>
                     </b-field>
                     <b-field label="Input" v-else-if="book.input && !book.card">
-                        <b-input loading :value="book.input"></b-input>
+                        <b-input disabled loading :value="book.input"></b-input>
                     </b-field>
                         </div>
 
@@ -34,9 +38,16 @@
                     <b-field label="Quantity" v-if="book.card">
                         <b-numberinput v-model="book.quantity"></b-numberinput>
                     </b-field>
+
                         </div>
                         <div class="tile" >
-                    <b-button type="is-danger" @click="removeBook(index)" outlined>Remove</b-button>
+                            <b-field label="Price" v-if="book.card">
+                                <b-input v-model="book.card.price"></b-numberinput>
+                            </b-field>
+                            €
+                        </div>
+                        <div class="tile" >
+                                <b-button type="is-danger" @click="removeBook(index)" outlined>Remove</b-button>
                         </div>
                     </div>
                     <bookstore-card v-if="book.card"
@@ -56,6 +67,20 @@
                             @select="option => itemSelected(option)"
             ><template slot-scope="props">{$ {{ props.option.title }} $}</template>
             </b-autocomplete>
+
+            <div>
+                                Quantity: {$ {{quantity}} $} Total: {$ {{total}} $}
+                <b-field label="Payment method">
+                    <b-select v-model="paymentMethod">
+                    <option
+                        v-for="option in paymentMethods"
+                        :value="option">
+                        {$ {{ option }} $}
+                    </option>
+                </b-select>
+                </b-field>
+            </div>
+            <b-button @click="completeSale" >Submit</b-button>
         </div>
     </div>
 

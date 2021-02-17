@@ -250,6 +250,7 @@ Dev helpers:
   (render-template* +receive.html+ nil
                     :route "/receive"))
 
+(bookshops.models:define-role-access sell-route :view :editor)
 (defroute sell-route ("/sell" :method :get) ()
   (render-template* +sell.html+ nil
                     :route "/sell"))
