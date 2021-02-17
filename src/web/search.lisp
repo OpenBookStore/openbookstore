@@ -39,7 +39,8 @@
 
 (defun local-isbn-search (q)
   (declare (type string q))
-  (list (models:find-by :isbn q)))
+  (alexandria:when-let ((res (models:find-by :isbn q)))
+    (list res)))
 
 (defun local-key-search (q)
   (declare (type string q))
@@ -150,7 +151,6 @@ Cards will be created for remote finds if :save is set T."
        (list :card (car res)))
       (t (list :error
                (if (utils:isbn-p q)
-                   ;; Where should _ come from?
-                   (bookshops::_ "No book found for ISBN")
-                   (bookshops::_ "No matches found in store")))))))
+                   "No book found for ISBN"
+                   "No matches found in store"))))))
 
