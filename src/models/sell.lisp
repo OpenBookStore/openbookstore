@@ -10,6 +10,13 @@
     :col-type :boolean
     :documentation "If the sale has been cancelled")
 
+   (date
+    :accessor date
+    :initarg :date
+    :type :date-stamp
+    :col-type :datestamp
+    :documentation "Date of the sale")
+
    (client
     :accessor sell-client
     :initarg :client
@@ -32,11 +39,19 @@
     :col-type :integer
     :documentation "Quantity of this book sold in this transaction. Can be a negative number.")
 
-   (price
+   (sold-price
     :accessor sold-price
-    :initarg :price
+    :initarg :sold-price
     :initform nil
-    :col-type (or :float :null)))
+    :col-type (or :float :null))
+
+   (current-price
+    :accessor current-price
+    :initarg :current-price
+    :initform nil
+    :col-type (or :float :null)
+    :documentation "Book list price at time of sale")
+   )
 
   (:metaclass mito:dao-table-class)
   (:documentation "A many-to-many connection table representing books sold. Card field is a link to the book that was sold. Sell field is a link to the transaction in which it was sold."))
@@ -60,6 +75,26 @@
 
    (:metaclass mito:dao-table-class)
    (:documentation "Payment method that was used to complete a Sell."))
+
+(defun make-sale (&key books payment client date)
+  (let* ((sale (make-instance 'sell :client client :date date))
+         (payment (make-instance 'payment-method :sell sale :name payment))
+         (bookobjs (mapcar (lambda (book)
+                             (let ((card (find-by :id (access book :id))))
+                               (unless card
+                                 (error "Book not found!"))
+                               (make-instance
+                                'sold-cards
+                                :current-price (price card)
+                                :sold-price (access book :price)
+                                :quantity (access book :quantity)
+                                :card card
+                                :sell sale)))
+                           books)))
+    (mito:save-dao sale)
+    (mito:save-dao payment)
+    (mapc #'mito:save-dao bookobjs)
+    sale))
 
 
 

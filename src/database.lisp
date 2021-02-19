@@ -14,6 +14,9 @@
                          role
                          user-role
                          role-copy
+                         sell
+                         sold-cards
+                         payment-method
 ))
 
 (defun connect (&optional (db-name *db-name*))

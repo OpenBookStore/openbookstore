@@ -170,6 +170,14 @@ const sellPage = {
         };
     },
     methods: {
+        reset: function () {
+            self.books = [];
+            self.suggestions = [];
+            self.paymentMethod = "";
+            self.client = "";
+            self.search = "";
+            self.sellDate = new Date();
+        },
         completeSale: function () {
             var books = [];
             this.books.forEach((book) => {
@@ -186,12 +194,13 @@ const sellPage = {
                 books: books,
                 paymentMethod: this.paymentMethod,
                 client: this.client,
-                sellDate: this.sellDate,
+                sellDate: this.sellDate.toISOString(),
             };
-            this.$http.get('/api/sell-complete', data)
+            this.$http.post('/api/sell-complete/', data, {emulateJSON:true} )
                 .then(({ data }) => {
                     if (data.success) {
                         this.unsaved = false;
+                        this.reset();
                     }
                 })
                 .catch((error) => {
@@ -209,6 +218,7 @@ const sellPage = {
                 if (input.length < 13) {
                     this.suggestions = [];
                 } else {
+                    //Asynchronous search for ISBN happens here...
                     var cardindex = this.newBook({input, error: null, card: null});
                     this.$http.get(`/api/sell-search?q=${input}`)
                         .then(({ data }) => {
@@ -258,6 +268,7 @@ const sellPage = {
             }
         },
         removeBook: function (index) {
+            //book isn't removed, just hidden
             this.books[index].show = false;
         },
         newBook: function (params) {

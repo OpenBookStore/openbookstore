@@ -8,7 +8,8 @@
            #:ensure-float
            #:format-date
            #:i18n-load
-           #:_)
+           #:_
+           #:parse-iso-date)
   (:documentation "Utilities that do not depend on models."))
 
 (in-package :bookshops.utils)
@@ -70,6 +71,13 @@
 (defun format-date (date)
   "Format the given date with the default date format (yyyy-mm-dd). Return a string."
   (local-time:format-timestring nil date :format +date-y-m-d+))
+
+(defun parse-iso-date (date)
+  "Dates returned from javascript are often ISO format"
+  (let ((année (parse-integer date :start 0 :end 4))
+        (mois (parse-integer date :start 5 :end 7))
+        (jour (parse-integer date :start 8 :end 10)))
+    (local-time:encode-timestamp 0 0 0 0 jour mois année :timezone local-time:+utc-zone+)))
 
 (defun asciify (string)
   (str:downcase (slug:asciify string)))

@@ -51,3 +51,45 @@
 (defroute api-sell-search
     ("/api/sell-search" :decorators ((@check-roles stock-route) (easy-routes:@json))) (&get q)
   (cl-json:encode-json-plist-to-string (sell-search q)))
+
+(defun split-post-var (pvar)
+  (str:split #\] (substitute #\] #\[ pvar) :omit-nulls t))
+
+(defun extract-array (name params)
+  "Elements of an array of objects sent in a POST request arrive with keys like: 'arrayname[0][key]'. This function joins all of the elements into a list of alists."
+  (let* ((params (remove-if-not (lambda (itm) (str:starts-with? name (car itm))) params))
+         (params (sort params #'string< :key #'car))
+         (last nil)
+         (accum nil)
+         (res nil))
+    (dolist (p params)
+      (destructuring-bind (_ index key) (split-post-var (car p))
+        (declare (ignore _))
+        (unless (string-equal index last)
+          (when last
+            (push (nreverse accum) res)
+            (setf accum nil))
+          (setf last index))
+        (push (cons (alexandria:make-keyword (string-upcase key)) (cdr p)) accum)))
+    (when accum (push (nreverse accum) res))
+    (nreverse res)))
+
+(defvar *sell-data* nil)
+
+(defun sell-complete (&key books payment-method client sell-date)
+  (models:make-sale :books books :payment payment-method :client client :date sell-date)
+  (list :success t))
+
+(bookshops.models:define-role-access api-sell-complete :view :editor)
+(defroute api-sell-complete
+    ("/api/sell-complete/" :method :post :decorators ((@check-roles stock-route) (easy-routes:@json)))
+    (&post (payment-method :real-name "paymentMethod")
+           client
+           (sell-date :real-name "sellDate"))
+  (let ((params
+          (list :books (extract-array "books" (hunchentoot:post-parameters*))
+                :payment-method payment-method :client client
+                :sell-date (utils:parse-iso-date sell-date))))
+    (setf *sell-data* params)
+    (cl-json:encode-json-plist-to-string
+     (apply #'sell-complete params))))
