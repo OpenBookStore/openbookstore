@@ -59,7 +59,8 @@
 
            ;; utils
            :print-quantity-red-green :negative-quantities
-           :erase-metaclass-from)
+   :erase-metaclass-from
+   :make-sale)
   (:local-nicknames
    (#:parameters #:bookshops.parameters)
    (#:utils #:bookshops.utils)))
