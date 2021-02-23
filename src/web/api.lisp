@@ -77,7 +77,16 @@
 (defvar *sell-data* nil)
 
 (defun sell-complete (&key books payment-method client sell-date)
-  (models:make-sale :books books :payment payment-method :client client :date sell-date)
+  (models:make-sale
+   :payment payment-method :client client :date sell-date
+   :books
+   (mapcar (lambda (book)
+             (list (cons :id (parse-number:parse-number (access book :id)))
+                   (cons :quantity (parse-number:parse-number (access book :quantity)))
+                   (cons :price (if (str:empty? (access book :price))
+                                    ""
+                                    (parse-number:parse-number (access book :price))))))
+           books))
   (list :success t))
 
 (bookshops.models:define-role-access api-sell-complete :view :editor)

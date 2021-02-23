@@ -53,7 +53,6 @@
 
 (defun save-remote-find (find &key (save t))
   "Convert a remote search result into a book object and optionally save."
-  (declare (type hash-table find))
   (let*
       ((found find)
        (title (gethash :title found))
@@ -67,7 +66,7 @@
                                :price price
                                :cover-url (access found :cover-url))))
     (when (and save book)
-      (mito:save-dao book))
+      (models:save-book book))
     book))
 
 

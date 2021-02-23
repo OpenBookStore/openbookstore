@@ -29,12 +29,14 @@
 
 (defclass sold-cards ()
   ((card
+    :accessor card
     :col-type book)
 
    (sell
     :col-type sell)
 
    (quantity
+    :accessor quantity
     :initform 0
     :col-type :integer
     :documentation "Quantity of this book sold in this transaction. Can be a negative number.")
@@ -94,6 +96,10 @@
     (mito:save-dao sale)
     (mito:save-dao payment)
     (mapc #'mito:save-dao bookobjs)
+    (dolist (sold bookobjs)
+      (bookshops.models:add-to (bookshops.models:default-place)
+                     (card sold)
+                     :quantity (- (quantity sold))))
     sale))
 
 
