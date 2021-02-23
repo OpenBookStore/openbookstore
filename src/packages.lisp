@@ -61,7 +61,8 @@
            :print-quantity-red-green :negative-quantities
    :erase-metaclass-from
            :make-sale
-           :list-of-books)
+   :list-of-books
+   :list-of-search-results)
   (:local-nicknames
    (#:parameters #:bookshops.parameters)
    (#:utils #:bookshops.utils)

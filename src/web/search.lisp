@@ -153,7 +153,7 @@ Cards will be created for remote finds if :save is set T."
           (list :go (card-url (car res)))))))
 
 (defun sell-search (q)
-  (let ((res (get-or-search q :remote-key nil :remote-isbn nil)))
+  (let ((res (get-or-search q :remote-key nil :remote-isbn t)))
     (cond
       ((< 1 (length res))
        (list :options

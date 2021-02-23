@@ -154,30 +154,28 @@ Vue.component('bookstore-card', {
 "
 });
 
+function initialSellPage (alt) {
+    return {
+        books: [{error: null, card: null, input: "", quantity: 1, show: false}],
+        suggestions: [],
+        unsaved: false,
+        paymentMethods: ["Cash", "Mastercard"],
+        paymentMethod: "",
+        client: "",
+        search: "",
+        message: "",
+        selected: null,
+        isFetching: false,
+        sellDate: new Date(),
+        ...alt
+    };
+}
+
 const sellPage = {
     data () {
-        return {
-            books: [{error: null, card: null, input: "", quantity: 1, show: false}],
-            suggestions: [],
-            unsaved: false,
-            paymentMethods: ["Cash", "Mastercard"],
-            paymentMethod: "",
-            client: "",
-            search: "",
-            selected: null,
-            isFetching: false,
-            sellDate: new Date()
-        };
+        return initialSellPage();
     },
     methods: {
-        reset: function () {
-            self.books = [];
-            self.suggestions = [];
-            self.paymentMethod = "";
-            self.client = "";
-            self.search = "";
-            self.sellDate = new Date();
-        },
         completeSale: function () {
             var books = [];
             this.books.forEach((book) => {
@@ -200,7 +198,7 @@ const sellPage = {
                 .then(({ data }) => {
                     if (data.success) {
                         this.unsaved = false;
-                        this.reset();
+                        Object.assign(this.$data, initialSellPage({message: "Success!"}));
                     }
                 })
                 .catch((error) => {
