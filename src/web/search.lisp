@@ -27,6 +27,9 @@
   (declare (type string q))
   (values (fr:books q) 1))
 
+(declaim (ftype (function (string) models:list-of-search-results)
+                remote-isbn-search remote-key-search))
+
 (defun remote-isbn-search (q)
   (declare (type string q))
   (cacle:cache-fetch *isbn-search-cache* q))
@@ -37,14 +40,16 @@
 
 ;;; Note: the local functions return lists of book objects, not lists of hash tables.
 
+(declaim (ftype (function (string) models:list-of-books) local-isbn-search local-key-search))
+
 (defun local-isbn-search (q)
-  (declare (type string q))
-  (alexandria:when-let ((res (models:find-by :isbn q)))
+  (a:when-let ((res (models:find-by :isbn q)))
     (list res)))
 
 (defun local-key-search (q)
-  (declare (type string q))
   (models:find-book :query (bookshops.utils::asciify q)))
+
+(declaim (ftype (function (hash-table &key (:save boolean)) models:book) save-remote-find))
 
 (defun save-remote-find (find &key (save t))
   "Convert a remote search result into a book object and optionally save."
@@ -85,38 +90,49 @@
 
 (defvar *single-result* nil)
 
+(declaim (ftype (function (string
+                           &key
+                           (:remote-key boolean) (:remote-isbn boolean) (:local-key boolean)
+                           (:local-isbn boolean) (:save boolean))
+                          models:list-of-books) get-or-search))
+
 (defun get-or-search (q &key (remote-key t) (remote-isbn t)
                           (local-key t) (local-isbn t) save)
   "General search function. Will perform an ISBN or keyword search, both local and remote. ISBN searches will be performed before keyword, and local searches will be performed before remote. Search will stop on the first kind of search that returns a result.
 
-Any of :remote-key, :remote-isbn, :local-key or :local-isbn may be set to NIL to stop that particular search. If results are found, a list of book objects will be returned, unless :multiple NIL is set, in which case a single book object will be returned.
+Any of :remote-key, :remote-isbn, :local-key or :local-isbn may be set to NIL to stop that particular search. If results are found, a list of book objects will be returned.
 
 Cards will be created for remote finds if :save is set T."
   (declare (type string q))
   (if (utils:isbn-p q)
-      (alexandria:if-let
+      (a:if-let
           (found (and local-isbn (local-isbn-search q)))
         found
-        (alexandria:when-let*
+        (a:when-let*
             ((found (and remote-isbn (remote-isbn-search q)))
              (book (save-remote-find (car found) :save save)))
           (list book)))
-      (alexandria:if-let
+      (a:if-let
           (found (and local-key (local-key-search q)))
         found
-        (alexandria:when-let*
+        (a:when-let*
             ((found (and remote-key (remote-key-search q)))
              (books (mapcar (lambda (b) (save-remote-find b :save save))
                             ;;Only save what we are going to return
                             (if *single-result* (list (car found)) found))))
           books))))
 
+(declaim (ftype (function (string
+                           &key
+                           (:remote-key boolean) (:remote-isbn boolean) (:local-key boolean)
+                           (:local-isbn boolean) (:save boolean))
+                          models:book) get-or-search-single))
+
 (defun get-or-search-single (q &key (remote-key t) (remote-isbn t)
                                  (local-key t) (local-isbn t) save)
   (let ((*single-result* t))
     (car (get-or-search q :remote-key remote-key :remote-isbn remote-isbn :local-key local-key
                       :local-isbn local-isbn :save save))))
-
 
 (defun quick-search (q)
   "Either search an ISBN in our DB first, then on a datasource (and on that case, create a card object).

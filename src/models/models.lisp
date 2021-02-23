@@ -672,3 +672,31 @@ searches. This method was thought the most portable.
   "Needed to change the metaclass, e.g. add mito."
   ;; https://stackoverflow.com/questions/38811931/how-to-change-classs-metaclass
   (setf (find-class class) nil))
+
+;;
+;; useful type definitions
+;;
+
+(defun list-of-type-p (type list)
+  (and (listp list)
+       (every (a:rcurry #'typep type) list)))
+
+(defun list-of-books-p (list)
+  (list-of-type-p 'book list))
+
+(deftype list-of-books ()
+  `(satisfies list-of-books-p))
+
+(defun book-hash-p (obj)
+  (and (hash-table-p obj)
+       (let ((keys (a:hash-table-keys obj)))
+         (every (lambda (x) (member x keys)) '(:title :isbn)))))
+
+(deftype book-hash ()
+  `(satisfies book-hash-p))
+
+(defun list-of-search-results-p (list)
+  (list-of-type-p 'book-hash  list))
+
+(deftype list-of-search-results ()
+  `(satisfies book-hash-p))

@@ -60,10 +60,12 @@
            ;; utils
            :print-quantity-red-green :negative-quantities
    :erase-metaclass-from
-   :make-sale)
+           :make-sale
+           :list-of-books)
   (:local-nicknames
    (#:parameters #:bookshops.parameters)
-   (#:utils #:bookshops.utils)))
+   (#:utils #:bookshops.utils)
+   (#:a #:alexandria)))
 
 (defpackage bookshops
   (:use :cl
@@ -101,7 +103,8 @@
            ;; functions
            :books)
   (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
-                    (#:fr #:bookshops.datasources.scraper-fr))
+                    (#:fr #:bookshops.datasources.scraper-fr)
+                    (#:a #:alexandria))
   (:documentation "CLI interface"))
 
 (defpackage bookshops-web
@@ -113,4 +116,5 @@
   (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
                     (#:fr #:bookshops.datasources.scraper-fr)
                     (#:models #:bookshops.models)
-                    (#:utils #:bookshops.utils)))
+                    (#:utils #:bookshops.utils)
+                    (#:a #:alexandria)))
