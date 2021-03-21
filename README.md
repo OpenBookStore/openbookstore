@@ -109,6 +109,8 @@ Quit with `C-d`.
 
 - initialize the database if not already done, see above.
 
+![](web.png)
+
 ### Command line
 
     ./bookshops search terms
