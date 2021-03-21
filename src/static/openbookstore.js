@@ -132,6 +132,16 @@ if (document.getElementById('vue-receive')) {
 
 Vue.component('bookstore-card', {
     props: ['card'],
+
+    /*
+    XXX update 2021-03: unused template. We only need to show the title.
+    Use it like this:
+
+    <bookstore-card v-if="book.card"
+      v-bind:key="index"
+      v-bind:card="book.card">
+    </bookstore-card>
+    */
     template:
     " \
     <div class='media'> \
@@ -150,7 +160,7 @@ Vue.component('bookstore-card', {
           </p> \
         </div> \
       </div> \
-          </div> \
+    </div> \
 "
 });
 
@@ -260,22 +270,30 @@ const sellPage = {
                     this.isFetching = false;
                 });
         }, 500),
+
         itemSelected: function (item) {
             if (item) {
                 this.newBook({ card: item.card, input: this.search });
             }
         },
+
         removeBook: function (index) {
             //book isn't removed, just hidden
             this.books[index].show = false;
+            this.focusInput();
         },
+
         newBook: function (params) {
             params.show = true;
             params.quantity = 1;
             this.books.push(params);
             setTimeout(function() {this.search = ""; this.unsaved = true;}.bind(this));
             return this.books.length - 1;
-        }
+        },
+
+        focusInput: function (params) {
+            document.getElementById('default-input').focus();
+        },
     },
     computed: {
         quantity: function () {
@@ -298,6 +316,10 @@ const sellPage = {
             };
             return this.books.reduce(reducer, 0.0);
         }
+    },
+
+    mounted: function () {
+        document.getElementById('default-input').focus();
     }
 }
 
@@ -316,5 +338,3 @@ if (document.getElementById('vue-sell')) {
         }
     });
 }
-
-
