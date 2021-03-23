@@ -30,9 +30,7 @@
     <nav class="navbar is-white">
       <div class="container">
         <div class="navbar-brand">
-          <a class="navbar-item brand-text" href="/">
-            Admin
-          </a>
+          <a class="navbar-item brand-text" href="/"> OpenBookStore </a>
           <div class="navbar-burger burger" data-target="navMenu">
             <span></span>
             <span></span>
@@ -41,10 +39,6 @@
         </div>
         <div id="navMenu" class="navbar-menu">
           <div class="navbar-start">
-            <a class="navbar-item" href="/">
-              Home
-            </a>
-
             <a class="navbar-item" href="/">
               <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link">
@@ -119,7 +113,6 @@
               General
             </p>
             <ul class="menu-list">
-              <li><a {% if route == "/" %} class="is-active" {% endif %} href="/">Dashboard</a></li>
               <li><a {% if route == "/stock" %} class="is-active" {% endif %} href="/stock"> Stock </a></li>
               <li><a {% if route == "/search" %} class="is-active" {% endif %} href="/search"> Search </a></li>
               <li><a {% if route == "/sell" %} class="is-active" {% endif %} href="/sell"> Sell </a></li>
