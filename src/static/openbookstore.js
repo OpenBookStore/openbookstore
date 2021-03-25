@@ -188,6 +188,9 @@ const sellPage = {
     methods: {
         completeSale: function () {
             var books = [];
+            if (this.books && this.books.length == 1 && !this.books[0].card) {
+                return;
+            }
             this.books.forEach((book) => {
                 if (book.show && !book.error && book.card && book.quantity != 0) {
                     bk = {
