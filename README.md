@@ -1,5 +1,5 @@
 
-![](https://gitlab.com/vindarel/cl-bookshops/badges/master/pipeline.svg)
+![](https://gitlab.com/myopenbookstore/openbookstore/badges/master/pipeline.svg)
 
 [![Gitter](https://badges.gitter.im/openbookstore-developers/community.svg)](https://gitter.im/openbookstore-developers/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
@@ -59,7 +59,7 @@ In development. Starts being testable.
 
 ### Openbookstore
 
-Download the executable from https://gitlab.com/vindarel/cl-bookshops/pipelines (download a build artifact with the button on the right).
+Download the executable from https://gitlab.com/myopenbookstore/openbookstore/-/pipelines (download a build artifact with the button on the right).
 
 It's a 24MB self-contained executable (for Debian GNU/Linux,
 x86/64). You don't need to install a Lisp implementation nor anything
@@ -368,7 +368,8 @@ To test DB operations, use our macro `with-empty-db`.
 # See also
 
 - https://gitlab.com/vindarel/abstock our online catalogue for public consumption
-- https://github.com/jl2/bookdb/, which searches on isbndb.com (not good enough for us and lacking prices)
+
+<!-- - https://github.com/jl2/bookdb/, which searches on isbndb.com (not good enough for us and lacking prices) -->
 
 # Licence
 
