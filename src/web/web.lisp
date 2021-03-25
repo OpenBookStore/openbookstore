@@ -93,7 +93,7 @@ Dev helpers:
 ;;; Routes.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (bookshops.models:define-role-access home-route :view :visitor)
-(defroute home-route ("/" :decorators ((@check-roles stock-route))) ()
+(defroute home-route ("/" :decorators ((@check-roles home-route))) ()
   (render-template* +dashboard.html+ nil
                     :route "/"
                     :current-user (current-user)
@@ -102,6 +102,7 @@ Dev helpers:
                                 :nb-titles-negative (length
                                                      (models::negative-quantities)))))
 
+;XXX: we don't need a similar define-role-access for each route.
 (bookshops.models:define-role-access stock-route :view :visitor)
 (defroute stock-route ("/stock" :decorators ((@check-roles stock-route)))
     (&get q)
@@ -125,7 +126,7 @@ Dev helpers:
                                                        (bookshops.models::negative-quantities))))))
 
 (bookshops.models:define-role-access search-route :view :visitor)
-(defroute search-route ("/search" :decorators ((@check-roles stock-route))) (&get q)
+(defroute search-route ("/search" :decorators ((@check-roles search-route))) (&get q)
   (let ((cards (and q (search-datasources q))))
     (if cards
         (render-template* +search.html+ nil
@@ -142,7 +143,7 @@ Dev helpers:
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute add-or-create-route ("/card/add-or-create/" :method :post
-                                                      :decorators ((@check-roles stock-route)))
+                                                      :decorators ((@check-roles add-or-create-route)))
     (q title isbn cover-url publisher (updatep :parameter-type 'boolean
                                                :init-form t)
        (book-id :parameter-type 'string :init-form "")
@@ -171,7 +172,7 @@ Dev helpers:
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute card-add-stock-route ("/card/add-stock/" :method :post
-                                                   :decorators ((@check-roles stock-route)))
+                                                   :decorators ((@check-roles add-or-create-route)))
     (q place-id (quantity :parameter-type 'integer :init-form 0) isbn
        (referer-route :parameter-type 'string :init-form "/search"))
   (let ((card (models:find-by :isbn isbn))
@@ -181,7 +182,7 @@ Dev helpers:
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute card-quick-add-route ("/card/quick-add-stock/" :method :post
-                                                         :decorators ((@check-roles stock-route)))
+                                                         :decorators ((@check-roles add-or-create-route)))
     (q (quantity :parameter-type 'integer :init-form 1) title isbn cover-url publisher
        (updatep :parameter-type 'boolean :init-form t)
        (book-id :parameter-type 'string :init-form "")
@@ -198,7 +199,7 @@ Dev helpers:
     (redirect-to-search-result referer-route q book)))
 
 (bookshops.models:define-role-access add-or-create-route :view :visitor)
-(defroute card-page ("/card/:slug" :decorators ((@check-roles stock-route)))
+(defroute card-page ("/card/:slug" :decorators ((@check-roles add-or-create-route)))
     (&get raw)
   "Show a card.
 
@@ -221,14 +222,16 @@ Dev helpers:
        (render-template* +404.html+ nil)))))
 
 (bookshops.models:define-role-access card-create-route :view :editor)
-(defroute card-create-route ("/card/create" :method :get)
+(defroute card-create-route ("/card/create" :method :get
+                                            :decorators ((@check-roles card-create-route)))
     ()
   (describe (hunchentoot:start-session) t) ;; XXX debug
   ;; (log:info (bookshops.messages::add-message "Hello message :)"))
   (render-template* +card-create.html+ nil
                     :messages/status (bookshops.messages:get-message/status)))
 
-(defroute card-create/post-route ("/card/create" :method :post)
+(defroute card-create/post-route ("/card/create" :method :post
+                                                 :decorators ((@check-roles card-create-route)))
     ;; title is mandatory, the rest is optional.
     (title isbn price authors)
   (when (str:blankp title)
@@ -251,19 +254,25 @@ Dev helpers:
       (format *error-output* c))))
 
 (bookshops.models:define-role-access receive-route :view :editor)
-(defroute receive-route ("/receive" :method :get) ()
+(defroute receive-route ("/receive" :method :get
+                                    :decorators ((@check-roles receive-route)))
+    ()  ;; args
   (render-template* +receive.html+ nil
                     :route "/receive"
                     :title "Receive - OpenBookstore"))
 
 (bookshops.models:define-role-access sell-route :view :editor)
-(defroute sell-route ("/sell" :method :get) ()
+(defroute sell-route ("/sell" :method :get
+                              :decorators ((@check-roles sell-route)))
+    ()  ;; args
   (render-template* +sell.html+ nil
                     :route "/sell"
                     :title "Sell - OpenBookstore"))
 
 (bookshops.models:define-role-access history-route :view :editor)
-(defroute history-route ("/history" :method :get) ()
+(defroute history-route ("/history" :decorators ((@check-roles history-route))
+                                    :method :get)
+    ()  ;; args
   (render-template* +history.html+ nil
                     :route "/history"
                     :title "History - OpenBookstore"
