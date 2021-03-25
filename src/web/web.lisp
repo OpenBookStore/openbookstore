@@ -114,6 +114,7 @@ Dev helpers:
                   (listopia:take 50 (models:find-book))))))
     (render-template* +stock.html+ nil
                       :route "/stock"
+                      :title "Stock - OpenBookstore"
                       :cards cards
                       :nb-results (length cards)
                       :q q
@@ -128,12 +129,14 @@ Dev helpers:
     (if cards
         (render-template* +search.html+ nil
                           :route "/search"
+                          :title "Search - OpenBookstore"
                           :q q
                           :cards cards
                           :nb-results (length cards)
                           :title (format nil "OpenBookstore - search: ~a" q))
         (render-template* +search.html+ nil
                           :route "/search"
+                          :title "Search - OpenBookstore"
                           :q q))))
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
@@ -246,14 +249,17 @@ Dev helpers:
                                         ;XXX: 404 handled by hunchentoot
       (format *error-output* c))))
 
+(bookshops.models:define-role-access receive-route :view :editor)
 (defroute receive-route ("/receive" :method :get) ()
   (render-template* +receive.html+ nil
-                    :route "/receive"))
+                    :route "/receive"
+                    :title "Receive - OpenBookstore"))
 
 (bookshops.models:define-role-access sell-route :view :editor)
 (defroute sell-route ("/sell" :method :get) ()
   (render-template* +sell.html+ nil
-                    :route "/sell"))
+                    :route "/sell"
+                    :title "Sell - OpenBookstore"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Start-up functions.
