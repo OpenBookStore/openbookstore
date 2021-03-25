@@ -94,13 +94,23 @@
                                 :sell sale)))
                            books)))
     (mito:save-dao sale)
-    (mito:save-dao payment)
+    (mito:save-dao payment)  ;XXX: why save the payment? This leaked threw a PR review.
     (mapc #'mito:save-dao bookobjs)
     (dolist (sold bookobjs)
-      (bookshops.models:add-to (bookshops.models:default-place)
-                     (card sold)
-                     :quantity (- (quantity sold))))
+      (add-to (default-place)
+              (card sold)
+              :quantity (- (quantity sold))))
     sale))
 
+(defun find-sell (&key (order :asc))
+  "Find sell objects."
+  ;TODO: search soldcards, group by sell_id, colorize.
+  (mito:select-dao 'sell
+    (sxql:order-by `(,order :created-at))))
 
-
+(defun find-soldcards (&key (order :asc) (limit 400))
+  "Find soldcards objects (sells details)."
+  ;TODO: views to show by month and day, with no limit..
+  (mito:select-dao 'sold-cards
+    (sxql:order-by `(,order :created_at))
+    (sxql:limit limit)))

@@ -71,6 +71,7 @@ Dev helpers:
 (defparameter +card-create.html+ (djula:compile-template* "card-create.html"))
 (defparameter +receive.html+ (djula:compile-template* "receive.html"))
 (defparameter +sell.html+ (djula:compile-template* "sell.html"))
+(defparameter +history.html+ (djula:compile-template* "history.html"))
 
 (defparameter +404.html+ (djula:compile-template* "404.html"))
 
@@ -260,6 +261,13 @@ Dev helpers:
   (render-template* +sell.html+ nil
                     :route "/sell"
                     :title "Sell - OpenBookstore"))
+
+(bookshops.models:define-role-access history-route :view :editor)
+(defroute history-route ("/history" :method :get) ()
+  (render-template* +history.html+ nil
+                    :route "/history"
+                    :title "History - OpenBookstore"
+                    :soldcards (models::find-soldcards :order :desc)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Start-up functions.

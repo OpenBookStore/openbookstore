@@ -47,7 +47,6 @@ const qsearchData = {
                 });
         }, 500),
         itemSelected: function (item) {
-            console.log(item);
             window.location = item.url;
         }
     }

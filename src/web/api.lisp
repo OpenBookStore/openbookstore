@@ -78,7 +78,9 @@
 
 (defun sell-complete (&key books payment-method client sell-date)
   (models:make-sale
-   :payment payment-method :client client :date sell-date
+   :payment payment-method
+   :client client
+   :date sell-date
    :books
    (mapcar (lambda (book)
              (list (cons :id (parse-number:parse-number (access book :id)))
@@ -97,7 +99,8 @@
            (sell-date :real-name "sellDate"))
   (let ((params
           (list :books (extract-array "books" (hunchentoot:post-parameters*))
-                :payment-method payment-method :client client
+                :payment-method payment-method
+                :client client
                 :sell-date (utils:parse-iso-date sell-date))))
     (setf *sell-data* params)
     (cl-json:encode-json-plist-to-string

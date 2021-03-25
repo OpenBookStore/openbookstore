@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+
+<!-- Everything remains to be done:
+
+   - view history of a month
+   - view history of a day
+   - choose a day or month
+   - show total revenue
+   - undo a sell (not just a soldcard)
+   - show payments
+   - export results in CSV
+   - ...
+
+-->
+
+<div id="history-page">
+
+  {% for soldcard in soldcards %}
+  <div data-sell-id="{{ soldcard.sell-id }}">
+   {{ soldcard.created-at | date:(:year "/" (:month 2) "/" (:day 2) " " (:hour 2) ":" (:min 2)) }} - <a href="{{ soldcard.card | url }}"> {{ soldcard.card.title }} </a>, {{ soldcard.sold-price | price }}€ x{{ soldcard.quantity }}
+
+  </div>
+  {% endfor %}
+
+</div>
+
+{% endblock %}
