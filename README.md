@@ -24,39 +24,40 @@ In development. Starts being testable.
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [Bookshops](#bookshops)
-    - [Installation](#installation)
-    - [Usage](#usage)
-        - [Web UI](#web-ui)
-        - [Command line](#command-line)
-        - [GUI](#gui)
-        - [Lisp REPL](#lisp-repl)
-        - [Bibliographic search, adding books to your stock](#bibliographic-search-adding-books-to-your-stock)
-        - [Seeing the stock, pagination](#seeing-the-stock-pagination)
-        - [Places](#places)
-        - [Lending books to contacts](#lending-books-to-contacts)
-        - [Stats](#stats)
-        - [Settings](#settings)
-    - [High-level goals](#high-level-goals)
+- [Installation](#installation)
+    - [Download a binary (WIP)](#download-a-binary-wip)
+    - [Run from sources](#run-from-sources)
+- [Running it](#running-it)
+    - [Web UI](#web-ui)
+    - [Command line](#command-line)
+    - [Readline interface](#readline-interface)
+    - [Lisp REPL](#lisp-repl)
+- [Usage](#usage)
+    - [Bibliographic search, adding books to your stock](#bibliographic-search-adding-books-to-your-stock)
+    - [Seeing the stock, pagination](#seeing-the-stock-pagination)
+    - [Places](#places)
+    - [Lending books to contacts](#lending-books-to-contacts)
+    - [Stats](#stats)
+    - [Settings](#settings)
+- [High-level goals](#high-level-goals)
     - [i18n](#i18n)
-    - [Dev](#dev)
-        - [Creating custom commands for the binary application](#creating-custom-commands-for-the-binary-application)
-        - [Testing](#testing)
-        - [Troubleshooting](#troubleshooting)
+- [Dev](#dev)
+    - [Creating custom commands for the binary application](#creating-custom-commands-for-the-binary-application)
+    - [Testing](#testing)
+    - [Troubleshooting](#troubleshooting)
 - [Lisp ?!](#lisp-)
 - [See also](#see-also)
 - [Licence](#licence)
 
 <!-- markdown-toc end -->
 
+# Installation
 
-## Installation
+There are a couple system dependencies to install.
 
-### Dependencies
+On Debian: `apt install rlwrap sqlite3`
 
-`make run` uses `rlwrap`; install it with your package manager (on Debian, `apt install rlwrap`).
-
-### Openbookstore
+## Download a binary (WIP)
 
 Download the executable from https://gitlab.com/myopenbookstore/openbookstore/-/pipelines (download a build artifact with the button on the right).
 
@@ -64,60 +65,75 @@ It's a 24MB self-contained executable (for Debian GNU/Linux,
 x86/64). You don't need to install a Lisp implementation nor anything
 to run it.
 
-Alternatively, install `sbcl` with your package manager, Quicklisp, clone the repository and either build the executable:
+## Run from sources
 
-    make build
+Alternatively, install `sbcl` with your package manager:
 
-or run from sources:
+    apt install sbcl
 
-    make run  # aka sbcl --load run.lisp
+install Quicklisp, the Lisp library manager ([full instructions](https://www.quicklisp.org/beta/#installation)):
 
-There is a toy Tk GUI.
+    curl -O https://beta.quicklisp.org/quicklisp.lisp && sbcl --load quicklisp.lisp --eval '(quicklisp-quickstart:install)' --eval '(ql:add-to-init-file)' --quit &> /dev/null
+    rm quicklisp.lisp
 
-### Database initialization
+clone the repository:
 
-From the REPL:
+    git clone https://gitlab.com/myopenbookstore/openbookstore.git
 
-    (bookshops.models::initialize-database)
+Then, to run the software, you have 2 options: build a binary or run it from sources.
 
-Create a superuser:
+# Running it
 
-    (bookshops.models::create-superuser name email password)
-
-## Usage
-
-### Web UI
+## Web UI
 
 To run the web application:
 
 - run it from the binary. Either download it from GitLab either build it (`make build`), then run it:
 
-    ./bookshops -w [--port 8989] [--verbose]
+```
+./bookshops -w [--port 8989] [--verbose]
+```
 
 - run it from sources:
 
-    make run
+```
+make run
+```
 
-aka `sbcl --load run.lisp`. You can set the port with the environment variable `OBS_PORT` (defaults to 4242).
+aka `rlwrap sbcl --load run.lisp`. You can set the port with the environment variable `OBS_PORT` (defaults to 4242).
 
 Quit with `C-d`.
 
 - run it from the REPL:
 
-    (bookshops-web:start-app :port 8989)
+```
+(bookshops-web:start-app :port 4242)
+```
 
 - initialize the database if not already done, see above.
 
 ![](web.png)
 
-### Command line
+## Command line
 
-    ./bookshops search terms
+We can run OpenBookStore without a graphical interface.
 
-get a readline interactive prompt:
+We can use it to search for books data on internet sources:
 
-    ./bookshops -i
-    bookshops > help
+    $ ./bookshops search terms
+
+see `--help` for the available options.
+
+## Readline interface
+
+We can use OpenBookStore with a simple readline-based terminal interface.
+
+Get a readline interactive prompt with the `-i` flag:
+
+```
+$ ./bookshops -i
+bookshops >
+```
 
 See the available commands with `help`, the documentation of a given command with `help <cmd>` (see `help help`, use TAB-completion).
 
@@ -125,30 +141,35 @@ At any moment, quit the current prompt with `C-d` (control-d) or use:
 
 - `quit`
 
+To search for books on the internet sources, use `search`:
+
 ![](search-add.png)
 
 
-### GUI
+## Lisp REPL
 
-A useless Tk GUI built for learning purposes.
+We can start OpenBookStore from a Common Lisp REPL, from our preferred editor, and modify it on-the-fly. The editor can be Emacs with Slime, Atom with SLIMA, Vim with Slimv, VSCode with Alive etc.
 
-    ./bookshops-gui &
+Load the system definition, `bookshops.asd`, with C-c C-k in Slime,
 
-or from the REPL: load `bookshops/gui` and run `bookshops.gui:main`.
+Load the dependencies: `(ql:quickload "bookshops")`,
 
-You can't do much !
+Create the DB: `(bookshops.models::initialize-database)`
 
-### Lisp REPL
+Create a superuser: `(bookshops.models::create-superuser name email password)`
 
-Load `bookshops.asd` (C-c C-k in Slime), Quickload the system
-(`(ql:quickload "bookshops")`), then initialize the DB connection and
-the translations with `(bookshops:init)`, then explore commands in
-`bookshops.commands`, like `stock`.
+Connect to the DB: `(bookshops:init)`
+
+then explore commands in `bookshops.commands`.
 
 You might need to enable terminal colors with `M-x slime-repl-ansi-on` ([see here](https://github.com/enriquefernandez/slime-repl-ansi-color)).
 
 
-### Bibliographic search, adding books to your stock
+# Usage
+
+If you use the web app, you should find your way. Below is an overview on the available commands of the terminal interface.
+
+## Bibliographic search, adding books to your stock
 
 You can begin to search for books:
 
@@ -170,7 +191,7 @@ See also
 
 - `delete <i>`
 
-### Seeing the stock, pagination
+## Seeing the stock, pagination
 
 To see your stock:
 
@@ -192,7 +213,7 @@ As with several commands, you can autocomplete the id argument using
 the TAB key. The choices are the ids displayed on the last `stock`
 command, so this can be handy when you have filtered the results.
 
-### Places
+## Places
 
 When you start the program, you are in the "default place". See that
 the command prompt displays `(default place) bookshops > `: it shows the
@@ -217,7 +238,7 @@ See the list of places:
 
 - `places`: lists the existing places with their number of books and their total cost.
 
-### Lending books to contacts
+## Lending books to contacts
 
 Lend a book to someone:
 
@@ -239,7 +260,7 @@ and when your friend returns a book back:
 - `receive <book id> [optional contact name]`
 
 
-### Stats
+## Stats
 
 Get some numbers about your stock:
 
@@ -250,7 +271,7 @@ Get some numbers about your stock:
     register them.
 
 
-### Settings
+## Settings
 
 The parameters can be changed with `set`.
 
@@ -259,22 +280,28 @@ The follownig settings currently exist:
 - `*page-size*`
 
 
-## High-level goals
+# High-level goals
 
 Be more useful and easier to install and use than our Abelujo web app.
 
 - [X] single-file binaries: DONE. Thanks, Common Lisp.
-- GUI
-  - [X] proof of concept
-- connect to a remote DB
-- use a GUI running on a remote server (see [ltk-remote](http://www.peter-herth.de/ltk/ltkdoc/node46.html))
-- [X] searching one's stock from a web interface (~~with Weblocks~~)
-- [X] build an online catalogue for clients (ABStock)
-- sells, several places, list of commands, etc.
-- download a pdf of the stock, with barcodes
-- invoices
-- clients
-- etc
+- [X] readline UI
+- [X] Web interface (~~with Weblocks~~)
+  - [X] search the stock
+  - [X] search new books
+  - [X] sell view
+  - [X] history of sells
+  - all the rest
+- GUI (postponed)
+  - [X] proof of concept with LTk
+  - use a GUI running on a remote server (see [ltk-remote](http://www.peter-herth.de/ltk/ltkdoc/node46.html))
+- [X] build an online catalogue for clients ([ABStock](http://abstock.org/))
+- features:
+  - sells, several places, list of commands, etc.
+  - download a pdf of the stock, with barcodes
+  - invoices
+  - clients
+  - etc
 
 
 ## i18n
@@ -284,48 +311,26 @@ This software is available in other languages than english.
 See the makefile and `i18n-load` in `utils.lisp`.
 
 
-## Dev
+# Dev
 
-We use (our) `replic` library to build quickly the readline interactive prompt:
+We use (our) `replic` library to build the readline commands from existing Lisp functions:
 https://github.com/vindarel/replic (which builds on cl-readline).
 
 We use the [Mito](https://github.com/fukamachi/mito) ORM. See the [Cookbook tutorial](https://lispcookbook.github.io/cl-cookbook/databases.html).
 
-Model usage:
+<!-- ## Management commands -->
 
-```lisp
-(in-package :bookshops.model)
-(use-package '(:mito :sxql))
+<!-- You can use: -->
 
-(connect)
-(i18n-load)
+<!-- - `manage <custom_command>` -->
 
-(make-book :title "antigone" :datasource "xxx")
+<!-- to run custom commands. -->
 
-(save-book *)
-
-(find-dao 'book)
-;; => #<Book antigone>
-
-(select-dao 'book
-    (where (:like :title "%ti%")))
-```
-
-Slots: `title`... `quantity`, etc.
-
-### Creating custom commands for the binary application
-
-You can use:
-
-- `manage <custom_command>`
-
-to run custom commands.
-
-And you can see some basic instructions on how to create your own commands
-on file "src/manager.lisp"
+<!-- And you can see some basic instructions on how to create your own commands -->
+<!-- on file "src/manager.lisp" -->
 
 
-### Testing
+## Testing
 
 To test DB operations, use our macro `with-empty-db`.
 
@@ -353,7 +358,7 @@ To test DB operations, use our macro `with-empty-db`.
 #<BOOK inside-test>
 ```
 
-### Troubleshooting
+## Troubleshooting
 
 - `DB is locked`: close and re-open: `(mito:disconnect-toplevel)` and `(bookshops.model:connect)`. => [fixed upstream](https://github.com/fukamachi/mito/pull/28#issuecomment-377450798) ?
 
@@ -361,8 +366,8 @@ To test DB operations, use our macro `with-empty-db`.
 
 - http://common-lisp.net/
 - http://lisp-lang.org/
-- https://github.com/CodyReichert/awesome-cl (and [companies](https://github.com/azzamsa/awesome-lisp-companies))
-- https://lispcookbook.github.io
+- [awesome-cl](https://github.com/CodyReichert/awesome-cl) (and a list of [companies](https://github.com/azzamsa/awesome-lisp-companies) using CL)
+- https://lispcookbook.github.io/cl-cookbook/
 
 # See also
 
@@ -373,5 +378,3 @@ To test DB operations, use our macro `with-empty-db`.
 # Licence
 
 AGPLv3
-
-<a href="https://www.patreon.com/bePatron?u=36390714" data-patreon-widget-type="become-patron-button">Become a Patron!</a> or [buy me a coffee :)](https://ko-fi.com/vindarel)
