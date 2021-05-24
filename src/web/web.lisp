@@ -4,8 +4,6 @@
 Show the stock on a web page.
 (in construction)
 
-(connect)
-then
 (start-app)
 
 and go to localhost:4242/stock/

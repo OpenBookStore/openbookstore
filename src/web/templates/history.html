@@ -21,13 +21,54 @@
 
 <div id="history-page">
 
-  {% for soldcard in soldcards %}
-  <div data-sell-id="{{ soldcard.sell-id }}">
-   {{ soldcard.created-at | date:(:year "/" (:month 2) "/" (:day 2) " " (:hour 2) ":" (:min 2)) }} - <a href="{{ soldcard.card | url }}"> {{ soldcard.card.title }} </a>, {{ soldcard.sold-price | price }}€ x{{ soldcard.quantity }}
+  <h3 class="is-size-3">
+    History
+  </h3>
 
-  </div>
+  <table class="table">
+    <thead>
+      <th> transaction </th>
+      <th> date </th>
+      <th> title </th>
+      <th> publisher </th>
+      <th> price sold </th>
+      <th> quantity sold </th>
+    </thead>
+
+    <tbody>
+
+  {% for soldcard in soldcards %}
+  <tr data-sell-id="{{ soldcard.sell-id }}">
+    <td>
+      {{ soldcard.id }}
+    </td>
+
+    <td>
+      {{ soldcard.created-at | date:(:year "/" (:month 2) "/" (:day 2) " " (:hour 2) ":" (:min 2)) }}
+    </td>
+
+    <td>
+      <a href="{{ soldcard.card | url }}"> {{ soldcard.card.title }} </a>
+    </td>
+
+    <td>
+      {{ soldcard.card.publisher }}
+    </td>
+
+    <td>
+      {{ soldcard.sold-price | price }}€
+    </td>
+
+    <td>
+      x{{ soldcard.quantity }}
+    </td>
+
+  </tr>
   {% endfor %}
 
-</div>
+    </tbody>
+  </table>
 
-{% endblock %}
+</ div>
+
+{%  endblock %}
