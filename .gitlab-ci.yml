@@ -8,6 +8,8 @@ stages:
 before_script:
   - apt-get update -qy
   - apt-get install -y git-core
+  # The image doesn't have Quicklisp installed by default.
+  - QUICKLISP_ADD_TO_INIT_FILE=true /usr/local/bin/install-quicklisp
   - make install
 
 qa:
