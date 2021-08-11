@@ -289,6 +289,14 @@ Dev helpers:
   (setf puri::*strict-illegal-query-characters*
         (remove #\? puri::*strict-illegal-query-characters*))
 
+  ;; Watch out case output. This trips up JS.
+  ;; The output of
+  #+(or) (cl-json:encode-json-plist-to-string (sell-search "test"))
+  ;; should be encoded in lowercase.
+  ;; This is the default but it has been a source of error already.
+  (setf json:*json-identifier-name-to-lisp* #'json:camel-case-to-lisp)
+  (setf json:*lisp-identifier-name-to-json* #'json:lisp-to-camel-case)
+
   (setf *server* (make-instance 'easy-routes:easy-routes-acceptor :port port))
   (hunchentoot:start *server*)
   (serve-static-assets)
@@ -298,6 +306,9 @@ Dev helpers:
   ;; disconnect db ?
   (hunchentoot:stop *server*))
 
+;;;;;;;;;;;;;;;
+; Dev helpers ;
+;;;;;;;;;;;;;;;
 (defun set-devel-profile ()
   "- interactive debugger"
   (setf hunchentoot:*catch-errors-p* nil))
