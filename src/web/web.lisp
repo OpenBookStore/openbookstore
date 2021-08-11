@@ -236,7 +236,8 @@ Dev helpers:
     (bookshops.messages::add-message "Please enter a title" :status :warning)
     (hunchentoot:redirect "/card/create"))
   ;XXX: handle more than one validation message.
-  (when (not (bookshops.utils:isbn-p isbn))
+  (when (and (str:non-blank-string-p isbn)
+             (not (bookshops.utils:isbn-p isbn)))
     (bookshops.messages::add-message (format nil "This doesn't look like an ISBN: ~a" isbn) :status :warning)
     (hunchentoot:redirect "/card/create"))
   (handler-case
