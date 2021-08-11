@@ -18,6 +18,9 @@
                ;; readline
                :unix-opts
                :replic
+               :cl-ansi-text
+               :parse-number
+
                ;; utils
                :can
                :str
