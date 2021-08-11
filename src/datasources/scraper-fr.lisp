@@ -1,6 +1,5 @@
 (defpackage bookshops.datasources.scraper-fr
   (:use :cl
-        :rutils
         :cl-ansi-text
         :parse-float
         :log4cl)
@@ -9,11 +8,8 @@
 
 (in-package :bookshops.datasources.scraper-fr)
 
-;; enable rutils literal syntax.
-(named-readtables:in-readtable rutils-readtable)
-
 ;; Print hash-tables readably (used for debug logs).
-(toggle-print-hash-table)
+(serapeum:toggle-pretty-print-hash-table)
 
 (defparameter *french-search* "http://www.librairie-de-paris.fr/listeliv.php?MOTS={QUERY}&SUPPORT=&RECHERCHE=simple&TRI=&DISPOCHE=&RAYONS=&LIVREANCIEN=2&CSR="
   "French source of books. The {query} string will be replaced by the list
@@ -120,7 +116,7 @@
   Don't rely on the models in the data scrapers.
 
   tip: access the fields easily with the access library."
-  #H(:title title
+  (serapeum:dict :title title
             :isbn isbn
             :datasource datasource
             :cover-url cover-url

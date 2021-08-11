@@ -20,7 +20,6 @@
                :replic
                ;; utils
                :can
-               :rutils
                :str
                :listopia  ;; list manipulation
                :local-time
@@ -30,6 +29,7 @@
                ;; cache
                :cacle
                :cl-json
+               :serapeum
                ;; web app
                :hunchentoot
                :easy-routes
