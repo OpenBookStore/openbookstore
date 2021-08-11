@@ -30,12 +30,21 @@ const qsearchData = {
             this.$http.get(`/api/quick-search?q=${name}`)
                 .then(({ data }) => {
                     // here we go elsewhere if appropriate.
+                    console.log(data);
                     if (data && data.hasOwnProperty("go")) {
                         window.location = data.go;
+                    } else if (data.hasOwnProperty("GO")) {
+                        window.location = data.GO;
                     }
                     if (data) {
                         this.data = [];
-                        data.results.forEach((item) => this.data.push(item));
+                        if (data.results) {
+                            data.results.forEach((item) => this.data.push(item));
+                        } else if (data.RESULTS) {
+                            data.RESULTS.forEach((item) => this.data.push(item));
+                        } else {
+                            console.log("No results (data.results)");
+                        }
                     }
                 })
                 .catch((error) => {
