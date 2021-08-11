@@ -143,10 +143,8 @@ Cards will be created for remote finds if :save is set T."
     (if (< 1 (length res))
         (list :results
               (mapcar (lambda (book)
-                        (let ((data (make-hash-table)))
-                          (setf (gethash :url data) (card-url book))
-                          (setf (gethash :title data) (models:title book))
-                          data))
+                         (serapeum:dict :url (card-url book)
+                                        :title (models:title book)))
                       res))
         (when res
           (list :go (card-url (car res)))))))
@@ -157,10 +155,8 @@ Cards will be created for remote finds if :save is set T."
       ((< 1 (length res))
        (list :options
              (mapcar (lambda (book)
-                       (let ((data (make-hash-table)))
-                         (setf (gethash :card data) book)
-                         (setf (gethash :title data) (models:title book))
-                         data))
+                       (serapeum:dict :url (card-url book)
+                                      :title (models:title book)))
                      res)))
       ((eq 1 (length res))
        (list :card (car res)))
@@ -168,4 +164,3 @@ Cards will be created for remote finds if :save is set T."
                (if (utils:isbn-p q)
                    "No book found for ISBN"
                    "No matches found in store"))))))
-
