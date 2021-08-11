@@ -516,7 +516,7 @@ searches. This method was thought the most portable.
               existing)
           bk))))
 
-(defun find-book (&key query (order :asc))
+(defun find-book (&key query (order :desc))
   "Return a list of book objects. If a query string is given, filter by the ascii title and authors."
   (mito:select-dao 'book
     (when (str:non-blank-string-p query)
