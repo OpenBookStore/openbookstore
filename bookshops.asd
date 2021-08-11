@@ -6,6 +6,8 @@
   :version "0.1.1"
   :author "vindarel"
   :license "GPL3"
+  :description "Free software for bookshops."
+  :homepage "https://gitlab.com/myopenbookstore/openbookstore/"
   :depends-on (
                ;; web client
                :dexador

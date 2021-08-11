@@ -11,6 +11,7 @@ Then, we are given the lisp prompt: we can interact with the running application
 Another solution to run the app is to run the executable (see README).
 "
 
+(require "asdf")  ;; for Docker
 (load "bookshops.asd")
 
 (ql:quickload "bookshops")

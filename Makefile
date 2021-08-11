@@ -1,7 +1,9 @@
-LISP?=sbcl
+LISP ?= sbcl
 
 all: test
 
+run:
+	rlwrap $(LISP) --load run.lisp
 build:
 	#TODO: update replic with multi args completion
 	$(LISP)	--non-interactive \
@@ -14,6 +16,12 @@ build-gui:
 		--load bookshops.asd \
 		--eval '(ql:quickload :bookshops/gui)' \
 		--eval '(asdf:make :bookshops/gui)'
+
+docker-build:
+	sudo docker build . -t openbookstore
+
+docker-run:
+	sudo docker run -it --rm --name my-obs openbookstore
 
 
 test:
@@ -28,8 +36,6 @@ install:
 	git clone https://github.com/vindarel/replic/ ~/quicklisp/local-projects/replic/
 	git clone https://github.com/vindarel/cl-str/ ~/quicklisp/local-projects/cl-str/
 
-run:
-	rlwrap sbcl --load run.lisp
 
 # Workflow:
 # - update
