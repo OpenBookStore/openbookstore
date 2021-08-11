@@ -516,7 +516,7 @@ searches. This method was thought the most portable.
               existing)
           bk))))
 
-(defun find-book (&key query (order :desc))
+(defun find-book (&key query (order :desc) (limit 50))
   "Return a list of book objects. If a query string is given, filter by the ascii title and authors."
   (mito:select-dao 'book
     (when (str:non-blank-string-p query)
@@ -525,7 +525,8 @@ searches. This method was thought the most portable.
          ,@(loop for word in (str:words query)
               :collect `(:or (:like :title-ascii ,(str:concat "%" word "%"))
                              (:like :authors-ascii ,(str:concat "%" word "%")))))))
-       (sxql:order-by `(,order :created-at))))
+    (sxql:limit limit)
+    (sxql:order-by `(,order :created-at))))
 
 (defun last-books (&key (order :asc))
   ""
