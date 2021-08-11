@@ -1,4 +1,4 @@
-image: daewok/lisp-devel
+image: clfoundation/sbcl
 
 stages:
   - test  # looks like current tests run forever in the CI.
