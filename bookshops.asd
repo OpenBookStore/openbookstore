@@ -22,9 +22,9 @@
                :parse-number
 
                ;; utils
+               :alexandria
                :can
                :str
-               :listopia  ;; list manipulation
                :local-time
                :local-time-duration
                :cl-ppcre
