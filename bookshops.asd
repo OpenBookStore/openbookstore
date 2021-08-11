@@ -2,6 +2,7 @@
   This file is a part of bookshops project.
 |#
 
+(require "asdf")  ;; for CI
 (asdf:defsystem "bookshops"
   :version "0.1.1"
   :author "vindarel"
