@@ -3,6 +3,7 @@
         :parse-float
         :bookshops.parameters)
   (:export #:isbn-p
+           #:asciify
            #:clean-isbn
            #:extract-float
            #:ensure-float

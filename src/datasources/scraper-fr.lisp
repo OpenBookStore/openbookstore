@@ -146,8 +146,6 @@
                         :price price
                         :publisher publisher
                         :date-publication date-publication))
-    ;; (when (log:debug) (describe bk))
-    (when (log:debug) (print-ht bk))
     bk))
 
 (defun build-url (query &key (source *datasource*) (encode t))

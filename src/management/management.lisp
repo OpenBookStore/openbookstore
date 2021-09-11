@@ -4,7 +4,10 @@
   (:import-from :bookshops.models
                 :find-book
                 :price)
+  (:import-from :bookshops.utils)
   (:export :parse-prices)
+  (:local-nicknames (:models :bookshops.models)
+                    (:utils :bookshops.utils))
   (:documentation "Commands to work on the database (clean-up,...). Depends on models and needs cl-ppcre."))
 
 (in-package :bookshops.management)
@@ -21,7 +24,7 @@
       (if (numberp (price bk))
           (format t "price is a number: ~a~&" (price bk))
           (progn
-            (let ((new-price (extract-float (price bk))))
+            (let ((new-price (utils:extract-float (price bk))))
               (format t "scan: ~a~&" new-price)
               (unless dry-run
                 (setf (price bk) new-price)
@@ -38,16 +41,16 @@
   (needs to migrate the table).
   To use manually when necessary."
   (time
-   (loop for card in (bookshops.models::find-book)
+   (loop for card in (models::find-book)
       for i from 0
-      for title-ascii = (asciify (title card))
-      for authors-ascii = (asciify (authors card))
-      for publisher-ascii = (asciify (publisher card))
+      for title-ascii = (utils:asciify (models::title card))
+      for authors-ascii = (utils:asciify (models::authors card))
+      for publisher-ascii = (utils:asciify (models::publisher card))
       do (format t "- ~a asciify card ~a, \"~a\"~&"
-                 i (object-id card) (str:shorten 40 (title card)))
-      do (setf (bookshops.models::title-ascii card) title-ascii)
-      do (setf (bookshops.models::authors-ascii card) authors-ascii)
-      do (setf (bookshops.models::publisher-ascii card) publisher-ascii)
+                 i (object-id card) (str:shorten 40 (models::title card)))
+      do (setf (models::title-ascii card) title-ascii)
+      do (setf (models::authors-ascii card) authors-ascii)
+      do (setf (models::publisher-ascii card) publisher-ascii)
       do (save-dao card))))
 
 
