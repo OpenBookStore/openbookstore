@@ -9,6 +9,8 @@
   :license "GPL3"
   :description "Free software for bookshops."
   :homepage "https://gitlab.com/myopenbookstore/openbookstore/"
+  :bug-tracker "https://gitlab.com/myopenbookstore/openbookstore/-/issues/"
+  :source-control (:git "https://gitlab.com/myopenbookstore/openbookstore/")
   :depends-on (
                ;; web client
                :dexador
