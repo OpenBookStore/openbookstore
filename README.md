@@ -164,6 +164,37 @@ then explore commands in `bookshops.commands`.
 
 You might need to enable terminal colors with `M-x slime-repl-ansi-on` ([see here](https://github.com/enriquefernandez/slime-repl-ansi-color)).
 
+## Run at startup with Systemd
+
+In a new `/etc/systemd/system/openbookstore.service`:
+
+```
+[Unit]
+Description=OpenBookStore
+
+[Service]
+Restart=on-failure
+WorkingDirectory=/home/you/path/to/repository
+# We run the binary: (abstolute path)
+ExecStart=/home/you/path/to/repository/openbookstore --web --port 4242
+User=openbookstore  # or an existing user
+Type=simple
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target  # start at reboot.
+```
+
+start it:
+
+    systemctl start openbookstore.service
+
+to see the logs:
+
+    journalctl -u openbookstore.service [--since today] [--no-pager] [-o json-pretty] [-f]
+
+use `-f` to follow the logs as they are written.
+
 
 # Usage
 
