@@ -95,7 +95,7 @@
           *last-page*))
 
 (defun basket-names ()
-  (mapcar #'name (models:find-baskets)))
+  (mapcar #'models::name (models:find-baskets)))
 
 (defun baskets (&optional name)
   (let ((models::*print-details* (not (str:emptyp name))))
@@ -310,10 +310,10 @@ By default, add to the stock. If an optional list name is given, add it to the l
     (mapcar #'models:print-place (models:find-places name))))
 
 (defun place-names ()
-  (mapcar #'name (models:find-places)))
+  (mapcar #'models:name (models:find-places)))
 
 (defun contact-names ()
-  (mapcar #'name (models:find-contacts)))
+  (mapcar #'models:name (models:find-contacts)))
 
 (defun parse-quantity (rest)
   "Given a list of strings, extract the integer if the last element starts with an x.
@@ -393,7 +393,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
         (progn
           (setf contact (first res))
           (models::lend book contact)
-          (format t "Lended ~a to ~a~&" (models:title book) (name contact))))))
+          (format t "Lended ~a to ~a~&" (models:title book) (models:name contact))))))
 
 (replic.completion:add-completion "lend" (lambda ()
                                            (append (last-page-book-ids)
@@ -415,7 +415,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
         (setf replic:*prompt-prefix* (format nil "(~a) " (models:name models:*current-place*)))
         (format t "Now inside ~a.~&" name))
       (progn
-        (format t "Current place: ~a.~&" (name (models:current-place))))))
+        (format t "Current place: ~a.~&" (models:name (models:current-place))))))
 
 (replic.completion:add-completion "places" #'place-names)
 (replic.completion:add-completion "inside" #'place-names)
