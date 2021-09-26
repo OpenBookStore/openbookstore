@@ -33,8 +33,13 @@
     :col-type (or (:integer) :null))
    (max-time
     :col-type :integer
-    :initform 60                        ;; days
-    :accessor max-time))
+    :initform 60 ;; days
+    :accessor max-time)
+   (due-date
+    :col-type (or :null :timestamp)     ;; null needed for a successfull Mito migration.
+    :initform (local-time:timestamp+ (local-time:now) 60 :days)
+    :accessor due-date
+    :documentation "Date when the loan should end and the book come back."))
   (:metaclass mito:dao-table-class))
 
 (defmethod quantity ((it contact-copies))
@@ -218,6 +223,12 @@ If `contact' is given, filter by this contact."
     ;; to get pagination completion right.
     (mapcar #'contact-copies-book copies)))
 
+(defun outdated-loans (&key (limit 20) (order :asc))
+  "Return a list of loans whose due date is exhausted (lower than today)."
+  (mito:select-dao 'contact-copies
+    (sxql:where (:< :due-date (local-time:now)))
+    (sxql:limit limit)
+    (sxql:order-by `(,order :due-date))))
 (defun receive (book &optional contact)
   "Return this book.
    In case of ambiguity, give the contact as optional argument."

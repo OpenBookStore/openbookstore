@@ -47,7 +47,7 @@
     <div class="card events-card">
       <header class="card-header">
         <p class="card-header-title">
-          Events
+          Outdated loans
         </p>
         <a href="#" class="card-header-icon" aria-label="more options">
           <span class="icon">
@@ -59,51 +59,16 @@
         <div class="content">
           <table class="table is-fullwidth is-striped">
             <tbody>
+              {% for loan in data.outdated-loans %}
               <tr>
                 <td width="5%"><i class="fa fa-bell-o"></i></td>
-                <td>Lorum ipsum dolem aire</td>
+                <td>
+                  <a href="/card/{{ loan.book-id }}">{{ loan.book-id | print-book }}
+                  </a>
+                  lended to {{ loan.contact-id | print-contact }}, due on {{ loan.due-date | date:(:year "/" (:month 2) "/" (:day 2) " " (:hour 2) ":" (:min 2)) }} </td>
                 <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
               </tr>
-              <tr>
-                <td width="5%"><i class="fa fa-bell-o"></i></td>
-                <td>Lorum ipsum dolem aire</td>
-                <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
-              </tr>
-              <tr>
-                <td width="5%"><i class="fa fa-bell-o"></i></td>
-                <td>Lorum ipsum dolem aire</td>
-                <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
-              </tr>
-              <tr>
-                <td width="5%"><i class="fa fa-bell-o"></i></td>
-                <td>Lorum ipsum dolem aire</td>
-                <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
-              </tr>
-              <tr>
-                <td width="5%"><i class="fa fa-bell-o"></i></td>
-                <td>Lorum ipsum dolem aire</td>
-                <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
-              </tr>
-              <tr>
-                <td width="5%"><i class="fa fa-bell-o"></i></td>
-                <td>Lorum ipsum dolem aire</td>
-                <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
-              </tr>
-              <tr>
-                <td width="5%"><i class="fa fa-bell-o"></i></td>
-                <td>Lorum ipsum dolem aire</td>
-                <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
-              </tr>
-              <tr>
-                <td width="5%"><i class="fa fa-bell-o"></i></td>
-                <td>Lorum ipsum dolem aire</td>
-                <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
-              </tr>
-              <tr>
-                <td width="5%"><i class="fa fa-bell-o"></i></td>
-                <td>Lorum ipsum dolem aire</td>
-                <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
-              </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>

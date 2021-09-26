@@ -59,6 +59,16 @@ Dev helpers:
           ((plusp quantity) (access:access options :positive))
           (t (access:access options :negative)))))
 
+;; Two filters necessary because buggy Mito which doesn't show the book
+;; even though book-id is set.
+(djula:def-filter :print-contact (contact-id)
+  (let ((contact (mito:find-dao 'models::contact :id contact-id)))
+    (format nil "~a" (models::name contact))))
+
+(djula:def-filter :print-book (book-id)
+  (let ((obj (mito:find-dao 'models::book :id book-id)))
+    (format nil "~a" (models::title obj))))
+
 ;;; Load templates.
 (defparameter +base.html+ (djula:compile-template* "base.html"))
 (defparameter +dashboard.html+ (djula:compile-template* "dashboard.html"))
@@ -98,7 +108,12 @@ Dev helpers:
                     :data (list :nb-titles (models:count-book)
                                 :nb-books (models::total-quantities)
                                 :nb-titles-negative (length
-                                                     (models::negative-quantities)))))
+                                                     (models::negative-quantities))
+                                :outdated-loans
+                                (models::outdated-loans :limit 20 :order :asc)
+                                ;; :nb-outdated-loans
+                                ;; (models::count-outdated-loans)
+                                )))
 
 ;XXX: we don't need a similar define-role-access for each route.
 (bookshops.models:define-role-access stock-route :view :visitor)
