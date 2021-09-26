@@ -16,7 +16,7 @@ Another solution to run the app is to run the executable (see README).
 
 (ql:quickload "bookshops")
 
-(in-package :bookshops-web)
+(in-package :bookshops/web)
 (handler-case
     (start-app :port (or (ignore-errors (parse-integer (uiop:getenv "OBS_PORT")))
                          *port*))

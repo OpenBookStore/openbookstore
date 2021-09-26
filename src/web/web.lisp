@@ -1,4 +1,4 @@
-(in-package :bookshops-web)
+(in-package :bookshops/web)
 
 #|
 Show the stock on a web page.

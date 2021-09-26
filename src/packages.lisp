@@ -108,7 +108,7 @@
                     (#:a #:alexandria))
   (:documentation "CLI interface"))
 
-(defpackage bookshops-web
+(defpackage bookshops/web
   (:use :cl)
   (:import-from :easy-routes
                 :defroute)
