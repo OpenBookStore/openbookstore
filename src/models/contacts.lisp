@@ -137,13 +137,16 @@ If `contact' is given, filter by this contact."
 (defun print-borrowed-books (contact)
   (let ((title-length 40))
     (mapcar (lambda (it)
-              (format t "~t~2a- ~va since ~a~&"
-                      (mito:object-id (contact-copies-book it))
-                      title-length
-                      (str:prune title-length (title it))
-                      (princ-color-flags
-                       (utils:format-date (mito:object-created-at it))
-                       it)))
+              (let ((book (contact-copies-book it)))
+                (if book
+                    (format t "~t~2a- ~va since ~a~&"
+                            (mito:object-id book)
+                            title-length
+                            (str:prune title-length (title it))
+                            (princ-color-flags
+                             (utils:format-date (mito:object-created-at it))
+                             it))
+                    (format t "no book for ~a?" copy))))
             (mito:select-dao 'contact-copies
               (sxql:where (:= :contact contact))))))
 
@@ -188,22 +191,28 @@ If `contact' is given, filter by this contact."
           (quantity contact-copy)))))
 
 
-(defun loans (&key contact)
+(defun loans (&key name)
   "Print who borrowed what book and since when (most recent last). If `name', filter by this contact."
-  (let* ((contact (when contact
-                    (first (find-contacts contact))))
+  (unless name
+    (error "Please give a name argument."))
+  (let* ((contact (if name
+                      (first (find-contacts name))
+                      (first (find-contacts))))
          (copies (find-contacts-copies :contact contact))
          (title-length 40)
          (padding (+ title-length 9))) ;; color escape strings.
     (mapcar (lambda (copy)
-              (format t "~2a- ~va since ~a by ~a~&"
-                      (mito:object-id (contact-copies-book copy))
-                      padding
-                      (cl-ansi-text:blue (str:prune title-length (title copy)))
-                      (princ-color-flags
-                       (utils:format-date (mito:object-created-at copy))
-                       copy)
-                      (name copy)))
+              (let ((book (contact-copies-book copy)))
+                (if book
+                    (format t "~2a- ~va since ~a by ~a~&"
+                            (mito:object-id book)
+                            padding
+                            (cl-ansi-text:blue (str:prune title-length (title copy)))
+                            (princ-color-flags
+                             (utils:format-date (mito:object-created-at copy))
+                             copy)
+                            (name copy))
+                    (format t "no book for copy ~a?" copy))))
             copies)
     ;; We return a list of copies, not contact-copies, for the command level,
     ;; to get pagination completion right.
