@@ -11,6 +11,17 @@ build:
 		--eval '(ql:quickload :bookshops)' \
 		--eval '(asdf:make :bookshops)'
 
+build-package:
+	# This must use a custom-built SBCL with a special parameter,
+	# see linux-packaging README.
+	# I have it under ~/.local/bin/bin/sbcl
+	$(LISP) --non-interactive \
+		--load bookshops.asd \
+		--eval '(ql:quickload :bookshops)' \
+		--eval '(load "~/common-lisp/asdf/tools/load-asdf.lisp")' \
+		--eval '(setf *debugger-hook* (lambda (c h) (declare (ignore h)) (format t "~A~%" c) (sb-ext:quit :unix-status -1)))' \
+		--eval '(asdf:make :bookshops)'
+
 build-gui:
 	$(LISP)	--non-interactive \
 		--load bookshops.asd \

@@ -11,6 +11,11 @@
   :homepage "https://gitlab.com/myopenbookstore/openbookstore/"
   :bug-tracker "https://gitlab.com/myopenbookstore/openbookstore/-/issues/"
   :source-control (:git "https://gitlab.com/myopenbookstore/openbookstore/")
+
+  ;; Create .deb package.
+  ;; :defsystem-depends-on ("linux-packaging")
+  ;; :class "linux-packaging:deb"
+  ;; :package-name "bookshops"
   :depends-on (
                ;; web client
                :dexador
@@ -47,51 +52,52 @@
                :log4cl
                :cl-i18n)
   :components ((:module "src/datasources"
-                :components
-                ((:file "dilicom")
-                 (:file "dilicom-flat-text")
-                 (:file "scraper-fr")))
+                        :components
+                        ((:file "dilicom")
+                         (:file "dilicom-flat-text")
+                         (:file "scraper-fr")))
 
                (:module "src"
-                :components
-                ;; stand-alone packages.
-                ((:file "parameters")
-                 (:file "utils")
-                 ;; they depend on the above.
-                 (:file "packages")
-                 (:file "authentication")
-                 (:file "manager")
-                 (:file "bookshops")
-                 (:file "commands")
-                 (:file "database")))
+                        :components
+                        ;; stand-alone packages.
+                        ((:file "parameters")
+                         (:file "utils")
+                         ;; they depend on the above.
+                         (:file "packages")
+                         (:file "authentication")
+                         (:file "manager")
+                         (:file "bookshops")
+                         (:file "commands")
+                         (:file "database")))
 
                (:module "src/models"
-                :components
-                ((:file "models")
-                 (:file "models-utils")
-                 (:file "baskets")
-                 (:file "contacts")
-                 (:file "sell")))
+                        :components
+                        ((:file "models")
+                         (:file "models-utils")
+                         (:file "baskets")
+                         (:file "contacts")
+                         (:file "sell")))
 
                ;; One-off utility "scripts" to work on the DB.
                (:module "src/management"
-                :components
-                ((:file "management")))
+                        :components
+                        ((:file "management")))
 
                (:module "src/web"
-                :components
-                ((:file "package")
-                 (:file "messages")
-                 (:file "authentication")
-                 (:file "search")
-                 (:file "web")
-                 (:file "api"))))
+                        :components
+                        ((:file "package")
+                         (:file "messages")
+                         (:file "authentication")
+                         (:file "search")
+                         (:file "web")
+                         (:file "api"))))
 
   :build-operation "program-op"
-  :build-pathname "bookshops"
   :entry-point "bookshops:main"
+  ;; For a .deb (with the two lines above).
+  ;; :build-operation "linux-packaging:build-op"
+  ;; :build-pathname "bookshops"
 
-  :description ""
   ;; :long-description
   ;; #.(read-file-string
   ;;    (subpathname *load-pathname* "README.md"))
