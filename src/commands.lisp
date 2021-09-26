@@ -71,20 +71,8 @@
   "Search for books with `query` on `datasource`, nicely print the result."
   ;; the &rest is for the readline repl, that gives many string arguments to this function.
   (let* ((query (str:unwords (cons query rest)))
-         (results (setf *last-results* (search-books query)))
-         (i (length results)))
-    (mapcar (lambda (it)
-              (format t "~2@a- ~a, ~a~t~$ ~tstock: x~a~&"
-                      i
-                      (blue (models:title it))
-                      (models:authors it)
-                      (models:price it)
-                      (print-quantity-red-green (models:quantity it)))
-              (format t "~t ed: ~a, ~a~&"
-                      (models:publisher it)
-                      (models:isbn it))
-              (decf i))
-            (reverse results))))
+         (results (setf *last-results* (search-books query))))
+    (models::pprint-books results)))
 
 (defun last-page-book-ids ()
   "We want to complete the ids and the titles."

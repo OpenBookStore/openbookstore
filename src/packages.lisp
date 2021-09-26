@@ -1,7 +1,8 @@
 ;; XXX: all packages are not here.
 
 (defpackage bookshops.models
-  (:use :cl)
+  (:use :cl
+        :cl-ansi-text)
 
   (:import-from :access
                 :access)

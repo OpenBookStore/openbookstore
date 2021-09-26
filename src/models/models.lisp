@@ -187,6 +187,22 @@ searches. This method was thought the most portable.
         book
       (format stream "~a" title))))
 
+(defun pprint-books (results)
+  "Pretty print this list of books, as rows."
+  (let ((i (length results)))
+    (mapcar (lambda (it)
+              (format t "~2@a- ~a, ~a~t~$ ~tstock: x~a~&"
+                      i
+                      (blue (title it))
+                      (authors it)
+                      (price it)
+                      (print-quantity-red-green (quantity it)))
+              (format t "~t ed: ~a, ~a~&"
+                      (publisher it)
+                      (isbn it))
+              (decf i))
+            (reverse results))))
+
 (defclass place ()
   ((name
     ;; accessor as generic, for the intermediate class too.

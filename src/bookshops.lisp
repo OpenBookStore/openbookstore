@@ -131,8 +131,8 @@
 
 
       (handler-case
-          (if free-args
-              (search-books (str:join " " free-args)))
+          (when free-args
+            (search-books (str:join " " free-args)))
         (error (c)
           (progn
             (format *error-output* "~a~&" c)
@@ -161,4 +161,16 @@
           ;; XXX: quit also kills the current lisp process, which is
           ;; annoying when developing with a REPL.
           ;; (uiop:quit 1)
-          )))))
+          )))
+
+    (when free-args
+      (handler-case
+          (progn
+            (init)
+            (bookshops.models::pprint-books (search-books (str:join " " free-args))))
+        (error (c)
+          (progn
+            (format *error-output* "~a~&" c)
+            (uiop:quit 1)))))
+
+    ))
