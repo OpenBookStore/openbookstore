@@ -200,9 +200,7 @@ If `contact' is given, filter by this contact."
   "Print who borrowed what book and since when (most recent last). If `name', filter by this contact."
   (unless name
     (error "Please give a name argument."))
-  (let* ((contact (if name
-                      (first (find-contacts name))
-                      (first (find-contacts))))
+  (let* ((contact (first (find-contacts name)))
          (copies (find-contacts-copies :contact contact))
          (title-length 40)
          (padding (+ title-length 9))) ;; color escape strings.
