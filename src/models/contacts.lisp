@@ -151,7 +151,7 @@ If `contact' is given, filter by this contact."
                             (princ-color-flags
                              (utils:format-date (mito:object-created-at it))
                              it))
-                    (format t "no book for ~a?" copy))))
+                    (format t "no book for ~a?" it))))
             (mito:select-dao 'contact-copies
               (sxql:where (:= :contact contact))))))
 
