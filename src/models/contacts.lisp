@@ -106,6 +106,9 @@ If `contact' is given, filter by this contact."
 (defgeneric loan-too-long-p (obj)
   (:documentation "Return t if this loan bypasses the number of days allowed."))
 
+(defmethod loan-too-long-p (obj)
+  (error "no method for this type: ~a" (type-of obj)) )
+
 (defmethod loan-too-long-p ((obj contact-copies))
   (let* ((now (local-time:now))
          (time-difference (ltd:timestamp-difference

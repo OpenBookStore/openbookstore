@@ -16,6 +16,10 @@ In this file:
 
 Dev helpers:
 - adding ?raw=t on a URL (on a card page)
+
+Slime reminders:
+- use `C-u M-.` (`slime-edit-definition` with a prefix argument, also available as `M-- M-.`) to autocomplete the symbol and navigate to it. This command always asks for a symbol even if the cursor is on one. It works with any loaded definition. Here's a little [demonstration video](https://www.youtube.com/watch?v=ZAEt73JHup8).
+
 |#
 
 (defvar *server* nil
@@ -59,8 +63,21 @@ Dev helpers:
           ((plusp quantity) (access:access options :positive))
           (t (access:access options :negative)))))
 
+(djula:def-filter :contact-name (contact-copy)
+  ;; see why in loans.html. Mito limitation or me? Dec 2021.
+  (if (and contact-copy
+           (models::contact-copies-contact contact-copy))
+      (format nil "~a" (models::name (models::contact-copies-contact contact-copy)))
+      "?"))
+
+;; If a load is outdated, show the due date in red.
+(djula:def-filter :date-style (date raw-options)
+  (let ((options (read-from-string raw-options)))
+    (cond ((models::loan-too-long-p date) (access:access options :negative))
+          (t (access:access options :positive)))))
+
 ;; Two filters necessary because buggy Mito which doesn't show the book
-;; even though book-id is set.
+;; even though book-id is set (early 2021).
 (djula:def-filter :print-contact (contact-id)
   (let ((contact (mito:find-dao 'models::contact :id contact-id)))
     (format nil "~a" (models::name contact))))
@@ -80,6 +97,7 @@ Dev helpers:
 (defparameter +receive.html+ (djula:compile-template* "receive.html"))
 (defparameter +sell.html+ (djula:compile-template* "sell.html"))
 (defparameter +history.html+ (djula:compile-template* "history.html"))
+(defparameter +loans.html+ (djula:compile-template* "loans.html"))
 
 (defparameter +404.html+ (djula:compile-template* "404.html"))
 
@@ -91,11 +109,24 @@ Dev helpers:
   Static assets are reachable under the /static/ prefix.")
 
 (defun serve-static-assets ()
-  ;TODO: does not load our openbookstore.js file.
+  ;TODO: does not load our openbookstore.js file. Does it now ?
   (push (hunchentoot:create-folder-dispatcher-and-handler
          "/static/" (merge-pathnames *default-static-directory*
                                      (asdf:system-source-directory :bookshops)))
         hunchentoot:*dispatch-table*))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Some web utils.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun truthy-p (val)
+  "Return t if VAL is truthy: it is t, 1, \"true\"…"
+  (when (member val '(1 t "1" "t" "true" "yes") :test #'equal)
+    t))
+#+(or)
+(assert
+ (and (every #'truthy-p '(t "t" "1" 1 "true"))
+      (not (every #'truthy-p '(t "f" "false")))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Routes.
@@ -292,6 +323,20 @@ Dev helpers:
                     :route "/history"
                     :title "History - OpenBookstore"
                     :soldcards (models::find-soldcards :order :desc)))
+
+(bookshops.models:define-role-access loans-route :view :editor)
+(defroute loans-route ("/stock/loans" :decorators ((@check-roles history-route))
+                                      :method :get)
+    (outdated)  ;; args
+  (setf outdated (truthy-p outdated))
+  (log:warn outdated)
+  (render-template* +loans.html+ nil
+                    :route "/stock/loans"
+                    :title "Loans - OpenBookstore"
+                    :loans (if outdated
+                               (models::outdated-loans)
+                               (models::find-loans))
+                    :filter-outdated-p outdated))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Start-up functions.

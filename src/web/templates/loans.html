@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+
+<h3> Loans </h3>
+
+{% if filter-outdated-p  %}
+<div> outdated loans </div>
+{% endif %}
+
+{% for contact-copy in loans %}
+<div name="cardid" data-id="{{ contact-copy.book.id }}" id="card{{ contact-copy.book.id }}" class="box content">
+  <article class="post">
+    <div class="media">
+      <div class="media-left">
+        <p class="image is-64x64">
+          <img src="{{ contact-copy.book.cover-url }}">
+        </p>
+      </div>
+      <div class="media-content">
+        {% block contact-copy.book_content %}
+        <div class="content">
+          <a onclick="alert('clicked')">
+            <span class="title is-6"> {{ contact-copy.book.title }} </span>
+          </a>
+          <!-- it's me or Mito, but contact-copy.contact.name resolves to NIL, so let's use a filter. -->
+          <div> lended by {{ contact-copy | contact-name }} </div>
+
+          <span>
+            due date:
+            <div class="tag level-item {{ contact-copy | date-style:(:positive "is-success" :negative "is-danger is-light" :zero "") }}">
+              {{ contact-copy.due-date
+              | date:(:year "-" (:month 2) "-" (:day 2))
+              }}
+            </div>
+          </span>
+
+          <div class="has-text-grey-light"> {{ contact-copy.book.isbn }} </div>
+          <!-- <span> éd. {{ contact-copy.book.publisher | capfirst }} </span> -->
+          <p>
+            {% if contact-copy.book.availability %}
+            <span> availability: {{ contact-copy.book.availability }}  </span>
+            {% endif %}
+          </p>
+        </div>
+        {% endblock contact-copy.book_content %}
+      </div>
+      <div class="media-right">
+        <div class="level">
+          <span class="tag level-item">
+            x {{ contact-copy.quantity }}
+          </span>
+        </div>
+
+        <!-- TODO how to handle duplication of forms? how to stop them getting out of sync
+             with the end point parameters too? -->
+        <div class="level">
+          {% block contact-copy.book_button_row %}
+          <form action="#" method="POST" class="level-item">
+            <input name="q" type="hidden" value="{{ q }}">
+            <input name="referer-route" type="hidden" value="{{ route }}">
+            <input name="book-id"  type="hidden" value="{{ contact-copy.book.id ]}">
+            <input name="title" type="hidden" value="{{ contact-copy.book.title }}">
+            <input name="title" type="hidden" value="{{ contact-copy.book.title }}">
+            <input name="isbn" type="hidden"  value="{{ contact-copy.book.isbn }}" />
+            <input name="cover-url" type="hidden" value="{{ contact-copy.book.cover-url }}" />
+            <input name="publisher" type="hidden" value="{{ contact-copy.book.publisher }}" />
+            <input type="submit" class="button" value="Do sthg...">
+          </form>
+          <form action="/contact-copy.book/quick-add-stock/" method="POST" class="level-item">
+            <input name="quantity" type="hidden" value="1" />
+            <input name="q" type="hidden" value="{{ q }}">
+            <input name="referer-route" type="hidden" value="{{ route }}">
+            <input name="book-id" type="hidden" value="{{ contact-copy.book.id }}" />
+            <input name="title" type="hidden" value="{{ contact-copy.book.title }}" />
+            <input name="isbn" type="hidden"  value="{{ contact-copy.book.isbn }}" />
+            <input name="cover-url" type="hidden" value="{{ contact-copy.book.cover-url }}"/>
+            <input name="publisher" type="hidden" value="{{ contact-copy.book.publisher }}" />
+          </form>
+          {% endblock contact-copy.book_button_row %}
+        </div>
+      </div>
+
+    </div>
+  </article>
+</div>
+{% endfor %}
+{% endblock %}

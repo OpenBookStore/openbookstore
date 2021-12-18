@@ -271,7 +271,9 @@ See the list of places:
 
 ## Lending books to contacts
 
-Lend a book to someone:
+In the **web UI**, the dashboard shows which loans are outdated (their due date was due before today).
+
+In the **terminal app**, lend a book to someone like so:
 
 - `lend <id> <contact name>`
 
@@ -290,9 +292,7 @@ and when your friend returns a book back:
 
 - `receive <book id> [optional contact name]`
 
-In the web UI, the dashboard shows which loans are outdated (their due date was due before today).
-
-In Lisp, get them with:
+In **Lisp**, get them with:
 
 ~~~lisp
 (bookshops.models::loans)
