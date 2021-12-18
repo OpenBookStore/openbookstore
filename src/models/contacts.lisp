@@ -222,18 +222,24 @@ If `contact' is given, filter by this contact."
     (mapcar #'contact-copies-book copies)))
 
 (defun outdated-loans (&key (limit 20) (order :asc))
-  "Return a list of loans whose due date is exhausted (lower than today)."
-  (mito:select-dao 'contact-copies
-    (sxql:where (:< :due-date (local-time:now)))
-    (sxql:limit limit)
-    (sxql:order-by `(,order :due-date))))
+  "Return a list of loans whose due date is exhausted (lower than today).
+
+  Filter out loans whose card is null."
+  (remove-if-not #'contact-copies-book
+                 (mito:select-dao 'contact-copies
+                   (sxql:where (:< :due-date (local-time:now)))
+                   (sxql:limit limit)
+                   (sxql:order-by `(,order :due-date)))))
+
+(defun loans-without-cards ()
+  "Find loans without a card. Should not happen, but can happen during development when a card is deleted."
+  (remove-if #'contact-copies-book
+             (mito:select-dao 'contact-copies)))
 
 (defun count-outdated-loans ()
   "Return the number (integer) of outdated loans."
   ;; Uses LENGTH instead of a proper SQL count.
-  (length
-   (mito:select-dao 'contact-copies
-     (sxql:where (:< :due-date (local-time:now))))))
+  (length (outdated-loans :limit 1000000)))
 
 (defun receive (book &optional contact)
   "Return this book.
