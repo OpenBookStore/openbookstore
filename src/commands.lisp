@@ -334,7 +334,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
 
 (defun loans (&optional name)
   "Print who borrowed what book and since when, ordered by date (oldest first)."
-  (setf *last-page* (models::loans :name name)))
+  (setf *last-page* (models::print-loans :name name)))
 
 (replic.completion:add-completion "contacts" #'contact-names)
 (replic.completion:add-completion "loans" #'contact-names)
