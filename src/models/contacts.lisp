@@ -37,7 +37,7 @@
     :accessor max-time)
    (due-date
     :col-type (or :null :timestamp)     ;; null needed for a successfull Mito migration.
-    :initform (local-time:timestamp+ (local-time:now) 60 :days)
+    :initform (local-time:timestamp+ (local-time:now) 60 :day)
     :accessor due-date
     :documentation "Date when the loan should end and the book come back."))
   (:metaclass mito:dao-table-class))
