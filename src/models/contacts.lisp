@@ -97,10 +97,11 @@
   "Return the list of borrowed books, most recent last.
 If `contact' is given, filter by this contact."
   ;; (warn "Exclude loans with a quantity at 0 ?")
-  (mito:select-dao 'contact-copies
-    (when contact
-      (sxql:where (:= :contact contact)))
-    (sxql:order-by :object-created)))
+  (remove-if-not #'contact-copies-book
+                 (mito:select-dao 'contact-copies
+                   (when contact
+                     (sxql:where (:= :contact contact)))
+                   (sxql:order-by :object-created))))
 
 (defgeneric loan-too-long-p (obj)
   (:documentation "Return t if this loan bypasses the number of days allowed."))
