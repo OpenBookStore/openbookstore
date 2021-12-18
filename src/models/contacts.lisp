@@ -227,6 +227,14 @@ If `contact' is given, filter by this contact."
     (sxql:where (:< :due-date (local-time:now)))
     (sxql:limit limit)
     (sxql:order-by `(,order :due-date))))
+
+(defun count-outdated-loans ()
+  "Return the number (integer) of outdated loans."
+  ;; Uses LENGTH instead of a proper SQL count.
+  (length
+   (mito:select-dao 'contact-copies
+     (sxql:where (:< :due-date (local-time:now))))))
+
 (defun receive (book &optional contact)
   "Return this book.
    In case of ambiguity, give the contact as optional argument."

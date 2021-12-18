@@ -102,6 +102,7 @@ Dev helpers:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (bookshops.models:define-role-access home-route :view :visitor)
 (defroute home-route ("/" :decorators ((@check-roles home-route))) ()
+  ;; aka dashboard-route
   (render-template* +dashboard.html+ nil
                     :route "/"
                     :current-user (current-user)
@@ -111,8 +112,8 @@ Dev helpers:
                                                      (models::negative-quantities))
                                 :outdated-loans
                                 (models::outdated-loans :limit 20 :order :asc)
-                                ;; :nb-outdated-loans
-                                ;; (models::count-outdated-loans)
+                                :nb-outdated-loans
+                                (models::count-outdated-loans)
                                 )))
 
 ;XXX: we don't need a similar define-role-access for each route.
