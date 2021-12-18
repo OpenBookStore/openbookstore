@@ -281,7 +281,7 @@ See your contacts, their books and the date they borrowed them:
 
 The same information, but a list of books sorted by date (oldest first):
 
-- `loans`
+- `loans [optional contact name]`
 
 In both commands, a book that was borrowed more than 60 days is
 printed in red.
@@ -289,6 +289,16 @@ printed in red.
 and when your friend returns a book back:
 
 - `receive <book id> [optional contact name]`
+
+In the web UI, the dashboard shows which loans are outdated (their due date was due before today).
+
+In Lisp, get them with:
+
+~~~lisp
+(bookshops.models::loans)
+;; and
+(bookshops.models::outdated-loans)
+~~~
 
 
 ## Stats

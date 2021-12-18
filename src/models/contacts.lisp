@@ -198,10 +198,10 @@ If `contact' is given, filter by this contact."
 
 (defun loans (&key name)
   "Print who borrowed what book and since when (most recent last). If `name', filter by this contact."
-  (unless name
-    (error "Please give a name argument."))
-  (let* ((contact (first (find-contacts name)))
-         (copies (find-contacts-copies :contact contact))
+  (let* ((contact (first (when name (find-contacts name))))
+         (copies (if contact
+                     (find-contacts-copies :contact contact)
+                     (find-contacts-copies)))
          (title-length 40)
          (padding (+ title-length 9))) ;; color escape strings.
     (mapcar (lambda (copy)

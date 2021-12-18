@@ -333,7 +333,6 @@ By default, add to the stock. If an optional list name is given, add it to the l
     (mapcar #'models:print-contact (models:find-contacts name))))
 
 (defun loans (&optional name)
-  ;TODO: filter by name
   "Print who borrowed what book and since when, ordered by date (oldest first)."
   (setf *last-page* (models::loans :name name)))
 
