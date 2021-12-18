@@ -222,6 +222,12 @@ If `contact' is given, filter by this contact."
     ;; to get pagination completion right.
     (mapcar #'contact-copies-book copies)))
 
+(defun find-loans (&key (limit 20) (order :asc))
+  (remove-if-not #'contact-copies-book
+                 (mito:select-dao 'contact-copies
+                   (sxql:limit limit)
+                   (sxql:order-by `(,order :due-date)))))
+
 (defun outdated-loans (&key (limit 20) (order :asc))
   "Return a list of loans whose due date is exhausted (lower than today).
 
