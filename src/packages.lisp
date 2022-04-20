@@ -115,6 +115,8 @@
                 :defroute)
   (:import-from :access
                 :access)
+  (:import-from :serapeum
+                :dict)
   (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
                     (#:fr #:bookshops.datasources.scraper-fr)
                     (#:models #:bookshops.models)

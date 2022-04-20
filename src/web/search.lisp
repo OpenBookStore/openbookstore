@@ -155,7 +155,7 @@ Cards will be created for remote finds if :save is set T."
       ((< 1 (length res))
        (list :options
              (mapcar (lambda (book)
-                       (serapeum:dict :url (card-url book)
+                       (dict :url (card-url book)
                                       :title (models:title book)))
                      res)))
       ((eq 1 (length res))
