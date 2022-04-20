@@ -141,26 +141,30 @@ Cards will be created for remote finds if :save is set T."
   - :RESULTS + JSON of books."
   (let ((res (get-or-search q :remote-key nil :save t)))
     (if (< 1 (length res))
-        (list :results
+        ;; Use strings as keys, because with symbols I have seen inconsistency
+        ;; in the JSON results.
+        ;; Once they are lowercased, once they are uppercased.
+        ;; Switch from cl-json?
+        (list "results"
               (mapcar (lambda (book)
-                         (serapeum:dict :url (card-url book)
-                                        :title (models:title book)))
+                         (dict "url" (card-url book)
+                                        "title" (models:title book)))
                       res))
         (when res
-          (list :go (card-url (car res)))))))
+          (list "go" (card-url (car res)))))))
 
 (defun sell-search (q)
   (let ((res (get-or-search q :remote-key nil :remote-isbn t :save t)))
     (cond
       ((< 1 (length res))
-       (list :options
+       (list "options"
              (mapcar (lambda (book)
-                       (dict :url (card-url book)
-                                      :title (models:title book)))
+                       (dict "url" (card-url book)
+                                      "title" (models:title book)))
                      res)))
       ((eq 1 (length res))
-       (list :card (car res)))
-      (t (list :error
+       (list "card" (car res)))
+      (t (list "error"
                (if (utils:isbn-p q)
                    "No book found for ISBN"
                    "No matches found in store"))))))
