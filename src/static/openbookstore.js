@@ -190,6 +190,17 @@ function initialSellPage (alt) {
 }
 
 const sellPage = {
+    // Ask the API for a list of items on user input.
+    // If there is only one result, add it straight away.
+    // If we scan an ISBN, we add it straight away, and *we fetch its data in the background*.
+    // Scanning books must be super fast for the user: they scan a book after the other without
+    // looking at the UI, they don't want to wait: the scanned book will be found anyways.
+    //
+    // Props:
+    // - this.books: a list of objects containing:
+    //   - card: other object, containing all the book's data
+    //   - quantity: the quantity to sell
+    //   - show: bool
     data () {
         return initialSellPage();
     },
@@ -228,19 +239,26 @@ const sellPage = {
         },
 
         getAsyncData: _.debounce (function (input) {
+            // The search input autocomplete of sell.html.
             if (!input.length) {
                 this.suggestions = [];
                 return;
             }
-            // Is the user inputting a number?
+            //
+            // Is the user inputting a number, is it an ISBN?
+            //
             if (/^\d+$/.test(input)) {
                 if (input.length < 13) {
                     this.suggestions = [];
                 } else {
-                    //Asynchronous search for ISBN happens here...
+                    //Asynchronous search for ISBN happens here:
+                    //
+                    // Add a result in the UI straight away, only showing the input text.
                     var cardindex = this.newBook({input, error: null, card: null});
+                    // Search for the bibliographic data.
                     this.$http.get(`/api/sell-search?q=${input}`)
                         .then(({ data }) => {
+                            // console.log("async book result: ", data);
                             var book = {input: this.books[cardindex].input,
                                         show: true,
                                         quantity: 1,
@@ -251,6 +269,7 @@ const sellPage = {
                             } else if (data && data.hasOwnProperty("error")) {
                                 book.error = data.error;
                             }
+                            // Save.
                             Vue.set(this.books, cardindex, book);
                             this.$forceUpdate();
                         })
@@ -261,15 +280,23 @@ const sellPage = {
                 }
                 return;
             }
+            //
+            // Normal search (not ISBN).
+            //
             this.isFetching = true;
             this.$http.get(`/api/sell-search?q=${input}`)
                 .then(({ data }) => {
+                    console.log("sell search results: ", data);
+                    // If we get one unique result: add it.
                     if (data && data.hasOwnProperty("card")) {
                         this.newBook({ card: data.card, input });
                     } else if (data && data.hasOwnProperty("options")) {
+                        // We can get a list of results.
+                        // console.log("-- options: ", data.options);  // we need lowercase
                         this.suggestions = [];
                         data.options.forEach((item) => this.suggestions.push(item));
                     } else if (data && data.hasOwnProperty("error")) {
+                        // Deal with errors.
                         this.newBook({ error: data.error, input });
                     }
                 })
@@ -283,7 +310,9 @@ const sellPage = {
         }, 500),
 
         itemSelected: function (item) {
+            // The item to sell is selected amongst the result list.
             if (item) {
+                // console.log("--- itemSelected: ", item, item.title, item.url, "card: ", item.card);
                 this.newBook({ card: item.card, input: this.search });
             }
         },
@@ -295,6 +324,12 @@ const sellPage = {
         },
 
         newBook: function (params) {
+            // Push a new object on this.books.
+            // - show: true
+            // - quantity: 1
+            // - inherit the card data.
+            //
+            // Return: this new book index.
             params.show = true;
             params.quantity = 1;
             this.books.push(params);

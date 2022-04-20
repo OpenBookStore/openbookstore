@@ -159,8 +159,11 @@ Cards will be created for remote finds if :save is set T."
       ((< 1 (length res))
        (list "options"
              (mapcar (lambda (book)
-                       (dict "url" (card-url book)
-                                      "title" (models:title book)))
+                       ;; Embed the full book.
+                       ;; It will be serialized by the JSON library.
+                       (dict "card" book
+                             "url" (card-url book)
+                             "title" (models:title book)))
                      res)))
       ((eq 1 (length res))
        (list "card" (car res)))
