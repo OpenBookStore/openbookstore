@@ -20,6 +20,8 @@
 
 In development. Starts being testable.
 
+Command line interface and web UI to search for books, add them to your stock, sell, see the history, etc.
+
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
@@ -53,10 +55,6 @@ In development. Starts being testable.
 
 # Installation
 
-There are a couple system dependencies to install.
-
-On Debian: `apt install rlwrap sqlite3`
-
 ## Download a binary (WIP)
 
 Download the executable from https://gitlab.com/myopenbookstore/openbookstore/-/pipelines (download a build artifact with the button on the right).
@@ -64,6 +62,10 @@ Download the executable from https://gitlab.com/myopenbookstore/openbookstore/-/
 It's a 24MB self-contained executable (for Debian GNU/Linux,
 x86/64). You don't need to install a Lisp implementation nor anything
 to run it.
+
+There are a couple system dependencies to install.
+
+On Debian: `apt install rlwrap sqlite3`
 
 ## Run from sources
 
@@ -91,7 +93,7 @@ To run the web application:
 - run it from the binary. Either download it from GitLab either build it (`make build`), then run it:
 
 ```
-./bookshops -w [--port 8989] [--verbose]
+./bookshops -w [--port 4242] [--verbose]
 ```
 
 - run it from sources:
@@ -198,7 +200,7 @@ use `-f` to follow the logs as they are written.
 
 # Usage
 
-If you use the web app, you should find your way. Below is an overview on the available commands of the terminal interface.
+If you use the web app, you should find your way. Below is an overview of the available commands of the terminal interface.
 
 ## Bibliographic search, adding books to your stock
 
@@ -409,6 +411,7 @@ To test DB operations, use our macro `with-empty-db`.
 - http://lisp-lang.org/
 - [awesome-cl](https://github.com/CodyReichert/awesome-cl) (and a list of [companies](https://github.com/azzamsa/awesome-lisp-companies) using CL)
 - https://lispcookbook.github.io/cl-cookbook/
+- [learn Common Lisp with this video course](https://www.udemy.com/course/common-lisp-programming/?referralCode=2F3D698BBC4326F94358)
 
 # See also
 
