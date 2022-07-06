@@ -329,7 +329,6 @@ Slime reminders:
                                       :method :get)
     (outdated)  ;; args
   (setf outdated (truthy-p outdated))
-  (log:warn outdated)
   (render-template* +loans.html+ nil
                     :route "/stock/loans"
                     :title "Loans - OpenBookstore"
