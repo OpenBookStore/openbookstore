@@ -65,9 +65,7 @@
                          ;; they depend on the above.
                          (:file "packages")
                          (:file "authentication")
-                         (:file "manager")
                          (:file "bookshops")
-                         (:file "commands")
                          (:file "database")))
 
                (:module "src/models"
@@ -77,6 +75,12 @@
                          (:file "baskets")
                          (:file "contacts")
                          (:file "sell")))
+
+               ;; readline-based, terminal user-facing app (using REPLIC).
+               (:module "src/terminal"
+                        :components
+                        ((:file "manager")
+                         (:file "commands")))
 
                ;; One-off utility "scripts" to work on the DB.
                (:module "src/management"

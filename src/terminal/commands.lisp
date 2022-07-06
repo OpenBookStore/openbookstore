@@ -32,7 +32,9 @@
            :receive
            :inside
            :fortune
-           :*page-size*))
+           :*page-size*)
+  (:documentation "User commands for the terminal application."))
+
 (in-package :bookshops.commands)
 
 (defvar *page-size* 15
@@ -45,6 +47,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utils
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun percentage (low max)
   (* 100 (/ (float low)
             max)))
@@ -54,6 +57,7 @@
          end)
       (subseq seq start end)
       (subseq seq start (length seq))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Commands
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -386,8 +390,6 @@ By default, add to the stock. If an optional list name is given, add it to the l
                                            (append (last-page-book-ids)
                                                    (contact-names))))
 
-
-
 ;;
 ;; Others
 ;;
@@ -412,10 +414,10 @@ By default, add to the stock. If an optional list name is given, add it to the l
       (uiop:run-program "/usr/games/fortune" :output *standard-output*)
       (format t "nothing in /usr/games/fortune, man.~&")))
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Dev
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun reset ()
   "For use in the repl."
   (setf *last-results* nil)
