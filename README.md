@@ -34,9 +34,12 @@ Command line interface and web UI to search for books, add them to your stock, s
     - [Command line](#command-line)
     - [Readline interface](#readline-interface)
     - [Lisp REPL](#lisp-repl)
+    - [Run at startup with Systemd](#run-at-startup-with-systemd)
 - [Usage](#usage)
     - [Bibliographic search, adding books to your stock](#bibliographic-search-adding-books-to-your-stock)
-    - [Seeing the stock, pagination](#seeing-the-stock-pagination)
+    - [Seeing your stock](#seeing-your-stock)
+    - [Selling books, history](#selling-books-history)
+    - [History (of sells)](#history-of-sells)
     - [Places](#places)
     - [Lending books to contacts](#lending-books-to-contacts)
     - [Stats](#stats)
@@ -44,7 +47,6 @@ Command line interface and web UI to search for books, add them to your stock, s
 - [High-level goals](#high-level-goals)
     - [i18n](#i18n)
 - [Dev](#dev)
-    - [Creating custom commands for the binary application](#creating-custom-commands-for-the-binary-application)
     - [Testing](#testing)
     - [Troubleshooting](#troubleshooting)
 - [Lisp ?!](#lisp-)
@@ -177,7 +179,7 @@ Description=OpenBookStore
 [Service]
 Restart=on-failure
 WorkingDirectory=/home/you/path/to/repository
-# We run the binary: (abstolute path)
+# We run the binary: (absolute path)
 ExecStart=/home/you/path/to/repository/openbookstore --web --port 4242
 User=openbookstore  # or an existing user
 Type=simple
@@ -200,11 +202,30 @@ use `-f` to follow the logs as they are written.
 
 # Usage
 
-If you use the web app, you should find your way. Below is an overview of the available commands of the terminal interface.
+Below is an overview of the available features in the web app and in the terminal interface.
 
 ## Bibliographic search, adding books to your stock
 
-You can begin to search for books:
+In the web app, go to the "Search" menu on the left.
+
+You can search anything by keywords or by ISBN (you can scan a book in
+every search input of OpenBookStore). The search will return the
+required bibliographic data (title, author(s), publisher, ISBN…) as
+well as the book's price and the cover image. However, these last two
+data depend on the datasource you use.
+
+The currently available datasources are:
+
+- french datasource
+
+In addition, for each book found, you will see a little button that tells you if you already have this title in stock, and how many.
+
+Click on the "+1" button to add this book to your stock.
+
+![](web.png)
+
+
+In the **terminal interface**, use `search`:
 
 - `search <search terms or ISBN>`
 
@@ -224,9 +245,13 @@ See also
 
 - `delete <i>`
 
-## Seeing the stock, pagination
+## Seeing your stock
 
-To see your stock:
+To search the books you have in stock, use the "Stock" menu in the web
+app, or use the search input in the top navigation bar.
+
+
+In the **terminal interface**, use `stock`:
 
 - `stock [keyword]`, with an optional keyword you can **filter by titles**.
 
@@ -246,7 +271,37 @@ As with several commands, you can autocomplete the id argument using
 the TAB key. The choices are the ids displayed on the last `stock`
 command, so this can be handy when you have filtered the results.
 
+## Selling books, history
+
+In the web app, go to the "Sell" menu.
+
+You can scan any book in the search input that is already selected,
+and you can search books already in your stock with the keyboard (3
+letters are necessary to trigger a search).
+
+Once you're ready, click a paymenth method button to validate the transaction.
+
+![](sell.png)
+
+What remains to be done:
+
+- register the sell for a client, handle three payment methods, generate a PDF bill…
+
+
+## History (of sells)
+
+You can find all your sell transactions in the History.
+
+![](history.png)
+
+What remains to be done:
+
+- see the history by month, by day, simple stats…
+
+
 ## Places
+
+*Note: we don't encourage the use of multiple places, it only renders your stock management more difficult*
 
 When you start the program, you are in the "default place". See that
 the command prompt displays `(default place) bookshops > `: it shows the
