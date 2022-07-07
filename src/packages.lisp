@@ -115,7 +115,7 @@
                     (#:a #:alexandria))
   (:documentation "CLI interface"))
 
-(defpackage bookshops/web
+(uiop:define-package bookshops/web
   (:use :cl)
   (:import-from :easy-routes
                 :defroute)
@@ -123,6 +123,10 @@
                 :access)
   (:import-from :serapeum
                 :dict)
+
+  (:import-from :parse-number
+                :parse-number)
+
   (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
                     (#:fr #:bookshops.datasources.scraper-fr)
                     (#:models #:bookshops.models)

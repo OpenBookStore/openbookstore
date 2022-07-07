@@ -44,9 +44,10 @@
           <div class="buttons">
             <b-field label="Validate with">
               <button class="button is-success"
-                  v-for="option in paymentMethods"
-                  :value="option">
-                        {$ {{ option }} $}
+                  v-for="payment in paymentMethods"
+                  @click="completeSale(payment.id)"
+                  :value="payment.id">
+                        {$ {{ payment.name }} $}
               </button>
             </b-field>
           </div>

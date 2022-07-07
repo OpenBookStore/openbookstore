@@ -33,6 +33,7 @@
       <th> publisher </th>
       <th> price sold </th>
       <th> quantity sold </th>
+      <th> payment method </th>
     </thead>
 
     <tbody>
@@ -71,6 +72,10 @@
 
     <td>
       x{{ sell/soldcard.soldcard.quantity }}
+    </td>
+
+    <td>
+      {{ sell/soldcard.sell.payment-method-name }}
     </td>
 
   </tr>

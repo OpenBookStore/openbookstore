@@ -172,12 +172,21 @@ Vue.component('bookstore-card', {
 "
 });
 
+const paymentMethods = [
+    {id: 1, name: "Cash"},
+    {id: 2, name:"CARD"}
+];
+
+function paymentMethodName (id) {
+    return _.find(paymentMethods, {'id': id}).name;
+};
+
 function initialSellPage (alt) {
     return {
         books: [{error: null, card: null, input: "", quantity: 1, show: false}],
         suggestions: [],
         unsaved: false,
-        paymentMethods: ["Cash", "Mastercard"],
+        paymentMethods: paymentMethods,
         paymentMethod: "",
         client: "",
         search: "",
@@ -205,7 +214,8 @@ const sellPage = {
         return initialSellPage();
     },
     methods: {
-        completeSale: function () {
+        completeSale: function (payment_method_id) {
+            // TODO: finish register payment_method
             var books = [];
             if (this.books && this.books.length == 1 && !this.books[0].card) {
                 return;
@@ -222,7 +232,8 @@ const sellPage = {
             });
             var data = {
                 books: books,
-                paymentMethod: this.paymentMethod,
+                paymentMethodId: payment_method_id,
+                paymentMethodName: paymentMethodName(payment_method_id),
                 client: this.client,
                 sellDate: this.sellDate.toISOString(),
             };

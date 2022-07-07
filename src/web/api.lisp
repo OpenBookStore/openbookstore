@@ -76,15 +76,17 @@
 
 (defvar *sell-data* nil)
 
-(defun sell-complete (&key books payment-method client sell-date)
+(defun sell-complete (&key books client sell-date
+                        payment-method-id payment-method-name)
   (models:make-sale
-   :payment payment-method
+   :payment-method-id (parse-number payment-method-id)
+   :payment-method-name payment-method-name
    :client client
    :date sell-date
    :books
    (mapcar (lambda (book)
-             (list (cons :id (parse-number:parse-number (access book :id)))
-                   (cons :quantity (parse-number:parse-number (access book :quantity)))
+             (list (cons :id (parse-number (access book :id)))
+                   (cons :quantity (parse-number (access book :quantity)))
                    (cons :price (if (str:empty? (access book :price))
                                     ""
                                     (parse-number:parse-number (access book :price))))))
@@ -94,12 +96,15 @@
 (bookshops.models:define-role-access api-sell-complete :view :editor)
 (defroute api-sell-complete
     ("/api/sell-complete/" :method :post :decorators ((@check-roles stock-route) (easy-routes:@json)))
-    (&post (payment-method :real-name "paymentMethod")
+    (&post (payment-method-id :real-name "paymentMethodId")
+           (payment-method-name :real-name "paymentMethodName")
            client
            (sell-date :real-name "sellDate"))
+
   (let ((params
           (list :books (extract-array "books" (hunchentoot:post-parameters*))
-                :payment-method payment-method
+                :payment-method-id payment-method-id
+                :payment-method-name payment-method-name
                 :client client
                 :sell-date (utils:parse-iso-date sell-date))))
     (setf *sell-data* params)

@@ -22,7 +22,21 @@
     :initarg :client
     :initform nil
     :col-type (or (:varchar 128) :null) ;TODO: should be link to client table?
-    :documentation "Name of customer"))
+    :documentation "Name of customer")
+
+   (payment-method-id
+    :accessor payment-method-id
+    :initarg :payment-method-id
+    :initform -1
+    :col-type :integer
+    :documentation "ID used for this payment method. We currently don't store all the payment methods in a table because: they will quite change depending on the user, they might change in time, we are not so interested about them. We want to compute totals per payment method and show totals in the UI.")
+
+   (payment-method-name
+    :accessor payment-method-name
+    :initarg :payment-method-name
+    :initform ""
+    :col-type (or (:varchar 128) :null)
+    :documentation "Name of the payment method used for this transaction. NOTE: we should allow up to 3 payment methods."))
 
   (:metaclass mito:dao-table-class)
   (:documentation "Represents a sale on a specific date of a number of books to a client."))
@@ -100,7 +114,7 @@
   (:metaclass mito:dao-table-class)
   (:documentation "Payment method that was used to complete a Sell."))
 
-(defun make-sale (&key books payment client date)
+(defun make-sale (&key books payment client date payment-method-id payment-method-name)
   "Create one sell with the given books (list of alist with ID, PRICE, QUANTITY).
   For each book, create a SOLD-CARD row.
 
@@ -113,7 +127,9 @@
 
   "
   (let* ((date (or date (local-time:now)))
-         (sale (make-instance 'sell :client client :date date))
+         (sale (make-instance 'sell :client client :date date
+                              :payment-method-id payment-method-id
+                              :payment-method-name payment-method-name))
          (payment (make-instance 'payment-method :sell sale :name payment))
          (bookobjs (mapcar (lambda (book)
                              (let ((card (find-by :id (access book :id))))
