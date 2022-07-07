@@ -136,17 +136,48 @@
               :quantity (- (quantity sold))))
     sale))
 
-(defun find-sell (&key (order :asc))
-  "Find sell objects."
-  ;TODO: search soldcards, group by sell_id, colorize.
-  (mito:select-dao 'sell
-    (sxql:order-by `(,order :created-at))))
+#+(or)
+(make-sale :books '(((:ID . 45) (:QUANTITY . 2) (:PRICE . 13.72))
+                    ((:ID . 15) (:QUANTITY . 2) (:PRICE . 41))))
 
-(defun find-soldcards (&key (order :asc) (limit 400))
+(defun find-sell (&key (order :asc) (limit 400) max-date min-date)
+  "Find sell objects.
+
+  Return: a list of SELL objects
+
+  ORDER: :asc or :desc
+  LIMIT: maximum objects to return (defaults to 400).
+
+  MIN-DATE: a local-time date. Find the sells from and including this date.
+  MAX-DATE: find sells up to and including this date."
+  ;; TODO: search soldcards, group by sell_id, colorize.
+  (mito:select-dao 'sell
+                   (when min-date
+                     (sxql:where (:>= :created-at min-date)))
+                   (when max-date
+                     (sxql:where (:<= :created-at
+                                      ;; need to add one day to include today
+                                      (local-time:timestamp+ max-date 1 :day))))
+                   (sxql:order-by `(,order :created-at))
+                   (sxql:limit limit)))
+
+(defun find-soldcards (&key (order :asc) (limit 400) sell sell-id)
   "Find soldcards objects (sells details).
 
-  Limit results to LIMIT (last 400 transactions by default)."
-  ;TODO: views to show by month and day, with no limit..
+  If SELL or SELL-ID is not nil, filter by the sell ID.
+
+  Limit results to LIMIT (last 400 transactions by default).
+
+  Return: a list of SOLD-CARDS objects.
+
+  Example:
+
+  (find-soldcards :order :desc :sell-id 19)"
+  ;; TODO: views to show by month and day, with no limit..
   (mito:select-dao 'sold-cards
-    (sxql:order-by `(,order :created_at))
-    (sxql:limit limit)))
+                   (when sell-id
+                     (sxql:where (:= :sell-id sell-id)))
+                   (when sell
+                     (sxql:where (:= :sell sell)))
+                   (sxql:order-by `(,order :created_at))
+                   (sxql:limit limit)))
