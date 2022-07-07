@@ -41,6 +41,7 @@
     :col-type book)
 
    (sell
+    :accessor sell
     :col-type sell)
 
    (quantity
