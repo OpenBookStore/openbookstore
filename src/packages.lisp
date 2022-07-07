@@ -1,6 +1,6 @@
 ;; XXX: all packages are not here.
 
-(defpackage bookshops.models
+(uiop:define-package bookshops.models
   (:use :cl
         :cl-ansi-text)
 
