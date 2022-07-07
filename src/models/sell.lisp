@@ -97,11 +97,23 @@
     :col-type :boolean
     :documentation "If false, show this transaction in the history but don't count it in the revenue."))
 
-   (:metaclass mito:dao-table-class)
-   (:documentation "Payment method that was used to complete a Sell."))
+  (:metaclass mito:dao-table-class)
+  (:documentation "Payment method that was used to complete a Sell."))
 
 (defun make-sale (&key books payment client date)
-  (let* ((sale (make-instance 'sell :client client :date date))
+  "Create one sell with the given books (list of alist with ID, PRICE, QUANTITY).
+  For each book, create a SOLD-CARD row.
+
+  Only BOOKs is required.
+
+  Example:
+
+  (make-sale :books '(((:ID . 45) (:QUANTITY . 2) (:PRICE . 13.72))
+          ((:ID . 15) (:QUANTITY . 2) (:PRICE . 41))))
+
+  "
+  (let* ((date (or date (local-time:now)))
+         (sale (make-instance 'sell :client client :date date))
          (payment (make-instance 'payment-method :sell sale :name payment))
          (bookobjs (mapcar (lambda (book)
                              (let ((card (find-by :id (access book :id))))
