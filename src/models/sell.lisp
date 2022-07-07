@@ -27,6 +27,14 @@
   (:metaclass mito:dao-table-class)
   (:documentation "Represents a sale on a specific date of a number of books to a client."))
 
+(defmethod print-object ((obj sell) stream)
+  (print-unreadable-object (obj stream :type t)
+    (format stream "#~a"
+            (or
+             ;; let's be defensive!
+             (ignore-errors (mito:object-id obj))
+             "<error getting object ID>"))))
+
 (defclass sold-cards ()
   ((card
     :accessor card
@@ -57,6 +65,19 @@
 
   (:metaclass mito:dao-table-class)
   (:documentation "A many-to-many connection table representing books sold. Card field is a link to the book that was sold. Sell field is a link to the transaction in which it was sold."))
+
+(defmethod print-object ((obj sold-cards) stream)
+  (print-unreadable-object (obj stream :type t)
+    (with-accessors ((card card))
+        obj
+      (format stream "#~a for card ~a (#~a)"
+              (mito:object-id obj)
+              (or
+               (ignore-errors (title card))
+               "<error getting card's title !>")
+              (or
+               (ignore-errors (mito:object-id card))
+               "<error getting the card ID!>")))))
 
 (defclass payment-method ()
   ((sell
