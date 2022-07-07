@@ -7,6 +7,12 @@
   (:import-from :access
                 :access)
 
+  (:import-from :parse-number
+                :parse-number)
+
+  (:import-from :serapeum
+                :dict)
+
   (:export :connect
            :add-to
            :ensure-tables-exist

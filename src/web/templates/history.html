@@ -37,30 +37,40 @@
 
     <tbody>
 
-  {% for soldcard in soldcards %}
-  <tr data-sell-id="{{ soldcard.sell-id }}">
+  {% for sell/soldcard in data %}
+  <tr data-sell-id="{{ sell/soldcard.sell-id }}"
+      {% if sell/soldcard.item-group %}
+      style="background-color: white"
+      {% else %}
+      style="background-color: lightgrey"
+      {% endif %}
+      >
     <td>
-      {{ soldcard.id }}
+      {% if sell/soldcard.first-sell-item %}
+      {{ sell/soldcard.sell-id }}
+      {% endif %}
     </td>
 
     <td>
-      {{ soldcard.created-at | date:(:year "/" (:month 2) "/" (:day 2) " " (:hour 2) ":" (:min 2)) }}
+      {% if sell/soldcard.first-sell-item %}
+      {{ sell/soldcard.created-at | date:(:year "/" (:month 2) "/" (:day 2) " " (:hour 2) ":" (:min 2)) }}
+      {% endif %}
     </td>
 
     <td>
-      <a href="{{ soldcard.card | url }}"> {{ soldcard.card.title }} </a>
+      <a href="{{ sell/soldcard.soldcard.card | url }}"> {{ sell/soldcard.soldcard.card.title }} </a>
     </td>
 
     <td>
-      {{ soldcard.card.publisher }}
+      {{ sell/soldcard.soldcard.card.publisher }}
     </td>
 
     <td>
-      {{ soldcard.sold-price | price }}€
+      {{ sell/soldcard.soldcard.sold-price | price }}€
     </td>
 
     <td>
-      x{{ soldcard.quantity }}
+      x{{ sell/soldcard.soldcard.quantity }}
     </td>
 
   </tr>

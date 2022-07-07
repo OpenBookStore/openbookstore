@@ -319,10 +319,13 @@ Slime reminders:
 (defroute history-route ("/history" :decorators ((@check-roles history-route))
                                     :method :get)
     ()  ;; args
-  (render-template* +history.html+ nil
-                    :route "/history"
-                    :title "History - OpenBookstore"
-                    :soldcards (models::find-soldcards :order :desc)))
+  (let ((data (models::group-sells-and-soldcards :order :desc
+                                                 :min-date (utils:yesterday)
+                                                 :max-date (local-time:today))))
+    (render-template* +history.html+ nil
+                      :route "/history"
+                      :title "History - OpenBookstore"
+                      :data data)))
 
 (bookshops.models:define-role-access loans-route :view :editor)
 (defroute loans-route ("/stock/loans" :decorators ((@check-roles history-route))

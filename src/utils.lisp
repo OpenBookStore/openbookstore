@@ -10,7 +10,12 @@
            #:format-date
            #:i18n-load
            #:_
-           #:parse-iso-date)
+           #:parse-iso-date
+
+           ;; local-time extras
+           #:yesterday
+           #:tomorrow
+           )
   (:documentation "Utilities that do not depend on models."))
 
 (in-package :bookshops.utils)
@@ -82,3 +87,12 @@
 
 (defun asciify (string)
   (str:downcase (slug:asciify string)))
+
+
+(defun yesterday ()
+  "Returns a timestamp representing the day before today."
+  (local-time:timestamp- (local-time:today) 1 :day))
+
+(defun tomorrow ()
+  "Returns a timestamp representing the day after today."
+  (local-time:timestamp+ (local-time:today) 1 :day))

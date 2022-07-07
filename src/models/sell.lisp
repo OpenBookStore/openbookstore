@@ -181,3 +181,33 @@
                      (sxql:where (:= :sell sell)))
                    (sxql:order-by `(,order :created_at))
                    (sxql:limit limit)))
+
+(defun group-sells-and-soldcards (&key (order :asc) (limit 400) min-date max-date)
+  "Find soldcard objects between MIN-DATE and MAX-DATE (both including).
+  The goal is to show sells in the history: one line per sold card, but they should be grouped by sells.
+  We want to show the sell ID only once.
+
+  Return a list of dict with:
+  - sell-id
+  - sell object
+  - created-ad: date of the sell
+  - soldcard: the soldcard objects (it's about 1 sold item), which contains the price sold, the quantity sold, etc.
+  - first-sell-item: used for display. We want to show the sell ID and date only for the first soldcard of this sell.
+  - item-group: T or NIL, used for display (different colors for each sell)."
+  ;; NOTE: we don't have a backlink from a SELL to its SOLD-CARDS ?
+  (let ((sells (find-sell :order order :limit limit :min-date min-date :max-date max-date)))
+    (alexandria:flatten
+     (loop for sell in sells
+        for sell-id = (mito:object-id sell)
+        for item-group = t then (not item-group) ;; used to color each group of sells.
+        collect (loop for soldcard in (find-soldcards :sell-id (mito:object-id sell))
+                   for first-sell-item = t then nil
+                   collect (dict :sell-id sell-id
+                                 :first-sell-item first-sell-item
+                                 :item-group item-group
+                                 :sell sell
+                                 :created-at (mito:object-created-at sell)
+                                 :soldcard soldcard))))))
+
+#+(or)
+(group-sells-and-soldcards :min-date (utils:yesterday) :max-date (local-time:today))
