@@ -225,7 +225,8 @@ const sellPage = {
                     bk = {
                         id: book.card.id,
                         price: book.card.price,
-                        quantity: book.quantity
+                        quantity: book.quantity,
+                        url: book.url
                     };
                     books.push(bk);
                 }
@@ -274,6 +275,7 @@ const sellPage = {
                                         show: true,
                                         quantity: 1,
                                         card: null,
+                                        url: "#",
                                         error: null};
                             if (data && data.hasOwnProperty("card")) {
                                 book.card = data.card;
@@ -303,7 +305,6 @@ const sellPage = {
                         this.newBook({ card: data.card, input });
                     } else if (data && data.hasOwnProperty("options")) {
                         // We can get a list of results.
-                        // console.log("-- options: ", data.options);  // we need lowercase
                         this.suggestions = [];
                         data.options.forEach((item) => this.suggestions.push(item));
                     } else if (data && data.hasOwnProperty("error")) {
@@ -324,7 +325,7 @@ const sellPage = {
             // The item to sell is selected amongst the result list.
             if (item) {
                 // console.log("--- itemSelected: ", item, item.title, item.url, "card: ", item.card);
-                this.newBook({ card: item.card, input: this.search });
+                this.newBook({ card: item.card, input: this.search, url: item.url });
             }
         },
 

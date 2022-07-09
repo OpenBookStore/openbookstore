@@ -279,7 +279,7 @@ You can scan any book in the search input that is already selected,
 and you can search books already in your stock with the keyboard (3
 letters are necessary to trigger a search).
 
-Once you're ready, click a paymenth method button to validate the transaction.
+Once you're ready, click a payment method button to validate the transaction.
 
 ![](sell.png)
 

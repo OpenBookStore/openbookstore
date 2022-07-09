@@ -55,7 +55,10 @@
           <div v-for="(book, index) in books" :key="index">
             <div class="box content" v-if="book.show">
 
-              <div v-if="book.card" class="title is-6"> {$ {{ book.card.title }} $}
+              <div v-if="book.card" class="title is-6">
+                <a v-bind:href="book.url" target="_blank">
+                   {$ {{ book.card.title }} $}
+                </a>
               </div>
 
               <div class="tile is-ancestor">
