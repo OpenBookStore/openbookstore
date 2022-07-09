@@ -3,6 +3,9 @@
 |#
 
 (require "asdf")  ;; for CI
+
+(uiop:format! t "~&------- ASDF version: ~a~&" (asdf:asdf-version))
+
 (asdf:defsystem "bookshops"
   :version "0.1.1"
   :author "vindarel"
