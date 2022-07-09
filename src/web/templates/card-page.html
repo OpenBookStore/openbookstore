@@ -54,7 +54,12 @@
                 </div>
 
                 <div id="quantity">
-                    En stock: {{ card | quantity }}
+                    En stock:
+
+                    <span class="tag level-item
+{{ card | quantity | quantity-style:(:positive "is-success" :negative "is-danger is-light" :zero "") }}">
+                  x {{ card | quantity }}</span>
+
                 </div>
 
                 <table id="place-copies-table" class="table">
