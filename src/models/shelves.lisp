@@ -27,7 +27,7 @@
   (print-unreadable-object (obj stream :type t)
     (with-accessors ((name name))
         obj
-      (format stream "~a" name))))
+      (format stream "~a - ~a" (mito:object-id obj) name))))
 
 (defun make-shelf (name)
   "Save a new shelf in DB.

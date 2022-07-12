@@ -43,11 +43,25 @@
                   class="input"
                   placeholder="authors"/>
             </div>
+
             <div class="control">
               <label class="label"> Price </label>
               <input type="text" for="price" name="price" id="price"
                   class="input"
                   placeholder="price"/>
+            </div>
+
+            <div class="control">
+              <label class="label"> Shelf </label>
+              <div  class="select">
+                <select id="shelf-id" name="shelf-id" for="shelf-id">
+                  <option value="">  </option>
+                  {% for shelf in shelves %}
+                  <option value="{{ shelf.id }}"> {{ shelf.name }} </option>
+                  {% endfor %}
+                </select>
+              </div>
+
             </div>
             <!-- <input type="text" for="title" name="title" id="title" placeholder="title"/> -->
             <input type="submit" value="Save" class="button">

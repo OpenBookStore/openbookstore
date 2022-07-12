@@ -276,23 +276,27 @@ Slime reminders:
       (t
        (render-template* +404.html+ nil)))))
 
-(bookshops.models:define-role-access card-create-route :view :editor)
+(models:define-role-access card-create-route :view :editor)
 (defroute card-create-route ("/card/create" :method :get
                                             :decorators ((@check-roles card-create-route)))
     ()
   ;; see also: the API for POST updates.
-  (describe (hunchentoot:start-session) t) ;; XXX debug
+  ;; (describe (hunchentoot:start-session) t)
   ;; (log:info (bookshops.messages::add-message "Hello message :)"))
   (render-template* +card-create.html+ nil
+                    :shelves (models::find-shelf)
                     :messages/status (bookshops.messages:get-message/status)))
 
+(models:define-role-access card-create/post-route :view :editor)
 (defroute card-create/post-route ("/card/create" :method :post
                                                  :decorators ((@check-roles card-create-route)))
     ;; title is mandatory, the rest is optional.
-    (title isbn price authors)
+    (title isbn price authors shelf-id)
+
   (when (str:blankp title)
     (bookshops.messages::add-message "Please enter a title" :status :warning)
     (hunchentoot:redirect "/card/create"))
+
   ;XXX: handle more than one validation message.
   (when (and (str:non-blank-string-p isbn)
              (not (bookshops.utils:isbn-p isbn)))
@@ -302,12 +306,13 @@ Slime reminders:
       (let ((book (models:make-book :title title
                                     :isbn (bookshops.utils:clean-isbn isbn)
                                     :authors authors
+                                    :shelf-id shelf-id
                                     :price (utils:ensure-float price))))
         (mito:save-dao book)
         (bookshops.messages:add-message "The book was created succesfully.")
         (hunchentoot:redirect "/card/create"))
     (error (c)
-                                        ;XXX: 404 handled by hunchentoot
+      ;; XXX: 404 handled by hunchentoot
       (format *error-output* c))))
 
 (bookshops.models:define-role-access receive-route :view :editor)

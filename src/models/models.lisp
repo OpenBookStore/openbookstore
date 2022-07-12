@@ -468,22 +468,30 @@ searches. This method was thought the most portable.
       (format t "There is no such book with id ~a~&" bk)))
 
 (defun make-book (&key title isbn authors details-url cover-url publisher
-                    date-publication price datasource)
-  "Create a Book instance.
-  Authors are saved as a string, not as related objects."
-  (make-instance 'book
-                 :datasource datasource
-                 :details-url details-url
-                 :cover-url cover-url
-                 :title title
-                 :title-ascii (bookshops.utils::asciify title)
-                 :isbn isbn
-                 :authors authors
-                 :authors-ascii (bookshops.utils::asciify authors)
-                 :publisher publisher
-                 :publisher-ascii (bookshops.utils::asciify publisher)
-                 :price (utils:ensure-float price)
-                 :date-publication date-publication))
+                    date-publication price datasource  shelf-id)
+  "Create a Book instance. Not yet saved on DB. XXX: my newer methods are not consistent.
+  Authors are saved as a string, not as related objects.
+
+  - shelf: get existing shelf."
+  (let ((shelf-obj (when shelf-id (find-shelf-by :id shelf-id)))
+        (book (make-instance 'book
+                             :datasource datasource
+                             :details-url details-url
+                             :cover-url cover-url
+                             :title title
+                             :title-ascii (bookshops.utils::asciify title)
+                             :isbn isbn
+                             :authors authors
+                             :authors-ascii (bookshops.utils::asciify authors)
+                             :publisher publisher
+                             :publisher-ascii (bookshops.utils::asciify publisher)
+                             :price (utils:ensure-float price)
+                             :date-publication date-publication)))
+
+    (when (and shelf-id shelf-obj)
+      (setf (shelf book) shelf-obj))
+
+    book))
 
 (defun create-book (&rest initargs)
   "Create a book and save it. CAUTION: you must provide title-ascii and authors-ascii.
