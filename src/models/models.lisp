@@ -129,6 +129,12 @@ searches. This method was thought the most portable.
     :col-type (or (:varchar 128) :null)
     :documentation "Normalized representation of authors, without accentuated letters.")
 
+   (shelf
+    :accessor shelf
+    :initform nil
+    :col-type (or :null shelf)
+    :documentation "Shelf")
+
    (cover-url
     :accessor cover-url
     :initarg :cover-url
@@ -183,9 +189,9 @@ searches. This method was thought the most portable.
 
 (defmethod print-object ((book book) stream)
   (print-unreadable-object (book stream :type t)
-    (with-accessors ((title title))
+    (with-accessors ((title title) (shelf shelf))
         book
-      (format stream "~a" title))))
+      (format stream "~a. SHELF: ~a" title (name shelf)))))
 
 (defun pprint-books (results)
   "Pretty print this list of books, as rows."

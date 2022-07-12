@@ -16,6 +16,7 @@
                          role-copy
                          sell
                          sold-cards
+                         shelf
                          payment-method
 ))
 

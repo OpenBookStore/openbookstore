@@ -76,6 +76,7 @@
                         ((:file "models")
                          (:file "models-utils")
                          (:file "baskets")
+                         (:file "shelves")
                          (:file "contacts")
                          (:file "sell")))
 
