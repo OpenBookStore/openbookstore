@@ -64,6 +64,10 @@
     (sxql:limit limit)
     (sxql:order-by `(,order ,order-by))))
 
+(defun find-shelf-by (key val)
+  (when val
+    (mito:find-dao 'shelf key val)))
+
 ;;; Devel
 (defun ensure-shelf-name-ascii ()
   "Parse all rows and ensure they have an ascii name.

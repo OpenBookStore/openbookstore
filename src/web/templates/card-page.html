@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+<!-- Some JS is loaded in the end. See card-page.js -->
+
 {% block content %}
 
 <div class="container is-fullheight" style="margin-bottom: 10em">
@@ -75,6 +77,36 @@
                     {% endfor %}
                 </table>
 
+
+                <table class="table is-narrow">
+                  <tbody>
+                    <tr>
+                      <td> Shelf </td>
+                      <td>
+                        {% if card.shelf %}
+                        {{ card.shelf.name }}
+                        {% else %}
+                        Pas de rayon
+                        {% endif %}
+
+                        <div hidden="true" data-shelves="{{ shelves }}"></div>
+                        <select id="shelf-select" name="shelves">
+                            <option value="">  </option>
+                            {% for shelf in shelves %}
+                            {% if shelf.id == card.shelf.id %}
+                            <option value="{{ shelf.id }}" selected> {{ shelf.name }} </option>
+                            {% else %}
+                            <option value="{{ shelf.id }}"> {{ shelf.name }} </option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+
+                       </td>
+                    </tr>
+
+                  </tbody>
+                </table>
+
                 {% block subinfo %}
                 <!-- TODO this is a bodge around no in boolean operator for if in djula -->
                 {% for role in current-user-roles %}
@@ -113,6 +145,9 @@
     </div>
 </div>
 
+<!-- Load JavaScript for this page: handle a change of the shelf select -->
+<script defer src="/static/card-page.js"></script>
+
 {% block script %}
 <script>
  window.addEventListener('load', (event) => {
@@ -121,6 +156,7 @@
      quantityInput.setSelectionRange(0, -1);
  });
 </script>
+
 {% endblock script %}
 
 {% endblock %}

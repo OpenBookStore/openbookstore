@@ -244,7 +244,7 @@ Slime reminders:
     (redirect-to-search-result referer-route q book)))
 
 (bookshops.models:define-role-access add-or-create-route :view :visitor)
-(defroute card-page ("/card/:slug" :decorators ((@check-roles add-or-create-route)))
+(defroute route-card-page ("/card/:slug" :method :GET :decorators ((@check-roles add-or-create-route)))
     (&get raw)
   "Show a card.
 
@@ -252,7 +252,8 @@ Slime reminders:
   (let* ((card-id (ignore-errors
                     (parse-integer (first (str:split "-" slug)))))
          (card (when card-id
-                 (models:find-by :id card-id))))
+                 (models:find-by :id card-id)))
+         (shelves (models::find-shelf)))
     (cond
       ((null card-id)
        (render-template* +404.html+ nil))
@@ -262,6 +263,7 @@ Slime reminders:
                          :route "/stock"
                          :card card
                          :places-copies (models::book-places-quantities card)
+                         :shelves shelves
                          :raw raw))
       (t
        (render-template* +404.html+ nil)))))
@@ -270,6 +272,7 @@ Slime reminders:
 (defroute card-create-route ("/card/create" :method :get
                                             :decorators ((@check-roles card-create-route)))
     ()
+  ;; see also: the API for POST updates.
   (describe (hunchentoot:start-session) t) ;; XXX debug
   ;; (log:info (bookshops.messages::add-message "Hello message :)"))
   (render-template* +card-create.html+ nil

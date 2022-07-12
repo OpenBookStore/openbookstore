@@ -6,17 +6,17 @@
 (defroute api-card-add-one ("/api/card/add" :method :post)
     (&post (id :parameter-type 'integer))
   (log:debug "Requested id: ~a.~&" id)
-  (let ((card (bookshops.models:find-by :id id)))
+  (let ((card (models:find-by :id id)))
     (assert card)
     (princ-to-string
-     (bookshops.models:add-to (bookshops.models:default-place) card))))
+     (models:add-to (models:default-place) card))))
 
 (defroute api-card-remove-one ("/api/card/remove" :method :post)
     (&post (id :parameter-type 'integer))
-  (let ((card (bookshops.models:find-by :id id)))
+  (let ((card (models:find-by :id id)))
     (assert card)
     (princ-to-string
-     (bookshops.models:add-to (bookshops.models:default-place)
+     (models:add-to (models:default-place)
                               card
                               :quantity -1))))
 
@@ -42,12 +42,30 @@
               (list :counter counter
                     :card "no isbn")))))
 
-(bookshops.models:define-role-access api-quick-search :view :editor)
+(models:define-role-access route-card-edit :view :editor)
+(defroute route-card-edit ("/api/card/update" :method :POST
+                                              :decorators ((easy-routes:@json)))
+    (&post (card-id :real-name "cardId" :parameter-type 'integer)
+           (shelf-id :real-name "shelfId" :parameter-type 'integer))
+  "Update a Card.
+  Works when we choose the blank option from the HTML select too, yeah:
+  FIND-SHELF-BY :id NIL returns NIL, and it works. Handy."
+  (log:info card-id shelf-id)
+  (let ((card (models:find-by :id card-id))
+        (shelf (models::find-shelf-by :id shelf-id)))
+    (log:info "existing card: " card)
+    (setf (models::shelf card) shelf)
+    (log:info "new card: " card)
+    (mito:save-dao card)
+
+    (cl-json:encode-json-to-string (dict "status" 200))))
+
+(models:define-role-access api-quick-search :view :editor)
 (defroute api-quick-search
     ("/api/quick-search" :decorators ((@check-roles stock-route) (easy-routes:@json))) (&get q)
   (cl-json:encode-json-plist-to-string (quick-search q)))
 
-;;(bookshops.models:define-role-access api-sell-search :view :editor)
+;;(models:define-role-access api-sell-search :view :editor)
 (defroute api-sell-search
     ("/api/sell-search" :decorators ((@check-roles stock-route) (easy-routes:@json))) (&get q)
   (cl-json:encode-json-plist-to-string (sell-search q)))
@@ -93,7 +111,7 @@
            books))
   (list :success t))
 
-(bookshops.models:define-role-access api-sell-complete :view :editor)
+(models:define-role-access api-sell-complete :view :editor)
 (defroute api-sell-complete
     ("/api/sell-complete/" :method :post :decorators ((@check-roles stock-route) (easy-routes:@json)))
     (&post (payment-method-id :real-name "paymentMethodId")
