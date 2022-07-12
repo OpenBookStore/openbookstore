@@ -39,13 +39,15 @@
                         <p class="">{{ card.publisher | capfirst }}</p>
                         {% endif %}
 
+                        <!-- -
                         {% if card.shelf %}
                         <p>
-                            <a href="/search?rayon={{ card.shelf_id }}">
-                                <span class="tag" title="{{ card.shelf }}"> {{ card.shelf | truncatechars:27 }} </span>
+                            <a href="/search?rayon={{ card.shelf.id }}">
+                              <span class="tag" title="{{ card.shelf }}"> {{ card.shelf.name | truncatechars:27 }} </span>
                             </a>
                         </p>
                         {% endif %}
+                        -->
 
                         {% if card.isbn %}
                         <div class="has-text-grey-light"> {{ card.isbn }} </div>
@@ -108,7 +110,8 @@
                         <!-- </a> -->
                         <a color="black"
                             title="Search your stock"
-                            href="/stock?shelf={{ card.shelf.name-ascii }}"> Shelf </a>
+                            href="/stock?shelf={{ card.shelf.name-ascii }}"> Shelf
+                        </a>
                       </td>
                       <td>
 

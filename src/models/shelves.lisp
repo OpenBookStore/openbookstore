@@ -50,9 +50,13 @@
          (mito:save-dao (make-instance 'shelf :name name))
          t))))
 
-(defun find-shelf (&key query (order :asc) (order-by :name-ascii) (limit 50))
+(defun find-shelf (&key query
+                     name-ascii
+                     (order-by :name-ascii) (order :asc) (limit 50))
   "Return a list of book objects. If a query string is given, filter by the ascii name.
-  By default, sorted alphabetically by name-ascii."
+  By default, sorted alphabetically by name-ascii.
+
+  You don't really need to use name-ascii, use FIND-SHELF-BY :name-ascii val"
   ;; Took inspiration from find-book. Beginning to have a pattern…
   ;; Added order-by
   (assert (member order (list :asc :desc)) nil "~&Wrong :order choice. Please use either :asc or :desc (default). You might want to change the :order-by field.~&Example: (find-shelf :order: asc :order-by :name-ascii)~&")
@@ -61,6 +65,8 @@
       (sxql:where
        `(:and
          (:like :name-ascii ,(str:concat "%" (str:downcase query) "%")))))
+    (when (str:non-blank-string-p name-ascii)
+      (sxql:where (:= :name-ascii name-ascii)))
     (sxql:limit limit)
     (sxql:order-by `(,order ,order-by))))
 

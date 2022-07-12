@@ -150,15 +150,23 @@ Slime reminders:
 ;XXX: we don't need a similar define-role-access for each route.
 (bookshops.models:define-role-access stock-route :view :visitor)
 (defroute stock-route ("/stock" :decorators ((@check-roles stock-route)))
-    (&get q)
-  (let ((cards (cond
-                 ((utils:isbn-p q)
-                  (list (models:find-by :isbn q)))
-                 (q
-                  (models:find-book :query (bookshops.utils::asciify q)))
-                 (t
-                  ;; XXX: pagination
-                  (alexandria-2:subseq* (models:find-book) 0 50)))))
+    (&get q
+          (shelf-name-ascii :real-name "shelf"))
+  (let* ((shelf (when shelf-name-ascii
+                  (models::find-shelf-by :name-ascii shelf-name-ascii)))
+         ;; Had a doubt if the search returned a list…
+         ;; (shelf (if (and shelves (listp shelves)) ;; unsure… see find-by (for books) and this.
+         ;;            (first shelves)
+         ;;            shelves))
+         (cards (cond
+                  ((utils:isbn-p q)
+                   (list (models:find-by :isbn q)))
+                  (q
+                   (models:find-book :query (bookshops.utils::asciify q)
+                                     :shelf shelf))
+                  (t
+                   ;; XXX: pagination
+                   (alexandria-2:subseq* (models:find-book :shelf shelf) 0 50)))))
     (render-template* +stock.html+ nil
                       :route "/stock"
                       :title "Stock - OpenBookstore"
@@ -377,4 +385,5 @@ Slime reminders:
 ;;;;;;;;;;;;;;;
 (defun set-devel-profile ()
   "- interactive debugger"
+  (log:config :debug)
   (setf hunchentoot:*catch-errors-p* nil))

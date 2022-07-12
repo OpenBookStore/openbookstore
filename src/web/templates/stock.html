@@ -8,7 +8,16 @@
     <p>
         <span> {{ card.authors }} </span>
         <span> {{ card.isbn }} </span>
-        <span class="tag"> shelf: {{ card.shelf }} (todo) </span>
+        {% if card.shelf %}
+        <span class="tag">
+          <a color="black"
+             title="Search your stock"
+             href="/stock?shelf={{ card.shelf.name-ascii }}">
+                      {{ card.shelf.name }}
+          </a>
+
+        </span>
+        {% endif %}
         <span> {{ card.publisher | capfirst }} </span>
     </p>
 </div>
