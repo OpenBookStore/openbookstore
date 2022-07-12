@@ -1,8 +1,8 @@
 {% extends "card-page.html" %}
 
 {% block media_header %}
-<button class="button" onclick="card_add_one({{ card.id }})">+1</button>
 <button class="button" onclick="card_remove_one({{ card.id }})">-1</button>
+<button class="button" onclick="card_add_one({{ card.id }})">+1</button>
 {% endblock media_header %}
 
 {% block subinfo %}
@@ -21,6 +21,7 @@
 {{ block.super }}
 <script>
  async function card_add_one(id) {
+     // XXX: HTMX!
      let data = new FormData();
      data.set("id", id);
      const resp = await fetch('/api/card/add', {
