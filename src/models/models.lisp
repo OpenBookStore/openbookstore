@@ -538,17 +538,75 @@ searches. This method was thought the most portable.
               existing)
           bk))))
 
-(defun find-book (&key query (order :desc) (limit 50))
-  "Return a list of book objects. If a query string is given, filter by the ascii title and authors."
-  (mito:select-dao 'book
-    (when (str:non-blank-string-p query)
-      (sxql:where
-       `(:and
-         ,@(loop for word in (str:words query)
-              :collect `(:or (:like :title-ascii ,(str:concat "%" word "%"))
-                             (:like :authors-ascii ,(str:concat "%" word "%")))))))
-    (sxql:limit limit)
-    (sxql:order-by `(,order :created-at))))
+(defun %build-sxql-words-query (query)
+  "Return an expression for Mito's select-dao :when (using SxQL).
+  Used to compose queries in find-book.
+
+  We want to search the words of the query in both the title and the authors field.
+
+(%build-sxql-words-query \"hello world love\")
+;; =>
+(:AND
+ (:OR (:LIKE :TITLE-ASCII \"%hello%\") (:LIKE :AUTHORS-ASCII \"%hello%\"))
+ (:OR (:LIKE :TITLE-ASCII \"%world%\") (:LIKE :AUTHORS-ASCII \"%world%\")))
+ (:OR (:LIKE :TITLE-ASCII \"%love%\") (:LIKE :AUTHORS-ASCII \"%love%\")))
+"
+  (if query
+      `(:and
+        ,@(loop for word in (str:words query)
+             :collect `(:or (:like :title-ascii ,(str:concat "%" word "%"))
+                            (:like :authors-ascii ,(str:concat "%" word "%")))))
+      '()))
+
+(defun %build-sxql-shelf-query (shelf)
+  "If shelf is not NIL, return an expression for Mito's select-dao (using SxQL).
+  We search by the object ID."
+  ;; I was having a difficulty extending an existing macro.
+  ;; Instead of writing a bigger one, decomposing the query building made it easier.
+  (if shelf
+      `(:= :shelf_id ,(mito:object-id shelf))
+      '()))
+
+(defun %merge-queries (q1 q2)
+  "Merge two SxQL queries to one, joined by a AND.
+  One query can be NIL but one query must not be NIL, or else the SQL query will fail. Please do your checks beforehand.
+
+  Example:
+
+  (%merge-queries '(:= :SHELF_ID 1) '())
+  ;; => (:= :SHELF_ID 1)
+
+"
+  (cond
+    ((null q1)
+     q2)
+    ((null q2)
+     q1)
+    (t
+     `(:and ,q1 ,q2))))
+
+(defun find-book (&key query
+                    shelf
+                    (order :desc) (limit 50))
+  "Return a list of book objects.
+  If a query string is given, filter by the ascii title and authors.
+
+  Filter also by:
+
+  - shelf (object)
+
+  Parameters:
+
+  - order: :desc (default) or :asc
+  - limit: 50"
+  (let ((shelf-query (%build-sxql-shelf-query shelf))
+        (words-query (%build-sxql-words-query query)))
+    (mito:select-dao 'book
+      (when (or query shelf)
+        (sxql:where
+         (%merge-queries shelf-query words-query)))
+      (sxql:limit limit)
+      (sxql:order-by `(,order :created-at)))))
 
 (defun last-books (&key (order :asc))
   ""
