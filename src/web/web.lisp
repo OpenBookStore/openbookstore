@@ -323,7 +323,7 @@ Slime reminders:
                                     :method :get)
     ()  ;; args
   (let ((data (models::group-sells-and-soldcards :order :desc
-                                                 :min-date (utils:yesterday)
+                                                 :min-date (utils::x-days-ago 30)
                                                  :max-date (local-time:today))))
     (render-template* +history.html+ nil
                       :route "/history"

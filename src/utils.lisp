@@ -93,6 +93,9 @@
   "Returns a timestamp representing the day before today."
   (local-time:timestamp- (local-time:today) 1 :day))
 
+(defun x-days-ago (x)
+  (local-time:timestamp- (local-time:today) x :day))
+
 (defun tomorrow ()
   "Returns a timestamp representing the day after today."
   (local-time:timestamp+ (local-time:today) 1 :day))
