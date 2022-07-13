@@ -285,6 +285,7 @@ Slime reminders:
   ;; (log:info (bookshops.messages::add-message "Hello message :)"))
   (render-template* +card-create.html+ nil
                     :shelves (models::find-shelf)
+                    :title "New book - OpenBookstore"
                     :messages/status (bookshops.messages:get-message/status)))
 
 (models:define-role-access card-create/post-route :view :editor)
