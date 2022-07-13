@@ -10,7 +10,7 @@
   <form id="form-input" v-on:submit.prevent="addCard">
     <div class="field has-addons">
       <div class="control is-expanded">
-        <input class="input" type="text" placeholder="Search..."
+        <input class="input" type="text" placeholder="Scan ISBN..."
             autofocus
             v-model="input"
         >
@@ -27,19 +27,6 @@
 
   <div>
     <div v-for="card in reversedCards()" :key="counter">
-
-      <!-- Before fetch: display raw input -->
-      <div v-else class="card">
-        <div class="card-content">
-          <div class="media">
-            <div class="media-content">
-              <p class="title is-4"> {$ {{ card.entry }} $} </p>
-            </div>
-          </div>
-          <div class="content">
-          </div>
-        </div>
-      </div>
 
       <!-- After fetch, display the book data. -->
       <div v-if="card.entry.card && card.entry.card.title">
@@ -70,7 +57,20 @@
             </div>
           </div>
         </div>
+      </div>
 
+      <!-- Before fetch: display raw input -->
+      <!-- (place after "after" because of the v-else) -->
+      <div v-else class="card">
+        <div class="card-content">
+          <div class="media">
+            <div class="media-content">
+              <p class="title is-4"> {$ {{ card.entry }} $} </p>
+            </div>
+          </div>
+          <div class="content">
+          </div>
+        </div>
       </div>
 
     </div>

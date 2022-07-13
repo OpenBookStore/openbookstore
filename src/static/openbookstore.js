@@ -87,9 +87,23 @@ const receivePage = {
             // so than when the back-end returns our bibliographic data, we can update the
             // right entry (the one of this counter).
 
+            // Accept search with at least 3 characters (should be done with the widget)
             if (this.input.length < 3) {
                 return;
             }
+
+            // Only accept ISBNs.
+            // This reception view is to scan new books, so it makes little sense to
+            // have an autocomplete.
+            if (/^\d+$/.test(this.input) && this.input.length < 10) {  // at least 10, often 13
+                console.log("Waiting for full ISBN");
+                return;
+            }
+            if (/^[a-z]+/.test(this.input)) {
+                console.log("Input should be ISBN only");
+                return;
+            }
+
 
             const url = "/api/receive";
             this.counter += 1;
