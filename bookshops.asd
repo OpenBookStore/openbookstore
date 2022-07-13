@@ -46,6 +46,7 @@
                :cacle
                :cl-json
                :serapeum
+
                ;; web app
                :hunchentoot
                :easy-routes
@@ -68,15 +69,15 @@
                          ;; they depend on the above.
                          (:file "packages")
                          (:file "authentication")
-                         (:file "bookshops")
+                         (:file "bookshops") ;; depends on src/web
                          (:file "database")))
 
                (:module "src/models"
                         :components
-                        ((:file "models")
+                        ((:file "shelves")
+                         (:file "models")
                          (:file "models-utils")
                          (:file "baskets")
-                         (:file "shelves")
                          (:file "contacts")
                          (:file "sell")))
 

@@ -366,6 +366,7 @@ Slime reminders:
   ;; fix a puri bug. puri:parse-uri "/login?referer-route=/stock?q=lisp" fails,
   ;; it doesn't like the last ?. See https://gitlab.common-lisp.net/clpm/puri/-/issues/2
   (setf puri::*strict-illegal-query-characters*
+        ;; xxx: mmmh… not enough (any more)
         (remove #\? puri::*strict-illegal-query-characters*))
 
   ;; Watch out case output. This trips up JS.

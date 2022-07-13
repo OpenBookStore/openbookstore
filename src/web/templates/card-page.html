@@ -116,7 +116,8 @@
                       <td>
 
                         <div hidden="true" data-shelves="{{ shelves }}"></div>
-                        <select id="shelf-select" name="shelves">
+                        <div class="select is-small">
+                          <select id="shelf-select" name="shelves">
                             <option value="">  </option>
                             {% for shelf in shelves %}
                             {% if shelf.id == card.shelf.id %}
@@ -125,7 +126,8 @@
                             <option value="{{ shelf.id }}"> {{ shelf.name }} </option>
                             {% endif %}
                             {% endfor %}
-                        </select>
+                          </select>
+                        </div>
 
                        </td>
                     </tr>

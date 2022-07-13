@@ -58,7 +58,7 @@
   "When the currency symbol appears in the price, remove it.
   This should be useful during development of the datasources."
   (loop for card in (select-dao 'book
-                      (where (:like :price "%€%")))
+                      (sxql:where (:like :price "%€%")))
      ;; XXX: we should run 1 SQL query to update all fields.
      do (setf (price card)
               (str:trim (str:replace-all "€" "" (price card))))

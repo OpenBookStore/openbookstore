@@ -97,7 +97,8 @@ $ ./bookshops -i
 
 (defun remove-superuser (&optional name-or-email-input)
   "Command for remove a superuser for its name or email"
-  (let ((name-or-email name-or-email-input))
+  (let ((name-or-email name-or-email-input)
+        user)
     (if (not name-or-email)
         (setf name-or-email
               (rl:readline :prompt
