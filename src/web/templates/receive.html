@@ -11,6 +11,7 @@
     <div class="field has-addons">
       <div class="control is-expanded">
         <input class="input" type="text" placeholder="Search..."
+            autofocus
             v-model="input"
         >
       </div>
@@ -22,35 +23,10 @@
     </div>
   </form>
 
-  input: {$ {{ input }} $}
+  <!-- input: {$ {{ input }} $} -->
 
   <div>
     <div v-for="card in reversedCards()" :key="counter">
-
-      <!-- After fetch, display the book data. -->
-      <div v-if="card.entry.card && card.entry.card.title">
-        <div class="card">
-          <div class="card-content">
-            <div class="media">
-              <div class="media-left">
-                <figure class="image is-48x48">
-                  <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
-                </figure>
-              </div>
-              <div class="media-content">
-                <p class="title is-5"> {$ {{ card.entry.card.title }} $} </p>
-                <p class="subtitle is-6"> {$ {{ card.entry.card.publisher }} $} </p>
-                <p class="subtitle is-6"> {$ {{ card.entry.card.isbn }} $} </p>
-                <p class="subtitle is-6"> {$ {{ card.entry.card.price }} $} € </p>
-                <!-- <p class="subtitle is-6"> {$ {{ card.entry.card }} $}  </p> -->
-              </div>
-            </div>
-            <div class="content">
-            </div>
-          </div>
-        </div>
-
-      </div>
 
       <!-- Before fetch: display raw input -->
       <div v-else class="card">
@@ -63,6 +39,38 @@
           <div class="content">
           </div>
         </div>
+      </div>
+
+      <!-- After fetch, display the book data. -->
+      <div v-if="card.entry.card && card.entry.card.title">
+        <div class="card">
+          <div class="card-content">
+            <div class="media">
+              <div class="media-left">
+                <figure class="image is-48x48">
+                  <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                </figure>
+              </div>
+              <div class="media-content">
+                <p class="title is-5"> {$ {{ card.entry.card.title }} $}
+                </p>
+                <p class="subtitle is-6"> {$ {{ card.entry.card.publisher }} $} </p>
+                <p class="subtitle is-6"> {$ {{ card.entry.card.isbn }} $} </p>
+
+                <p v-if="card.entry.card.price" class="subtitle is-6">
+                  {$ {{ card.entry.card.price }} $} €
+                </p>
+                <p v-else class="is-danger">
+                  price missing
+                </p>
+                <!-- <p class="subtitle is-6"> {$ {{ card.entry.card }} $}  </p> -->
+              </div>
+            </div>
+            <div class="content">
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </div>

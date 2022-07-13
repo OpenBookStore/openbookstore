@@ -80,6 +80,17 @@ const receivePage = {
 
     methods: {
         addCard: function () {
+            // As soon as an ISBN is entered, we want to display it and give back control
+            // to the search input.
+            // We first display the ISBN, as is, and we are requesting the book data in the background.
+            // We associate the ISBN with an internal counter. We give this counter to the back-end too,
+            // so than when the back-end returns our bibliographic data, we can update the
+            // right entry (the one of this counter).
+
+            if (this.input.length < 3) {
+                return;
+            }
+
             const url = "/api/receive";
             this.counter += 1;
             const current_counter = this.counter;
@@ -89,7 +100,7 @@ const receivePage = {
             });
 
             // API call, async.
-            // /api/receive?isbn=978&counter=i
+            // /api/receive?q=978&counter=i
             // TODO: handle keyword search.
             //
             // On success:
@@ -98,7 +109,7 @@ const receivePage = {
             // TODO: On error, show an alert, show card holder of counter in red.
 
             async function postData(url, input) {
-                let body = "counter=" + current_counter + "&isbn=" + input;
+                let body = "counter=" + current_counter + "&q=" + input;
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
@@ -112,8 +123,8 @@ const receivePage = {
 
             let res = postData(url, this.input);
             res.then((text) => {
-                let res = _.find(this.cards, ['counter', current_counter]);
-                res.entry = text;
+                let card = _.find(this.cards, ['counter', current_counter]);
+                card.entry = text;
             });
 
             this.input = "";
@@ -124,7 +135,7 @@ const receivePage = {
             return this.cards.slice().reverse();
         },
     }
-}
+};
 
 // Mount on the right page.
 if (document.getElementById('vue-receive')) {

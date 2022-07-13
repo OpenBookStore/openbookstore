@@ -19,9 +19,10 @@
               )))
 
 (defun check-in-stock (data)
-  "DATA is not a list book objects (but currently a hash-table).
+  "DATA is not a list of book objects (but currently a hash-table).
   Add an IN-STOCK field by looking up there ISBN."
   ;; 1 query to get the ones in stock.
+  (setf data (alexandria:ensure-list data))
   (let* ((in-stock (mito:select-dao 'book
                      (sxql:where
                       (:in :isbn (print (remove-if #'null

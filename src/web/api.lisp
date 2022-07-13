@@ -22,8 +22,8 @@
 
 (defroute api-receive-card ("/api/receive" :method :post)
     (&post (counter :parameter-type 'integer)
-           isbn)
-  "Receive an ISBN, look for it and return the full data.
+           q)
+  "Receive a query (ISBN so far), look for it and return the full data.
   The counter is used on the client side to update the corresponding node."
   ;;Changes:
   ;; - Should add a card for new ISBNs automatically
@@ -33,14 +33,17 @@
   (setf (hunchentoot:content-type*) "application/json")
   ;; (sleep 1)
   (cl-json:encode-json-plist-to-string
-   (print (if (and isbn (not (str:blankp isbn)))
+   (print (if (and q
+                   (not (str:blankp q))
+                   (<= 3 (length q)))
               (list :counter counter
                     :card
-                    (models::check-in-stock
-                     (get-or-search-single isbn :remote-key nil :local-key nil
-                                         :save t )))
+                    (first              ; get-or-search-single = 1 result please.
+                     (models::check-in-stock ; gives back a list :/
+                      (get-or-search-single q :remote-key nil :local-key nil
+                                            :save t ))))
               (list :counter counter
-                    :card "no isbn")))))
+                    :card "bad query")))))
 
 (models:define-role-access route-card-edit :view :editor)
 (defroute route-card-edit ("/api/card/update" :method :POST

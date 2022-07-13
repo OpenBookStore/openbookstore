@@ -125,11 +125,12 @@ Cards will be created for remote finds if :save is set T."
                            &key
                            (:remote-key boolean) (:remote-isbn boolean) (:local-key boolean)
                            (:local-isbn boolean) (:save boolean))
-                          models:book) get-or-search-single))
+                          (or null models:book)) get-or-search-single))
 
 (defun get-or-search-single (q &key (remote-key t) (remote-isbn t)
                                  (local-key t) (local-isbn t) save)
   (let ((*single-result* t))
+    (setf q (str:trim q))
     (car (get-or-search q :remote-key remote-key :remote-isbn remote-isbn :local-key local-key
                       :local-isbn local-isbn :save save))))
 
