@@ -18,9 +18,12 @@
               :datasource (access elt :datasource)
               )))
 
-(defun check-in-stock (data)
+(defun check-in-stock (data &key shelf-id)
   "DATA is not a list of book objects (but currently a hash-table).
-  Add an IN-STOCK field by looking up there ISBN."
+  Add an IN-STOCK field by looking up there ISBN.
+
+  Set the book shelf (Receive page). Ideally, we would not modify it if it already has a shelf,
+AND we would send a notification to the user."
   ;; 1 query to get the ones in stock.
   (setf data (alexandria:ensure-list data))
   (let* ((in-stock (mito:select-dao 'book
@@ -28,7 +31,9 @@
                       (:in :isbn (print (remove-if #'null
                                                    (mapcar (lambda (it)
                                                              (access it :isbn))
-                                                           data))))))))
+                                                           data)))))))
+         (shelf (when shelf-id
+                  (bookshops.models::find-shelf-by :id shelf-id))))
     ;; Add :in-stock to matches only.
     (loop for book in (print in-stock)
        for elt = (find (isbn book) data
@@ -38,5 +43,25 @@
        do (setf (access elt :in-stock)
                 (quantity book))
        do (setf (access elt :id)
-                (mito:object-id book)))
+                (mito:object-id book))
+
+       ;; Set the shelf.
+       ;; In next iterations: don't change it if it is already set,
+       ;; AND display a message to te user.
+       do (if shelf
+              (progn
+                (log:info "--- this book already has a shelf. Btw, our shelf is " shelf)
+                (setf (shelf book)
+                      shelf)
+                (mito:save-dao book)
+                (setf (access elt :shelf)
+                      shelf))
+              (progn
+                (log:info "--- No shelf. Set it to " shelf)
+                (setf (shelf book)
+                      shelf)
+                (mito:save-dao book)
+                (setf (access elt :shelf)
+                      shelf)))
+         )
     data))

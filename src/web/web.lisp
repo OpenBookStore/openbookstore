@@ -43,6 +43,9 @@ Slime reminders:
 (djula:def-filter :url (card)
   (card-url card))
 
+(djula:def-filter :slugify (s)
+  (slug:slugify s))
+
 (djula:def-filter :quantity (card)
   (typecase card
     (models:book (models:quantity card))
@@ -85,6 +88,13 @@ Slime reminders:
 (djula:def-filter :print-book (book-id)
   (let ((obj (mito:find-dao 'models::book :id book-id)))
     (format nil "~a" (models::title obj))))
+
+(djula:def-filter :background-color (loop-index)
+  "Alternate between white and grey color background in a Djula loop.
+  For list of shelves."
+  (if (zerop (mod loop-index 2))
+      "white"
+      "#eee9e9"))
 
 ;;; Load templates.
 (defparameter +base.html+ (djula:compile-template* "base.html"))
@@ -322,7 +332,20 @@ Slime reminders:
     ()  ;; args
   (render-template* +receive.html+ nil
                     :route "/receive"
+                    :shelves (models::find-shelf)
                     :title "Receive - OpenBookstore"))
+
+(defroute receive-in-shelf-route ("/receive/:shelf-slug" :method :get
+                                    :decorators ((@check-roles receive-route)))
+    () ;; args
+  (let ((shelf (models::find-shelf-by :id
+                                      (first (str:split "-" shelf-slug)))))
+    (log:info shelf "request URI?" (hunchentoot:request-uri*))
+    (render-template* +receive.html+ nil
+                      :route "/receive"
+                      :current-shelf shelf
+                      :shelves (models::find-shelf)
+                      :title "Receive - OpenBookstore")))
 
 (bookshops.models:define-role-access sell-route :view :editor)
 (defroute sell-route ("/sell" :method :get

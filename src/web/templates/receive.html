@@ -6,76 +6,127 @@
 
 {% block content %}
 
-<div id="vue-receive">
-  <form id="form-input" v-on:submit.prevent="addCard">
-    <div class="field has-addons">
-      <div class="control is-expanded">
-        <input class="input" type="text" placeholder="Scan ISBN..."
-            autofocus
-            v-model="input"
-        >
-      </div>
-      <div class="control submit">
-        <a class="button is-info">
-          Search
-        </a>
-      </div>
+
+<div class="container">
+
+  <div class="columns">
+    <div class="column is-3">
+      <ul class="menu-list">
+
+        <li>
+          <a href="/receive"
+              {% if not current-shelf %}
+              class="is-active"
+              {% endif %}
+          >
+            All cards
+          </a></li>
+
+        {% for shelf in shelves %}
+
+        <li style="background-color: {{ forloop.counter0 | background-color }};">
+          <a href="/receive/{{ shelf.id }}-{{ shelf.name-ascii | slugify }}"
+              {% if current-shelf.id == shelf.id %}
+              class="is-active"
+              {% endif %}
+          >
+            {{ shelf.name }}
+          </a></li>
+
+        {% endfor %}
+
+      </ul>
     </div>
-  </form>
 
-  <!-- input: {$ {{ input }} $} -->
+    <div class="column">
+      <div id="vue-receive">
+        <form id="form-input" v-on:submit.prevent="addCard">
+          <div class="field has-addons">
+            <div class="control is-expanded">
+              <input class="input" type="text" placeholder="Scan ISBN..."
+                  autofocus
+                  v-model="input"
+              >
+            </div>
+            <div class="control submit">
+              <a class="button is-info">
+                Search
+              </a>
+            </div>
+          </div>
+        </form>
 
-  <div>
-    <div v-for="card in reversedCards()" :key="counter">
+        <!-- input: {$ {{ input }} $} -->
 
-      <!-- After fetch, display the book data. -->
-      <div v-if="card.entry.card && card.entry.card.title">
-        <div class="card">
-          <div class="card-content">
-            <div class="media">
-              <div class="media-left">
-                <figure class="image is-48x48">
-                  <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
-                </figure>
-              </div>
-              <div class="media-content">
-                <p class="title is-5"> {$ {{ card.entry.card.title }} $}
-                </p>
-                <p class="subtitle is-6"> {$ {{ card.entry.card.publisher }} $} </p>
-                <p class="subtitle is-6"> {$ {{ card.entry.card.isbn }} $} </p>
+        <div>
+          <div v-for="card in reversedCards()" :key="counter">
 
-                <p v-if="card.entry.card.price" class="subtitle is-6">
-                  {$ {{ card.entry.card.price }} $} €
-                </p>
-                <p v-else class="is-danger">
-                  price missing
-                </p>
-                <!-- <p class="subtitle is-6"> {$ {{ card.entry.card }} $}  </p> -->
+            <!-- After fetch, display the book data. -->
+            <div v-if="card.entry.card && card.entry.card.title">
+              <div class="card">
+                <div class="card-content">
+                  <div class="media">
+                    <div class="media-left">
+                      <figure class="image is-48x48">
+                        <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                      </figure>
+                    </div>
+                    <div class="media-content">
+                      <div class="title is-5">
+                        <a v-bind:href="card.entry.card.url" style="color: black;">
+                          {$ {{ card.entry.card.title }} $}
+                        </a>
+                      </div>
+                      <div class="has-text-grey-light"> {$ {{ card.entry.card.isbn }} $} </div>
+                      <span class="subtitle is-6"> {$ {{ card.entry.card.publisher }} $} </span>
+                      <span v-if="card.entry.card.shelf" class="tag">
+                        <a color="black"
+                            title="Search your stock"
+                            href="/stock?shelf={{ card.shelf.name-ascii }}">
+                          {$ {{ card.entry.card.shelf.name }} $}
+                        </a>
+                      </span>
+
+
+                      <p v-if="card.entry.card.price" class="subtitle is-6">
+                        {$ {{ card.entry.card.price }} $} €
+                      </p>
+                      <p v-else class="is-danger">
+                        price missing
+                      </p>
+                      <!-- <p class="subtitle is-6"> {$ {{ card.entry.card }} $}  </p> -->
+                    </div>
+                  </div>
+                  <div class="content">
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="content">
+
+            <!-- Before fetch: display raw input -->
+            <!-- (place after "after" because of the v-else) -->
+            <div v-else class="card">
+              <div class="card-content">
+                <div class="media">
+                  <div class="media-content">
+                    <p class="title is-4"> {$ {{ card.entry }} $} </p>
+                  </div>
+                </div>
+                <div class="content">
+                </div>
+              </div>
             </div>
+
           </div>
         </div>
-      </div>
 
-      <!-- Before fetch: display raw input -->
-      <!-- (place after "after" because of the v-else) -->
-      <div v-else class="card">
-        <div class="card-content">
-          <div class="media">
-            <div class="media-content">
-              <p class="title is-4"> {$ {{ card.entry }} $} </p>
-            </div>
-          </div>
-          <div class="content">
-          </div>
-        </div>
       </div>
+  </>
 
+  <!-- cols -->
     </div>
   </div>
-
 </div>
+
 
 {% endblock %}

@@ -22,6 +22,7 @@
 
 (defroute api-receive-card ("/api/receive" :method :post)
     (&post (counter :parameter-type 'integer)
+           (shelf-id :parameter-type 'integer :real-name "shelf_id")
            q)
   "Receive a query (ISBN so far), look for it and return the full data.
   The counter is used on the client side to update the corresponding node."
@@ -31,17 +32,20 @@
   ;; - Adding keyword search should be easy: just remove :remote-key and
   ;;   :local-key parameters below.
   (setf (hunchentoot:content-type*) "application/json")
-  ;; (sleep 1)
+  ;; (sleep 2)                             ;debug
+
+  (log:debug shelf-id)
   (cl-json:encode-json-plist-to-string
    (print (if (and q
                    (not (str:blankp q))
                    (<= 3 (length q)))
               (list :counter counter
                     :card
-                    (first              ; get-or-search-single = 1 result please.
+                    (first                   ; get-or-search-single = 1 result please.
                      (models::check-in-stock ; gives back a list :/
                       (get-or-search-single q :remote-key nil :local-key nil
-                                            :save t ))))
+                                            :save t )
+                      :shelf-id shelf-id)))
               (list :counter counter
                     :card "bad query")))))
 

@@ -6,6 +6,17 @@ Vue.use(Buefy.Button);
 Vue.use(Buefy.Datepicker);
 Vue.use(Buefy.Select);
 
+function url_id (url) {
+    // extract an id
+    let re = /\/(\d+)/;
+    let res = url.match(re);
+    if (res && res.length == 2) {
+        return res[1];
+    }
+    return null;
+};
+
+
 const qsearchData = {
     data() {
         return {
@@ -104,10 +115,14 @@ const receivePage = {
                 return;
             }
 
-
             const url = "/api/receive";
             this.counter += 1;
             const current_counter = this.counter;
+
+            // What is the current shelf?
+            let shelf_id = url_id(window.location.pathname);
+            console.log("--- current shelf: ", shelf_id);
+
             this.cards.push({
                 counter: this.counter,
                 entry: this.input,
@@ -123,7 +138,7 @@ const receivePage = {
             // TODO: On error, show an alert, show card holder of counter in red.
 
             async function postData(url, input) {
-                let body = "counter=" + current_counter + "&q=" + input;
+                let body = "counter=" + current_counter + "&q=" + input + "&shelf_id=" + shelf_id;
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
