@@ -105,6 +105,10 @@ Slime reminders:
 (defparameter +card-stock.html+ (djula:compile-template* "card-stock.html"))
 (defparameter +card-create.html+ (djula:compile-template* "card-create.html"))
 (defparameter +receive.html+ (djula:compile-template* "receive.html"))
+
+;; Testing the UI with HTMX websockets
+(defparameter +receive-ws.html+ (djula:compile-template* "receive-ws.html"))
+
 (defparameter +sell.html+ (djula:compile-template* "sell.html"))
 (defparameter +history.html+ (djula:compile-template* "history.html"))
 (defparameter +loans.html+ (djula:compile-template* "loans.html"))
@@ -346,6 +350,13 @@ Slime reminders:
                       :current-shelf shelf
                       :shelves (models::find-shelf)
                       :title "Receive - OpenBookstore")))
+
+(defroute receive-ws-route ("/receive-ws" :method :get
+                                    :decorators ((@check-roles receive-route)))
+    () ;; args
+  (render-template* +receive-ws.html+ nil
+                    :route "/receive-ws"
+                    :title "Receive WS Devel- OpenBookstore"))
 
 (bookshops.models:define-role-access sell-route :view :editor)
 (defroute sell-route ("/sell" :method :get

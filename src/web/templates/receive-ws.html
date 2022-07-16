@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+
+  <div hx-ext="ws" ws-connect="ws://localhost:4432/echo">
+    <div id="body"></div>
+    WS notifications here:
+
+    <form id="form" ws-send>
+        <input name="chat_message">
+    </form>
+
+    <div id="notifications"></div>
+
+    <br>
+    <div id="id-livres"></div>
+
+  </div>
+
+
+{% endblock %}
