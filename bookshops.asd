@@ -66,6 +66,7 @@
                         ;; stand-alone packages.
                         ((:file "parameters")
                          (:file "utils")
+                         (:file "termp")
                          ;; they depend on the above.
                          (:file "packages")
                          (:file "authentication")

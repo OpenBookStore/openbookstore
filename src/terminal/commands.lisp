@@ -13,6 +13,9 @@
                 ;; utils
                 print-quantity-red-green)
 
+  (:local-nicknames (#:models #:bookshops.models)
+                    (#:utils #:bookshops.utils))
+
   (:export :main
            :search
            :add
@@ -57,6 +60,23 @@
          end)
       (subseq seq start end)
       (subseq seq start (length seq))))
+
+(defun %format-required (s &key (stream nil))
+  "Add a red \"*\" and a \"?\" after this text."
+  (format nil (str:concat s
+                          (cl-ansi-text:red "*")
+                          " ? ")))
+
+(defun %readline (&key prompt)
+  "readline, calls either `rl:readline' on the terminal, or the built-in `readline' in Emacs/Slime (when not under a real terminal).
+  So we can test the book creation form from Emacs.
+
+  The terminal check is simple. See termp.lisp"
+  (if (utils::termp)
+      (rl:readline :prompt prompt)
+      (progn
+        (format t "~a" prompt)
+        (read-line))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Commands
@@ -218,18 +238,15 @@ By default, add to the stock. If an optional list name is given, add it to the l
   "Ask for data, return a book object, but don't save it on DB yet.
    Function used for book creation and edition."
   ;; Next, we want to create this form with class introspection and additional model fields (required, etc).
-  (let (title authors price quantity)
-    (setf title (rl:readline :prompt (format nil (str:concat "Title"
-                                                  (cl-ansi-text:red "*")
-                                                  " ? "))))
+    (setf title (%readline :prompt (%format-required "Title")))
     (when (str:blank? title)
       (error "The title field is mandatory, please try again."))
-    (setf authors (rl:readline :prompt "Authors ? (comma separated) "))
-    (setf price (rl:readline :prompt "Price ? [0]"))
+    (setf authors (%readline :prompt "Authors ? (comma separated) "))
+    (setf price (%readline :prompt "Price ? [0]"))
     (if (str:blank? price)
         (setf price 0)
         (setf price (parse-integer price)))
-    (setf quantity (rl:readline :prompt "Quantity ? [0]"))
+    (setf quantity (%readline :prompt "Quantity ? [0]"))
     (if (str:blank? quantity)
         (setf quantity 0)
         (setf quantity (parse-integer quantity)))
@@ -250,7 +267,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
 (defun create-place ()
   "Interactively create a new place."
   (let (name)
-    (setf name (rl:readline :prompt (str:concat "Name" (cl-ansi-text:red "*") " ? ")))
+    (setf name (%readline :prompt (%format-required "Name")))
     (when (str:blank? name)
       (error "The name field is mandatory, please try again."))
     (models::create-place name)))
