@@ -468,12 +468,15 @@ searches. This method was thought the most portable.
       (format t "There is no such book with id ~a~&" bk)))
 
 (defun make-book (&key title isbn authors details-url cover-url publisher
-                    date-publication price datasource  shelf-id)
+                    date-publication price datasource
+                    shelf-id shelf)
   "Create a Book instance. Not yet saved on DB. XXX: my newer methods are not consistent.
   Authors are saved as a string, not as related objects.
 
-  - shelf: get existing shelf."
-  (let ((shelf-obj (when shelf-id (find-shelf-by :id shelf-id)))
+  - shelf-id: get existing shelf from this ID
+  - shelf: shelf object."
+  (let ((shelf-obj (or shelf
+                       (when shelf-id (find-shelf-by :id shelf-id))))
         (book (make-instance 'book
                              :datasource datasource
                              :details-url details-url
@@ -488,7 +491,7 @@ searches. This method was thought the most portable.
                              :price (utils:ensure-float price)
                              :date-publication date-publication)))
 
-    (when (and shelf-id shelf-obj)
+    (when shelf-obj
       (setf (shelf book) shelf-obj))
 
     book))

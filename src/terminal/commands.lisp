@@ -238,19 +238,30 @@ By default, add to the stock. If an optional list name is given, add it to the l
   "Ask for data, return a book object, but don't save it on DB yet.
    Function used for book creation and edition."
   ;; Next, we want to create this form with class introspection and additional model fields (required, etc).
+  (let (title authors price quantity
+              shelf-name shelf)
+    ;; Mandatory title.
     (setf title (%readline :prompt (%format-required "Title")))
     (when (str:blank? title)
       (error "The title field is mandatory, please try again."))
+    ;; Author(s)
     (setf authors (%readline :prompt "Authors ? (comma separated) "))
+    ;; Price.
     (setf price (%readline :prompt "Price ? [0]"))
     (if (str:blank? price)
         (setf price 0)
         (setf price (parse-integer price)))
+    ;; Quantity in stock.
     (setf quantity (%readline :prompt "Quantity ? [0]"))
     (if (str:blank? quantity)
         (setf quantity 0)
         (setf quantity (parse-integer quantity)))
-    (models:make-book :title title :authors authors :price price)))
+    ;; Shelf (from existing).
+    (setf shelf-name (%readline :prompt "Shelf ? "))
+    (unless (str:blankp shelf-name)
+      (setf shelf (models::find-shelf-by :name shelf-name)))
+    (models:make-book :title title :authors authors :price price
+                      :shelf shelf)))
 
 (defun create-book ()
   "Create a new book."
