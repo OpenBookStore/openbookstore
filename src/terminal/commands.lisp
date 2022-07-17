@@ -67,16 +67,39 @@
                           (cl-ansi-text:red "*")
                           " ? ")))
 
-(defun %readline (&key prompt)
+(defun %readline (&key prompt add-history)
   "readline, calls either `rl:readline' on the terminal, or the built-in `readline' in Emacs/Slime (when not under a real terminal).
   So we can test the book creation form from Emacs.
 
   The terminal check is simple. See termp.lisp"
   (if (utils::termp)
-      (rl:readline :prompt prompt)
+      ;; add-history should add the user entry to history.
+      ;; Doesn't work for me??
+      (rl:readline :prompt prompt :add-history add-history)
       (progn
         (format t "~a" prompt)
         (read-line))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Helper macros
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmacro with-rl-completion (list &body body)
+  ;;XXX: backported to REPLIC, just wait a bit for QL propagation.
+  "Overwrite the completion canditates for the context of BODY.
+
+  We overwrite replic.completion's `*commands*' list. A \"command\" in the context of a readline
+app is just the first word typed at the prompt.
+
+  Example:
+
+  (with-rl-completion (models::shelves-names)
+   (%readline :prompt \"Choose shelf: \")
+
+  This allows to autocomplete the shelves names in the sub-prompt of
+the book creation form."
+  `(let ((replic.completion::*commands* ,list))
+     ,@body))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Commands
@@ -257,9 +280,12 @@ By default, add to the stock. If an optional list name is given, add it to the l
         (setf quantity 0)
         (setf quantity (parse-integer quantity)))
     ;; Shelf (from existing).
-    (setf shelf-name (%readline :prompt "Shelf ? "))
+    ;; Is it possible to have readline autocomplete our shelf names here?
+    ;; Yes :)
+    (with-rl-completion (models::shelves-names)
+     (setf shelf-name (%readline :prompt "Shelf ? ")))
     (unless (str:blankp shelf-name)
-      (setf shelf (models::find-shelf-by :name shelf-name)))
+      (setf shelf (models::find-shelf-by :name (str:trim shelf-name))))
     (models:make-book :title title :authors authors :price price
                       :shelf shelf)))
 

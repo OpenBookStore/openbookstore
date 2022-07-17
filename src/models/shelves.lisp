@@ -50,6 +50,11 @@
          (mito:save-dao (make-instance 'shelf :name name))
          t))))
 
+(defun shelves-names (&key query)
+  "Return a list of shelves names.
+  For the terminal autocompletion."
+  (mapcar #'name (find-shelf :query query)))
+
 (defun find-shelf (&key query
                      name-ascii
                      (order-by :name-ascii) (order :asc) (limit 50))
