@@ -282,7 +282,6 @@ Slime reminders:
       (card
        (render-template* +card-stock.html+ nil
                          :messages nil
-                         :route "/stock"
                          :card card
                          :places-copies (models::book-places-quantities card)
                          :shelves shelves
