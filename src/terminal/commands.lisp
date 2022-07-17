@@ -22,6 +22,7 @@
            :baskets
            :details
            :stock
+           :shelf
            :next
            :previous
            :stats
@@ -36,7 +37,10 @@
            :inside
            :fortune
            :*page-size*)
-  (:documentation "User commands for the terminal application."))
+  (:documentation "User commands for the terminal application.
+
+To create a new command, write a function and export it.
+To define its completion arguments, use `replic.completion:add-completion'."))
 
 (in-package :bookshops.commands)
 
@@ -63,9 +67,13 @@
 
 (defun %format-required (s &key (stream nil))
   "Add a red \"*\" and a \"?\" after this text."
-  (format nil (str:concat s
-                          (cl-ansi-text:red "*")
-                          " ? ")))
+  (format stream (str:concat s
+                             (cl-ansi-text:red "*")
+                             " ? ")))
+
+(defun %format-info (s &key (stream nil))
+  "Prepend a \"INFO:\" in cyan."
+  (uiop:format! stream "~&~a ~a~&" (cl-ansi-text:cyan "INFO:") s))
 
 (defun %readline (&key prompt add-history)
   "readline, calls either `rl:readline' on the terminal, or the built-in `readline' in Emacs/Slime (when not under a real terminal).
@@ -194,7 +202,7 @@ By default, add to the stock. If an optional list name is given, add it to the l
           *last-page*))
 
 (defun stock (&optional title-kw &rest rest)
-  "Show our stock (books in DB)."
+  "Show our stock (books in DB). With an argument, search books by title or author."
   (let* ((query (if title-kw (str:join "%" (cons title-kw rest))))
          (results (models:find-book :query query)))
     (setf *last-search* query)
@@ -210,10 +218,23 @@ By default, add to the stock. If an optional list name is given, add it to the l
       (setf pk (ignore-errors
                  (parse-integer pk/title))))
     (models:print-book-details (or pk pk/title))))
-
 ;; Get a list of ids of the last search.
 ;; Specially handy when we have filtered the search.
 (replic.completion:add-completion "details" #'last-page-book-ids)
+
+(defun shelf (&optional q &rest rest)
+  "Show the books in that shelf.
+  The optional argument is a shelf name."
+  (declare (ignorable rest))
+  ;; Not using multiple search terms here. We suppose we autocomplete a real name.
+  (unless q
+    (%format-info "You didn't specify a shelf. Use the auto-completion with the TAB key to choose one." :stream t))
+  (let* ((shelf (models::find-shelf-by :name (str:trim q)))
+         (results (models::find-book :shelf shelf)))
+    (setf *last-search* q)
+    (print-page results *current-page*)))
+;; Autocomplete shelves names.
+(replic.completion:add-completion "shelf" #'models::shelves-names)
 
 (defun stats (&optional arg)
   "Print some numbers about the stock.

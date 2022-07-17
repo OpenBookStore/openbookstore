@@ -256,7 +256,7 @@ searches. This method was thought the most portable.
   (print-unreadable-object (pc stream :type t)
     (with-slots (quantity) pc
       (format stream "book \"~a\" in \"~a\", x~a"
-              (str:prune 20 (title pc))
+              (str:shorten 20 (title pc))
               (name (place pc))
               quantity))))
 
@@ -411,11 +411,15 @@ searches. This method was thought the most portable.
   ;; xxx: print as a nice table.
   ;; ~30a = substring 20 + ansi colors markers.
   ;; ~12@a = justify on the right, count colors markers.
-  (format stream "~&~2@a- ~40a ~40a ~8@a x~12@a~&"
+  (format stream "~&~4@a- ~40a ~20a ~20a ~8@a x~6@a~&"
+          ;;        ^     ^ T  ^ A  ^ Shelf
+          ;; yeah I know.
           (prin1-to-string (mito:object-id book))
-          (cl-ansi-text:blue (str:prune 30 (title book)))
-          (str:prune 40 (or (authors book) ""))
-          (str:prune 15  (format nil "~$" (price book)))
+          ;; shorten to shorter string because of ansi color.
+          (cl-ansi-text:blue (str:shorten 30 (title book)))
+          (str:shorten 20 (or (authors book) ""))
+          (str:shorten 20 (or (name (shelf book)) ""))
+          (str:shorten 8  (format nil "~$" (price book)))
           (print-quantity-red-green (quantity book))))
 
 (defmethod print-obj ((obj book) &optional (stream t))
