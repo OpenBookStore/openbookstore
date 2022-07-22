@@ -1,6 +1,81 @@
 {% extends "search.html" %}
 
+<!-- The loop over results is factorized with the search.html template, but
+     the search form and the card presentation are different. So… not much
+     in common (any more).
+-->
+
+{% block search_form %}
+<form id="search-form" action="{{ route }}" style="margin-bottom: 3em;">
+
+  <div class="field">
+    <label class="label"> Search </label>
+
+    <div class="field has-addons">
+      <div class="control is-expanded">
+        <input class="input" name="q" type="text" {% if q %} value="{{ q }}" {% else %} placeholder="Search by title, author and ISBN" {% endif %}>
+      </div>
+      <div class="control">
+        <button type="submit" class="button is-primary"> Search </button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="field is-grouped is-grouped-multiline">
+
+    <div class="field has-addons">
+      <div hidden="true" data-shelves="{{ shelves }}"></div>
+      <div class="select is-link">
+        <select id="shelf" name="shelf"
+            onkeypress="if (event.keyCode == 13) {
+                 let form = document.getElementById('search-form');
+                 form.submit();
+            }"
+        >
+          <option value="-1" selected> Select shelf </option>
+          {% for shelf in shelves %}
+          {% if shelf.id == form-shelf.id %}
+          <option value="{{ shelf.name-ascii }}" selected> {{ shelf.name }} </option>
+          {% else %}
+          <option value="{{ shelf.name-ascii }}"> {{ shelf.name }} </option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Add grouped controls here
+
+           <p class="control">
+           <a class="button">
+           One
+           </a>
+           </p>
+      -->
+
+    </div>
+  </div>
+
+
+
+
+  {% if q and nb-results == 0 %}
+  <div class="columns is-centered">
+    <div class="is-half">
+      <p class="is-primary">
+        No results
+      </p>
+    </div>
+  </div>
+  {% endif %}
+
+</form>
+{% endblock search_form %}
+
 {% block card_content %}
+
+<!-- search results -->
+
 <div class="content">
     <a href="{{ card | url }}">
         <h4> {{ card.title }} </h4>

@@ -566,11 +566,10 @@ searches. This method was thought the most portable.
  (:OR (:LIKE :TITLE-ASCII \"%world%\") (:LIKE :AUTHORS-ASCII \"%world%\")))
  (:OR (:LIKE :TITLE-ASCII \"%love%\") (:LIKE :AUTHORS-ASCII \"%love%\")))
 "
-  (if query
-      `(:and
-        ,@(loop for word in (str:words query)
-             :collect `(:or (:like :title-ascii ,(str:concat "%" word "%"))
-                            (:like :authors-ascii ,(str:concat "%" word "%")))))
+  (if (str:non-blank-string-p query)
+      (loop for word in (str:words query)
+         :collect `(:or (:like :title-ascii ,(str:concat "%" word "%"))
+                        (:like :authors-ascii ,(str:concat "%" word "%"))))
       '()))
 
 (defun %build-sxql-shelf-query (shelf)
@@ -591,6 +590,11 @@ searches. This method was thought the most portable.
   (%merge-queries '(:= :SHELF_ID 1) '())
   ;; => (:= :SHELF_ID 1)
 
+  Search cards with shelf_id to 1 AND whose title contains \"alice\":
+  =>
+  (:and (:= :shelf_id 1)
+        (:like :title … ))
+
 "
   (cond
     ((null q1)
@@ -599,6 +603,67 @@ searches. This method was thought the most portable.
      q1)
     (t
      `(:and ,q1 ,q2))))
+
+(defun %merge-intersperse-and (q1 q2)
+  "For all clauses of q1, intersperse each one with a :AND and q2.
+  Join everything with a :AND.
+
+  Used to search for books by a shelf id AND by keywords of the titles (or the authors).
+
+  See quick test in source.
+
+  q1 is a list of clauses:
+
+  ((:OR (:LIKE :TITLE-ASCII \"%kan%\") (:LIKE :AUTHORS-ASCII \"%kan%\"))
+   (:OR (:LIKE :TITLE-ASCII \"%foo%\") (:LIKE :AUTHORS-ASCII \"%foo%\")))
+
+  thus it is not ready to be given to SxQL, we must join them with a :AND or something else.
+
+  Example:
+
+  (find-book :query \"antigone\")
+  => many results
+
+  (find-book :query \"antigone roy\")
+  => (#<BOOK Une Antigone à Kandahar. SHELF: nil>)
+  (filtered by author: Roy)
+
+  (find-book :query \"antigone\" :shelf #<SHELF 3 - Littérature>)
+  => (#<BOOK Antigone. SHELF: Littérature>)
+  (filtered by shelf)
+
+  "
+  (assert (not (null q2)))
+  `(:and
+    ,@(loop for query in q1
+         collect `(:and ,query ,q2))))
+
+#+(or)
+(let ((words-query '((:OR (:LIKE :TITLE-ASCII "%kan%") (:LIKE :AUTHORS-ASCII "%kan%"))
+                     (:OR (:LIKE :TITLE-ASCII "%foo%") (:LIKE :AUTHORS-ASCII "%foo%"))))
+      (shelf-query '(:= :SHELF_ID 3)))
+  (assert (equal (%merge-intersperse-and words-query shelf-query)
+                 '(:AND
+                   (:AND
+                    ;; word query first clause:
+                    (:OR (:LIKE :TITLE-ASCII "%kan%") (:LIKE :AUTHORS-ASCII "%kan%"))
+                    ;; AND-ed with shelf query:
+                    (:= :SHELF_ID 3))
+                   (:AND
+                    ;; word query second clause:
+                    (:OR (:LIKE :TITLE-ASCII "%foo%") (:LIKE :AUTHORS-ASCII "%foo%"))
+                    ;; shelf query again.
+                    (:= :SHELF_ID 3)))
+                 )))
+
+(defun %join-and (q1)
+  "join list of clauses with a :AND.
+
+  Useful to join the clauses of a text query together, when we don't need
+to join them with another filter (shelf)."
+  `(:and
+    ,@(loop for clause in q1
+         collect clause)))
 
 (defun find-book (&key query
                     shelf
@@ -614,12 +679,31 @@ searches. This method was thought the most portable.
 
   - order: :desc (default) or :asc
   - limit: 50"
+  (when (str:blankp query)
+    (setf query nil))
+
   (let ((shelf-query (%build-sxql-shelf-query shelf))
         (words-query (%build-sxql-words-query query)))
+    (log:debug shelf-query words-query)
     (mito:select-dao 'book
-      (when (or query shelf)
-        (sxql:where
-         (%merge-queries shelf-query words-query)))
+      (cond
+        ;; text query AND shelf: we must compose the queries
+        ;; and "AND" them together.
+        ((and query shelf)
+         (sxql:where
+          (%merge-intersperse-and words-query shelf-query)))
+        ;; Only a text query.
+        ((and query
+              (not shelf))
+         (sxql:where
+          (%join-and words-query)))
+        ;; Only a shelf query.
+        ((and shelf
+              (not query))
+         (sxql:where shelf-query)))
+      ;; No query nor shelf? It works and returns all the books, and
+      ;; still obeys the limit and order.
+
       (sxql:limit limit)
       (sxql:order-by `(,order :created-at)))))
 

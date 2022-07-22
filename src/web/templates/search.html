@@ -4,16 +4,16 @@
 {{ title }}
 {% endblock %}
 
+
 {% block content %}
+
+{% block search_form %}
 
 <form action="{{ route }}">
   <div class="field">
     <label class="label"> Search </label>
     <div class="control">
       <input class="input" name="q" type="text" {% if q %} value="{{ q }}" {% else %} placeholder="Search by title, author and ISBN" {% endif %}>
-      <div hx-boost="true"> or
-        <a href="/card/create"> create a book manually </a>
-      </div>
     </div>
   </div>
 
@@ -28,6 +28,8 @@
   {% endif %}
 
 </form>
+{% endblock search_form %}
+
 
 {% for msg in messages %}
 <div>

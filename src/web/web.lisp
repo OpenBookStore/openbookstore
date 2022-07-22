@@ -173,7 +173,9 @@ Slime reminders:
                     (ignore-errors (parse-integer shelf-name-ascii-or-id)))
                    (models::find-shelf-by :id shelf-name-ascii-or-id))
                   (t
+                   (log:info shelf-name-ascii-or-id)
                    (models::find-shelf-by :name-ascii shelf-name-ascii-or-id))))
+
          ;; Had a doubt if the search returned a list…
          ;; (shelf (if (and shelves (listp shelves)) ;; unsure… see find-by (for books) and this.
          ;;            (first shelves)
@@ -191,6 +193,8 @@ Slime reminders:
                       :route "/stock"
                       :title "Stock - OpenBookstore"
                       :cards cards
+                      :shelves (models::find-shelf)
+                      :form-shelf shelf
                       :nb-results (length cards)
                       :q q
                       :data (list :nb-titles (bookshops.models:count-book)
