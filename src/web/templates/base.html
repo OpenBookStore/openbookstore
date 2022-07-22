@@ -58,7 +58,7 @@
                 <a class="navbar-link">
                   Database
                 </a>
-                <div class="navbar-dropdown">
+                <div class="navbar-dropdown" hx-boost="true">
                   <a class="navbar-item" href="/card/create">
                     New book
                   </a>
@@ -131,11 +131,35 @@
               General
             </p>
             <ul class="menu-list">
-              <li><a {% if route == "/stock" %} class="is-active" {% endif %} href="/stock"> Stock </a></li>
-              <li><a {% if route == "/search" %} class="is-active" {% endif %} href="/search"> Search </a></li>
-              <li><a {% if route == "/sell" %} class="is-active" {% endif %} href="/sell"> Sell </a></li>
-              <li><a {% if route == "/history" %} class="is-active" {% endif %} href="/history"> History </a></li>
-              <li><a {% if route == "/receive" %} class="is-active" {% endif %} href="/receive"> Receive </a></li>
+              <li>
+                <a hx-boost="true" {% if route == "/stock" %} class="is-active" {% endif %} href="/stock">
+                Stock
+                </a>
+              </li>
+              <li>
+                <span hx-boost="true">
+                  <a {% if route == "/search" %} class="is-active" {% endif %} href="/search">
+                    Search
+                  </a>
+                </span>
+              </li>
+              <li>
+                <a {% if route == "/sell" %} class="is-active" {% endif %} href="/sell">
+                Sell
+                </a>
+              </li>
+              <li>
+                <span hx-boost="true">
+                  <a {% if route == "/history" %} class="is-active" {% endif %} href="/history">
+                    History
+                  </a>
+                </span>
+              </li>
+              <li>
+                <a {% if route == "/receive" %} class="is-active" {% endif %} href="/receive">
+                Receive
+                </a>
+              </li>
             </ul>
           </aside>
         </div>
