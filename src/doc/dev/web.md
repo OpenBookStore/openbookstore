@@ -20,12 +20,13 @@ https://htmx.org/
 
 - `hx-boost` really makes pages snappy. It needs to grab a full-HTML result.
   We can use it, as of today:
-  - on a card page, to pre-load a click on the shelf badge, that will show the query results nearly instantly.
   - on the navbar, to pre-load the new card form (doesn't use JS so far).
   - on the main menu: Stock, Search, History (so far at least). It is really great, pages take 5ms to display!!!
 
-  However, pages that rely on JavaScript (Vanilla, Vue) can NOT be "boost"ed.
+  However, pages that rely on JavaScript (Vanilla, Vue) or that lead
+  to dynamic results can NOT be "boost"ed.
   - can't boost the Sell page :/
+  - on a card page, don't boost the click on the shelf search, because the target can be changed by the select input, but not the boost result, or if we stay a long time on the page, we'll see old results of this query. Damn!
 
 # Vue
 
