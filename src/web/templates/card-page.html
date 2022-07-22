@@ -128,13 +128,15 @@
                           </select>
                         </div>
 
-                        <a color="black"
-                            title="Search your stock"
-                            href="/stock?shelf={{ card.shelf.name-ascii }}">
-                          <span class="icon">
-                            <i class="fas fa-search"></i>
-                          </span>
-                        </a>
+                        <span hx-boost="true">
+                          <a color="black"
+                              title="Search your stock"
+                              href="/stock?shelf={{ card.shelf.name-ascii }}">
+                            <span class="icon">
+                              <i class="fas fa-search"></i>
+                            </span>
+                          </a>
+                        </span>
 
                        </td>
                     </tr>
