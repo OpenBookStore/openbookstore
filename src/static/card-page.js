@@ -40,7 +40,7 @@ console.log("--- card page: watching Shelf change.");
             method: 'POST',
             headers: new Headers({
                 // *not* json, so it works out of the box with my Hunchentoot handlers.
-                'Content-Type': 'application/x-www-form-urlencoded', // <-- Specifying the Content-Type
+                'Content-Type': 'application/x-www-form-urlencoded',
             }),
             body: "cardId=" + card_id + "&shelfId=" + shelf_id,
         })
@@ -51,6 +51,13 @@ console.log("--- card page: watching Shelf change.");
                 if (myJson.status == 200) {
                     Notiflix.Notify.Success('OK');
                 }
+
+                // Update the link to filter the stock.
+                let link_elt = document.getElementById('link-stock-shelf');
+                if (link_elt) {
+                    link_elt.href = "/stock?shelf=" + shelf_id;
+                }
+
                 else {
                     Notiflix.Notify.Warning('Something happened');
                     console.log("status is not success: ", myJson.status);

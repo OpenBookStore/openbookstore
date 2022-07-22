@@ -165,9 +165,15 @@ Slime reminders:
 (bookshops.models:define-role-access stock-route :view :visitor)
 (defroute stock-route ("/stock" :decorators ((@check-roles stock-route)))
     (&get q
-          (shelf-name-ascii :real-name "shelf"))
-  (let* ((shelf (when shelf-name-ascii
-                  (models::find-shelf-by :name-ascii shelf-name-ascii)))
+          (shelf-name-ascii-or-id :real-name "shelf"))
+  (let* ((shelf (cond
+                  ;; We preferably create links with shelf ascii names.
+                  ;; but in the card page JS, we edit the link with the id… simpler for JS side.
+                  ((integerp
+                    (ignore-errors (parse-integer shelf-name-ascii-or-id)))
+                   (models::find-shelf-by :id shelf-name-ascii-or-id))
+                  (t
+                   (models::find-shelf-by :name-ascii shelf-name-ascii-or-id))))
          ;; Had a doubt if the search returned a list…
          ;; (shelf (if (and shelves (listp shelves)) ;; unsure… see find-by (for books) and this.
          ;;            (first shelves)
