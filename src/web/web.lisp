@@ -191,7 +191,10 @@ Slime reminders:
                    (alexandria-2:subseq* (models:find-book :shelf shelf) 0 50)))))
     (render-template* +stock.html+ nil
                       :route "/stock"
-                      :title "Stock - OpenBookstore"
+                      :title (format nil "Stock ~a~a ~a - OpenBookstore"
+                                     (if q q "")
+                                     (if  shelf ", " "")
+                                     (if shelf (models::name shelf) ""))
                       :cards cards
                       :shelves (models::find-shelf)
                       :form-shelf shelf
