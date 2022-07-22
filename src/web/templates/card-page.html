@@ -108,10 +108,9 @@
                         <!-- <a href="/search?rayon={{ card.shelf.id }}"> -->
                         <!-- <span class="tag" title="{{ card.shelf.name }}"> {{ card.shelf.name | truncatechars:27 }} </span> -->
                         <!-- </a> -->
-                        <a color="black"
-                            title="Search your stock"
-                            href="/stock?shelf={{ card.shelf.name-ascii }}"> Shelf
-                        </a>
+
+                        Shelf
+
                       </td>
                       <td>
 
@@ -128,6 +127,14 @@
                             {% endfor %}
                           </select>
                         </div>
+
+                        <a color="black"
+                            title="Search your stock"
+                            href="/stock?shelf={{ card.shelf.name-ascii }}">
+                          <span class="icon">
+                            <i class="fas fa-search"></i>
+                          </span>
+                        </a>
 
                        </td>
                     </tr>
