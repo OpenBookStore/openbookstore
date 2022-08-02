@@ -19,14 +19,15 @@
         {% endfor %}
 
         <div class="box content">
-        <h3 class="h3"> Create a new book </h3>
-          <form action="/card/create" method="POST">
+        <h3 class="h3"> Edit: {{ card.title }} </h3>
+          <form action="/card/update/{{ card.id }}" method="POST">
 
             <div class="field">
               <div class="control">
                 <label class="label"> Title* </label>
                 <input type="text" for="title" name="title" id="title"
-                    placeholder="title"
+                    value="{{ card.title }}"
+                    placeholder="Title"
                     required="true"
                     class="input"/>
               </div>
@@ -36,7 +37,11 @@
               <div class="control">
                 <label class="label"> ISBN </label>
                 <input type="text" for="isbn" name="isbn" id="isbn"
-                    placeholder="ISBN"
+                    {% if card.isbn %}
+                    value="{{ card.isbn }}"
+                    {% endif %}
+                    placeholder="title"
+                    required="true"
                     class="input"/>
               </div>
             </div>
@@ -44,6 +49,11 @@
             <div class="control">
               <label class="label"> Authors </label>
               <input type="text" for="authors" name="authors" id="authors"
+
+                  {% if card.authors %}
+                  value="{{ card.authors }}"
+                  {% endif %}
+
                   class="input"
                   placeholder="authors"/>
             </div>
@@ -51,6 +61,11 @@
             <div class="control">
               <label class="label"> Price </label>
               <input type="text" for="price" name="price" id="price"
+
+                  {% if card.price %}
+                  value="{{ card.price }}"
+                  {% endif %}
+
                   class="input"
                   placeholder="price"/>
             </div>
@@ -61,14 +76,19 @@
                 <select id="shelf-id" name="shelf-id" for="shelf-id">
                   <option value="">  </option>
                   {% for shelf in shelves %}
+
+                  {% if card.shelf.id == shelf.id %}
+                  <option value="{{ shelf.id }}" selected> {{ shelf.name }} </option>
+                  {% else %}
                   <option value="{{ shelf.id }}"> {{ shelf.name }} </option>
+                  {% endif %}
                   {% endfor %}
                 </select>
               </div>
 
             </div>
             <!-- <input type="text" for="title" name="title" id="title" placeholder="title"/> -->
-            <input type="submit" value="Save" class="button">
+            <input type="submit" value="Save" class="button is-success" style="margin-top: 5px">
 
           </form>
         </div>

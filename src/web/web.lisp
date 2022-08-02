@@ -104,6 +104,7 @@ Slime reminders:
 (defparameter +card-page.html+ (djula:compile-template* "card-page.html"))
 (defparameter +card-stock.html+ (djula:compile-template* "card-stock.html"))
 (defparameter +card-create.html+ (djula:compile-template* "card-create.html"))
+(defparameter +card-update.html+ (djula:compile-template* "card-edit.html"))
 (defparameter +receive.html+ (djula:compile-template* "receive.html"))
 
 ;; Testing the UI with HTMX websockets
@@ -220,6 +221,17 @@ Slime reminders:
                           :route "/search"
                           :title "Search - OpenBookstore"
                           :q q))))
+
+(defroute search-route/post ("/search" :method :POST) (&post q)
+  (let ((cards (and q (search-datasources q))))
+    (if cards
+        (str:concat
+         "<div class=\"dropdown-content\">"
+         "<div class=\"dropdown-item\" href=0> Beer name here </div>"
+         "<div class=\"dropdown-item\" href=0>
+          <p> Other beer name <bold> here </bold>
+           </div>"
+         "</div>"))))
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute add-or-create-route ("/card/add-or-create/" :method :post
@@ -341,6 +353,77 @@ Slime reminders:
     (error (c)
       ;; XXX: 404 handled by hunchentoot
       (format *error-output* c))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Edit/update an existing card.
+;;; Similar from create.
+(defroute card-update-route ("/card/update/:id" :method :get
+                                                :decorators ((@check-roles card-create-route)))
+    ()
+  ;; see also: the API for POST updates.
+  ;; (describe (hunchentoot:start-session) t)
+  ;; (log:info (bookshops.messages::add-message "Hello message :)"))
+  (let ((card (models::find-by :id id)))
+    (render-template* +card-update.html+ nil
+                      :card card
+                      :shelves (models::find-shelf)
+                      :title (format nil "Edit: ~a - OpenBookstore" (str:shorten 40 (models:title card) :ellipsis "…"))
+                      :messages/status (bookshops.messages:get-message/status))))
+
+
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; card update POST
+(models:define-role-access card-update/post-route :view :editor)
+(defroute card-update/post-route ("/card/update/:id" :method :post
+                                                 :decorators ((@check-roles card-create-route)))
+    ;; title is mandatory, the rest is optional.
+    (title isbn price authors shelf-id)
+
+  ;; Begin form validation.
+  (when (str:blankp title)
+    (bookshops.messages::add-message "Please enter a title" :status :warning)
+    (hunchentoot:redirect "/card/create"))
+
+  ;XXX: handle more than one validation message.
+  (when (and (str:non-blank-string-p isbn)
+             (not (bookshops.utils:isbn-p isbn)))
+    (bookshops.messages::add-message (format nil "This doesn't look like an ISBN: ~a" isbn) :status :warning)
+
+    (let ((card (models::find-by :id id)))
+      (setf card (models::update-book-with card
+                                             `((:title ,title)
+                                               (:isbn ,isbn)
+                                               (:price ,price)
+                                               (:authors ,authors))))
+      (return-from card-update/post-route
+        (render-template* +card-update.html+ nil
+                          :card card
+                          :shelves (models::find-shelf)
+                          :title (format nil "Edit: ~a - OpenBookstore" (str:shorten 40 (models:title card) :ellipsis "…"))
+                          :messages/status (bookshops.messages:get-message/status)))))
+
+  ;; Form validation OK.
+  (handler-case
+      (let ((book (models:find-by :id id))
+            (shelf (models::find-shelf-by :id shelf-id)))
+        ;; Update fields.
+        (setf book (models::update-book-with book
+                                             `((:title ,title)
+                                               (:isbn ,isbn)
+                                               (:price ,price)
+                                               (:authors ,authors)
+                                               (:shelf ,shelf))))
+
+        ;; Save.
+        (mito:save-dao book)
+        ;; We don't see the message after a redirect, too bad.
+        ;; (bookshops.messages:add-message "The book was updated succesfully.")
+        (hunchentoot:redirect (easy-routes:genurl 'route-card-page
+                                                  :slug (str:concat id "-" (slug:slugify title)))))
+    (error (c)
+      ;; XXX: 404 handled by hunchentoot
+      (format *error-output* c))))
+
 
 (bookshops.models:define-role-access receive-route :view :editor)
 (defroute receive-route ("/receive" :method :get

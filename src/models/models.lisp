@@ -541,6 +541,26 @@ searches. This method was thought the most portable.
      do (mito:save-dao book))
   book)
 
+(defun update-book-with (book fields)
+  "Update this book instance with new data.
+  In addition, update related fields implicetily, such as the title-ascii.
+
+  Do NOT save the object in DB yet.
+
+  fields: plist with (:field-name value).
+
+  Example:
+
+  (update-book-with (find-by :id 87) '((:title \"new title\"))) "
+  ;; XXX: update-book does save the object in DB…
+  (setf (title book) (car (access:access fields :title))
+        (title-ascii book) (utils:asciify (car (access:access fields :title)))
+        (isbn book) (car (access:access fields :isbn))
+        (price book) (car (access:access fields :price))
+        (authors book) (car (access:access fields :authors))
+        (shelf book) (car (access:access fields :shelf)))
+  book)
+
 (defun find-existing (bk &key update)
   "bk: a book object. Check in the DB if it already exists.
   Update its fields.
