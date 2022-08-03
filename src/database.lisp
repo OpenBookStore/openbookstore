@@ -20,10 +20,10 @@
                          payment-method
 ))
 
-(defun connect (&optional (db-name *db-name*))
+(defun connect (&optional (db-name (db-name)))
   "Connect to the DB."
   ;; also use mito:*connection*
-  (log:debug "connecting to ~a~&" *db-name*) (force-output)
+  (log:debug "connecting to ~a~&" (db-name)) (force-output)
   (setf *db* (mito:connect-toplevel :sqlite3 :database-name db-name)))
 
 (defun ensure-tables-exist ()
@@ -45,4 +45,3 @@
 (defun initialize-database ()
   (ensure-tables-exist)
   (bootstrap-base-roles))
-

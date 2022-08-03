@@ -25,7 +25,21 @@ searches. This method was thought the most portable.
 |#
 
 
-(defparameter *db-name* (asdf:system-relative-pathname :bookshops "db.db"))
+(defparameter *db-name* nil)
+
+(defun db-name ()
+  "Get our DB full path name.
+
+  During development or when running from sources, get the path relative to where openbookstore is installed.
+  When running from a binary release, search a db.db file on the current directory."
+  (when *db-name*
+    (return-from db-name *db-name*))
+  (if (deploy:deployed-p)
+      ;; Get or create at the current runtime directory.
+      ;; XXX: search on other locations such as ~/.config/openbookstore/
+      (merge-pathnames (deploy:runtime-directory) "db.db")
+      ;; Get it at the project root.
+      (asdf:system-relative-pathname :bookshops "db.db")))
 
 (defparameter *db* nil
   "DB connection object, returned by (connect).")

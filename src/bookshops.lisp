@@ -57,8 +57,8 @@
 
 (defun main ()
 
-  (unless (uiop:file-exists-p bookshops.models::*db-name*)
-    (uiop:format! t "Creating the database into ~a...~&" bookshops.models::*db-name*)
+  (unless (uiop:file-exists-p (bookshops.models::db-name))
+    (uiop:format! t "Creating the database into ~a...~&" (bookshops.models::db-name))
     (bookshops.models::initialize-database))
 
   (opts:define-opts
