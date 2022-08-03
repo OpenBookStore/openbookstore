@@ -16,7 +16,8 @@ before_script:
   - make install
   # Upgrade ASDF. TODO
   - mkdir -p ~/common-lisp/asdf/
-  - ( cd ~/common-lisp/asdf/ && wget https://asdf.common-lisp.dev/archives/asdf-3.3.5.lisp && mv asdf-3.3.5.lisp asdf.lisp )
+  # - ( cd ~/common-lisp/asdf/ && wget https://asdf.common-lisp.dev/archives/asdf-3.3.5.lisp && mv asdf-3.3.5.lisp asdf.lisp )
+  - ( cd ~/common-lisp/ && wget https://asdf.common-lisp.dev/archives/asdf-3.3.4.tar.gz && tar -xvf asdf-3.3.4.tar.gz && mv asdf-3.3.4 asdf )
   - echo "Content of ~/common-lisp/asdf/:" && ls ~/common-lisp/asdf/
 
 qa:
