@@ -155,3 +155,11 @@
   ;; #.(read-file-string
   ;;    (subpathname *load-pathname* "README.md"))
   :in-order-to ((test-op (test-op "bookshops-test"))))
+
+;; Now ASDF wants to update itself and crashes.
+;; On the target host, when we run the binary, yes. Damn!
+;; Thanks again to Shinmera.
+(deploy:define-hook (:deploy asdf) (directory)
+  (declare (ignorable directory))
+  #+asdf (asdf:clear-source-registry)
+  #+asdf (defun asdf:upgrade-asdf () nil))
