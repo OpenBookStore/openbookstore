@@ -40,5 +40,6 @@ build:
   script:
     - make build
   artifacts:
+    name: "openbookstore"
     paths:
-      - bookshops
+      - bin/
