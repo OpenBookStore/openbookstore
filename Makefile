@@ -8,6 +8,7 @@ build:
 	#TODO: update replic with multi args completion
 	# quickload cl+ssl: required to load the .asd, for Deploy.
 	$(LISP)	--non-interactive \
+		--eval '(ql:quickload "deploy")' \
 		--eval '(ql:quickload "cl+ssl")' \
 		--load bookshops.asd \
 		--eval '(ql:quickload :bookshops)' \
