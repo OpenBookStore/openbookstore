@@ -151,7 +151,7 @@
                         (search "hunchentoot" (bt:thread-name th)))
                       (bt:all-threads))))
         (usocket:address-in-use-error ()
-          (format *error-output* "This port is already taken.~&"))
+          (format *error-output* "This port is already taken. You can use the --port option or the OBS_PORT environment variable to specify a new port.~&"))
         #+sbcl
         (sb-sys:interactive-interrupt ()
           (format *error-output* "~&Bye!~&")

@@ -92,10 +92,10 @@ Then, to run the software, you have 2 options: build a binary or run it from sou
 
 To run the web application:
 
-- run it from the binary. Either download it from GitLab either build it (`make build`), then run it:
+- run it from the binary. Either download it from GitLab either build it (`make build`), then run it (the binary is created in a `bin/` directory alongside foreign libraries):
 
 ```
-./bookshops -w [--port 4242] [--verbose]
+./bin/bookshops -w [--port 4242] [--verbose]
 ```
 
 - run it from sources:

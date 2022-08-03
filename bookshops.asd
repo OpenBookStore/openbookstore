@@ -19,6 +19,7 @@
   ;; :defsystem-depends-on ("linux-packaging")
   ;; :class "linux-packaging:deb"
   ;; :package-name "bookshops"
+
   :depends-on (
                ;; web client
                :dexador
@@ -42,19 +43,22 @@
                :local-time-duration
                :cl-ppcre
                :parse-float
+               :serapeum
+               :log4cl
+
                ;; cache
                :cacle
-               :cl-json
-               :serapeum
 
                ;; web app
                :hunchentoot
                :easy-routes
                :djula
+               :cl-json
                :cl-slug
 
-               :log4cl
-               :cl-i18n)
+               :cl-i18n
+               )
+
   :components ((:module "src/datasources"
                         :components
                         ((:file "dilicom")
@@ -102,21 +106,33 @@
                          (:file "web")
                          (:file "api"))))
 
-  :build-operation "program-op"
+  ;; :build-operation "program-op"
   :entry-point "bookshops:main"
+  :build-pathname "bookshops"
+
   ;; For a .deb (with the two lines above).
   ;; :build-operation "linux-packaging:build-op"
-  ;; :build-pathname "bookshops"
+
+  ;; With Deploy, ship foreign libraries (and ignore libssl).
+  :defsystem-depends-on (:deploy)  ;; (ql:quickload "deploy") before
+  :build-operation "deploy-op"     ;; instead of "program-op"
 
   ;; :long-description
   ;; #.(read-file-string
   ;;    (subpathname *load-pathname* "README.md"))
   :in-order-to ((test-op (test-op "bookshops-test"))))
 
-;; from 108M, 0.04s startup time to 24M, 0.37s.
+
+;; Don't ship libssl, rely on the target OS'.
+#+linux (deploy:define-library cl+ssl::libssl :dont-deploy T)
+#+linux (deploy:define-library cl+ssl::libcrypto :dont-deploy T)
+
+
+;; Use compression: from 108M, 0.04s startup time to 24M, 0.37s.
 #+sb-core-compression
 (defmethod asdf:perform ((o asdf:image-op) (c asdf:system))
   (uiop:dump-image (asdf:output-file o c) :executable t :compression t))
+
 
 (asdf:defsystem "bookshops/gui"
   :version "0.1.0"
