@@ -91,8 +91,9 @@
                ;; readline-based, terminal user-facing app (using REPLIC).
                (:module "src/terminal"
                         :components
-                        ((:file "manager")
-                         (:file "commands")))
+                        ((:file "commands")
+                         ;; relies on the above:
+                         (:file "manager")))
 
                ;; One-off utility "scripts" to work on the DB.
                (:module "src/management"

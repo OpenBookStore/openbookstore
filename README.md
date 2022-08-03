@@ -59,21 +59,20 @@ Command line interface and web UI to search for books, add them to your stock, s
 
 ## Download a binary (WIP)
 
-Download the executable from https://gitlab.com/myopenbookstore/openbookstore/-/pipelines (download a build artifact with the button on the right).
+Download the standalone executable from [here](https://gitlab.com/myopenbookstore/openbookstore/-/jobs/artifacts/master/download?job=build) (warn: beta).
 
-It's a 24MB self-contained executable (for Debian GNU/Linux,
-x86/64). You don't need to install a Lisp implementation nor anything
-to run it.
+It's a 24MB self-contained executable (for Debian Buster GNU/Linux,
+x86/64 platform). You don't need to install a Lisp implementation to run
+it. Unzip the archive and run `openbookstore` from the `bin/`
+directory.
 
-There are a couple system dependencies to install.
-
-On Debian: `apt install rlwrap sqlite3`
+There is a system dependency to install. On Debian: `apt install sqlite3`
 
 ## Run from sources
 
 Alternatively, install `sbcl` with your package manager:
 
-    apt install sbcl
+    apt install sbcl rlwrap
 
 install Quicklisp, the Lisp library manager ([full instructions](https://www.quicklisp.org/beta/#installation)):
 
@@ -92,13 +91,19 @@ Then, to run the software, you have 2 options: build a binary or run it from sou
 
 To run the web application:
 
-- run it from the binary. Either download it from GitLab either build it (`make build`), then run it (the binary is created in a `bin/` directory alongside foreign libraries):
+- run it **from the binary**. Either download it from GitLab as seen above either build it (`make build`), then run it (the binary is created in a `bin/` directory):
 
 ```
 ./bin/bookshops -w [--port 4242] [--verbose]
 ```
 
-- run it from sources:
+To create a user with admin rights, run:
+
+    /bookshops --manage createsuperuser
+
+and follow the prompt.
+
+- run it **from sources**:
 
 ```
 make run
@@ -115,6 +120,7 @@ Quit with `C-d`.
 ```
 
 - initialize the database if not already done, see above.
+- to create a superuser from the Lisp REPL, use `(bookshops.manager::add-superuser)`.
 
 ![](web.png)
 

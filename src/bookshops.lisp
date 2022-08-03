@@ -90,7 +90,12 @@
            :arg-parser #'parse-integer
            :description "set the port for the web server. You can also use the OBS_PORT environment variable."
            :short #\p
-           :long "port"))
+           :long "port")
+
+    (:name :manage
+           :arg-parser #'identity
+           :description "Run a management command, such as createsuperuser"
+           :long "manage"))
 
   (multiple-value-bind (options free-args)
       (handler-bind ((error #'handle-parser-error))
@@ -109,12 +114,28 @@
     (when (getf options :verbose)
       (print-system-info))
 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; Management commands.
+    ;; Create a superuser with admin rights.
+    (when (getf options :manage)
+      (let ((command (getf options :manage)))
+        (when (equal "createsuperuser" (str:downcase (str:trim command)))
+          (format t "Initializing...~&")
+          ;; Connect to the DB.
+          (init)
+          (uiop:format! t "Running management command ~a…~&" command)
+          ;; XXX: avoid circular dependencies:
+          ;; we now want to call bookshops.manager, but this package relies on models,
+          ;; we can't load it before. Fix.
+          (eval (read-from-string "(bookshops.manager::add-superuser)")))))
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; Run the interactive terminal application.
     (when (getf options :interactive)
       (format t "Initializing...~&")
       (init)
 
       (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
-
       (setf replic:*prompt-prefix* (format nil "(~a) " (name (default-place))))
 
       ;; create commands from the exported functions and variables.
@@ -129,7 +150,6 @@
 
       (replic:repl)
 
-
       (handler-case
           (when free-args
             (search-books (str:join " " free-args)))
@@ -138,6 +158,8 @@
             (format *error-output* "~a~&" c)
             (uiop:quit 1)))))
 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; Run the web app.
     (when (getf options :web)
       (handler-case
           (progn
@@ -163,6 +185,8 @@
           ;; (uiop:quit 1)
           )))
 
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; Search on data sources, print results and exit.
     (when free-args
       (handler-case
           (progn

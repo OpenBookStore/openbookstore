@@ -53,7 +53,8 @@ $ ./bookshops -i
         (password password-input))
 
     (if (not name)
-        (setf name (rl:readline :prompt
+        ;; this %readline works on readline and Slime too.
+        (setf name (bookshops.commands::%readline :prompt
                                 (format nil (str:concat "Enter username"
                                                         (cl-ansi-text:red "*")
                                                         " ? ")))))
@@ -63,9 +64,8 @@ $ ./bookshops -i
            (error "Username ~a already exists" name))
           (t nil))
 
-
     (if (not email)
-        (setf email (rl:readline :prompt
+        (setf email (bookshops.commands::%readline :prompt
                              (format nil (str:concat "Enter email"
                                                      (cl-ansi-text:red "*")
                                                      " ? ")))))
@@ -76,7 +76,7 @@ $ ./bookshops -i
           (t nil))
 
     (if (not password)
-        (setf password (rl:readline :prompt
+        (setf password (bookshops.commands::%readline :prompt
                                     (format nil (str:concat "Enter password"
                                                             (cl-ansi-text:red "*")
                                                             " ? ")))))
