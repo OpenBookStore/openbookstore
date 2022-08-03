@@ -3,8 +3,10 @@
 |#
 
 (require "asdf")  ;; for CI
+(require "uiop")  ;; for CI?
 
 (uiop:format! t "~&------- ASDF version: ~a~&" (asdf:asdf-version))
+(uiop:format! t "~&------- UIOP version: ~a~&" uiop:*uiop-version*)
 
 (asdf:defsystem "bookshops"
   :version "0.1.1"
