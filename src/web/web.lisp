@@ -125,10 +125,15 @@ Slime reminders:
 
 (defun serve-static-assets ()
   ;TODO: does not load our openbookstore.js file. Does it now ?
-  (push (hunchentoot:create-folder-dispatcher-and-handler
-         "/static/" (merge-pathnames *default-static-directory*
-                                     (asdf:system-source-directory :bookshops)))
-        hunchentoot:*dispatch-table*))
+  (if (deploy:deployed-p)
+      (progn
+        (log:info "serve-static-assets: handle for standalone binary")
+        "src/static")                      ;; TODO:
+      (push (hunchentoot:create-folder-dispatcher-and-handler
+             "/static/" (merge-pathnames *default-static-directory*
+                                         (asdf:system-source-directory :bookshops) ;; => NOT src/
+                                         ))
+            hunchentoot:*dispatch-table*)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Some web utils.

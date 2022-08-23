@@ -59,7 +59,10 @@
 
 (defun i18n-load ()
   (let ((lang (uiop:getenv "LANG"))
-        (cl-i18n:*translation-file-root* (asdf:system-relative-pathname :bookshops "")))
+        (cl-i18n:*translation-file-root*
+         (if (deploy:deployed-p)
+             "." ;; TODO: just trying a fix to not run any asdf function with the binary.
+             (asdf:system-relative-pathname :bookshops ""))))
     (if (str:starts-with? "fr" lang)
         (setf cl-i18n::*translation-table*
               (cl-i18n:load-language "locale/mo/fr_FR/messages.mo"
