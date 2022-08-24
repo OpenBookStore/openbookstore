@@ -50,8 +50,8 @@
   (format stream "~&ASDF: ~a~&" (asdf:asdf-version))
   #-asdf
   (format stream "NO ASDF!")
-  #+quicklisp
-  (format stream "~&Quicklisp: ~a~&" (ql-dist:all-dists))
+  ;; #+quicklisp
+  ;; (format stream "~&Quicklisp: ~a~&" (ql-dist:all-dists))  ;; not for release?
   #-quicklisp
   (format stream "!! Quicklisp is not installed !!"))
 
