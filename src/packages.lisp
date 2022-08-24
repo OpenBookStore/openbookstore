@@ -110,7 +110,8 @@
            :name
            ;; functions
            :books
-           :search-books)
+           :search-books
+           :run)
   (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
                     (#:fr #:bookshops.datasources.scraper-fr)
                     (#:a #:alexandria))

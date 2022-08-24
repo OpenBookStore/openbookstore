@@ -134,13 +134,7 @@
     (when (getf options :interactive)
       (format t "Initializing...~&")
 
-      ;; Trying to see a backtrace when the binary errors out.
-      (handler-bind ((error (lambda (c)
-                        (format *error-output* "~&An error occured: ~a~&" c)
-                        (format *error-output* "~&Backtrace:~&")
-                        (trivial-backtrace:print-backtrace c))))
-        (init))
-
+      (init)
 
       (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
       (setf replic:*prompt-prefix* (format nil "(~a) " (name (default-place))))
@@ -205,3 +199,11 @@
             (uiop:quit 1)))))
 
     ))
+
+(defun run ()
+  "Call main, print a backtrace if an error occurs."
+  (handler-bind ((error (lambda (c)
+                          (format *error-output* "~&An error occured: ~a~&" c)
+                          (format *error-output* "~&Backtrace:~&")
+                          (trivial-backtrace:print-backtrace c))))
+    (main)))

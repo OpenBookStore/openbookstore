@@ -114,7 +114,7 @@
                          (:file "api"))))
 
   ;; :build-operation "program-op"
-  :entry-point "bookshops:main"
+  :entry-point "bookshops:run"
   :build-pathname "bookshops"
 
   ;; For a .deb (with the two lines above).
