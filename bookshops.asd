@@ -47,6 +47,7 @@
                :parse-float
                :serapeum
                :log4cl
+               :trivial-backtrace
 
                :deploy ;; must be a build dependency, but we also use deployed-p checks in our code.
                :fiveam  ;; dep of dep for build, required by deploy??

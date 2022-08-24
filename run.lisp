@@ -17,12 +17,13 @@ Another solution to run the app is to run the executable (see README).
 (ql:quickload "bookshops")
 
 (in-package :bookshops/web)
-(handler-case
-    (start-app :port (or (ignore-errors (parse-integer (uiop:getenv "OBS_PORT")))
-                         *port*))
-  (error (c)
-    (format *error-output* "~&An error occured: ~a~&" c)
-    ;; XXX: quit also kills the current lisp process, which is
-    ;; annoying when developing with a REPL.
-    ;; (uiop:quit 1)
-    ))
+(handler-bind ((error (lambda (c)
+                        (format *error-output* "~&An error occured: ~a~&" c)
+                        (format *error-output* "~&Backtrace:~&")
+                        (trivial-backtrace:print-backtrace c))
+                 ;; XXX: quit also kills the current lisp process, which is
+                 ;; annoying when developing with a REPL.
+                 ;; (uiop:quit 1)
+                 ))
+  (start-app :port (or (ignore-errors (parse-integer (uiop:getenv "OBS_PORT")))
+                         *port*)))
