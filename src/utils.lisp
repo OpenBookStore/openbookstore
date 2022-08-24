@@ -58,24 +58,28 @@
 (defun _ (a) (cl-i18n:translate a))
 
 (defun i18n-load ()
-  (let ((lang (uiop:getenv "LANG"))
-        (cl-i18n:*translation-file-root*
-         (if (deploy:deployed-p)
-             "." ;; TODO: just trying a fix to not run any asdf function with the binary.
-             (asdf:system-relative-pathname :bookshops ""))))
-    (if (str:starts-with? "fr" lang)
-        (setf cl-i18n::*translation-table*
-              (cl-i18n:load-language "locale/mo/fr_FR/messages.mo"
-                                     :store-hashtable nil
-                                     :store-plural-function t
-                                     :update-translation-table nil))
-        (progn
-          ;; Default locale.
-          (setf cl-i18n::*translation-table*
-                (cl-i18n:load-language "locale/mo/en_GB/messages.mo"
-                                       :store-hashtable nil
-                                       :store-plural-function t
-                                       :update-translation-table nil))))))
+  (if (deploy:deployed-p)
+      ;; Running binary release: we can't find the files on the file system. TODO:
+      (uiop:format! *error-output* "~&init: we don't load translation files in a binary release yet. The application stays untranslated.~&")
+      ;; Otherwise, find them.
+      (let ((lang (uiop:getenv "LANG"))
+            (cl-i18n:*translation-file-root*
+             (if (deploy:deployed-p)
+                 "." ;; TODO: just trying a fix to not run any asdf function with the binary.
+                 (asdf:system-relative-pathname :bookshops ""))))
+        (if (str:starts-with? "fr" lang)
+            (setf cl-i18n::*translation-table*
+                  (cl-i18n:load-language "locale/mo/fr_FR/messages.mo"
+                                         :store-hashtable nil
+                                         :store-plural-function t
+                                         :update-translation-table nil))
+            (progn
+              ;; Default locale.
+              (setf cl-i18n::*translation-table*
+                    (cl-i18n:load-language "locale/mo/en_GB/messages.mo"
+                                           :store-hashtable nil
+                                           :store-plural-function t
+                                           :update-translation-table nil)))))))
 
 (defun format-date (date)
   "Format the given date with the default date format (yyyy-mm-dd). Return a string."
