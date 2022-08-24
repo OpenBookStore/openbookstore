@@ -30,6 +30,7 @@
                :clss ;; might do with lquery only
                ;; DB
                :mito
+               :dbd-sqlite3  ;; required for the binary (?)
                :mito-auth
                ;; readline
                :unix-opts
