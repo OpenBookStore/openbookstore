@@ -96,7 +96,39 @@ Slime reminders:
       "white"
       "#eee9e9"))
 
-;;; Load templates.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Templates.
+;;
+;; Before compiling them with Djula, we tell Djula to compile them in-memory.
+;; This is for binary releases.
+;;
+;; But for development, we like them to be on filesystem and to be re-read on change.
+;; See SET-DEVEL-PROFILE.
+;;
+;; So, we grab all our templates defined in the .asd and compile them in-memory.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setf djula:*current-store*
+      (make-instance 'djula:memory-template-store
+		     :search-path (list (asdf:system-relative-pathname "bookshops"
+                                                                       "src/web/templates/"))))
+
+(let ((paths (djula:list-asdf-system-templates "bookshops" "src/web/templates")))
+  (loop for path in paths
+     do (uiop:format! t "~&Compiling template file in memory: ~a…~&" path)
+       (djula:compile-template* path))
+  (values t :all-done))
+
+;; Release setting: don't re-compile templates on change.
+;; However we LIKE this for development, see SET-DEVEL-PROFILE.
+(format t "~&NOTE: preventing Djula to recompile templates on change… set djula:*recompile-templates-on-change* to T for development (see SET-DEVEL-PROFILE).~&")
+(setf djula:*recompile-templates-on-change* nil)
+
+(uiop:format! t "~&All templates compiled in memory.~&")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Compile and load templates (as usual).
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defparameter +base.html+ (djula:compile-template* "base.html"))
 (defparameter +dashboard.html+ (djula:compile-template* "dashboard.html"))
 (defparameter +search.html+ (djula:compile-template* "search.html"))
@@ -106,6 +138,11 @@ Slime reminders:
 (defparameter +card-create.html+ (djula:compile-template* "card-create.html"))
 (defparameter +card-update.html+ (djula:compile-template* "card-edit.html"))
 (defparameter +receive.html+ (djula:compile-template* "receive.html"))
+
+;; from authentication.lisp
+(defparameter +no-nav-base.html+ (djula:compile-template* "no-nav-base.html"))
+(defparameter +permission-denied.html+ (djula:compile-template* "permission-denied.html"))
+(defparameter +login.html+ (djula:compile-template* "login.html"))
 
 ;; Testing the UI with HTMX websockets
 (defparameter +receive-ws.html+ (djula:compile-template* "receive-ws.html"))
@@ -522,9 +559,11 @@ Slime reminders:
   (hunchentoot:stop *server*))
 
 ;;;;;;;;;;;;;;;
-; Dev helpers ;
+;; Dev helpers
 ;;;;;;;;;;;;;;;
 (defun set-devel-profile ()
-  "- interactive debugger"
+  "- interactive debugger
+   - re-read Djula templates on change (maybe not enough, see in-memory template compilation)."
   (log:config :debug)
+  (setf djula:*recompile-templates-on-change* t)
   (setf hunchentoot:*catch-errors-p* nil))

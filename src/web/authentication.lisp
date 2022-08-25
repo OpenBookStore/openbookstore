@@ -11,9 +11,10 @@
 (defun logout ()
   (setf (hunchentoot:session-value :user) nil))
 
-(defparameter +no-nav-base.html+ (djula:compile-template* "no-nav-base.html"))
-(defparameter +permission-denied.html+ (djula:compile-template* "permission-denied.html"))
-(defparameter +login.html+ (djula:compile-template* "login.html"))
+;; We define these templates in web.lisp, where we add code to compile templates in memory (for binary releases).
+;; (defparameter +no-nav-base.html+ (djula:compile-template* "no-nav-base.html"))
+;; (defparameter +permission-denied.html+ (djula:compile-template* "permission-denied.html"))
+;; (defparameter +login.html+ (djula:compile-template* "login.html"))
 
 (defmacro render-template* (template &optional stream &rest template-arguments)
   (let ((template-arguments

@@ -112,7 +112,32 @@
                          (:file "authentication")
                          (:file "search")
                          (:file "web")
-                         (:file "api"))))
+                         (:file "api")))
+
+               (:static-file "README.md")
+
+               ;; Declare our templates to compile them in-memory, for delivery.
+               (:module "src/web/templates"
+                        :components
+                        ;; Order is important: the ones that extend base.html
+                        ;; must be declared after it, because we compile all of them
+                        ;; at build time.
+                        ((:static-file "login.html")
+                         (:static-file "404.html")
+                         (:static-file "base.html")
+                         (:static-file "dashboard.html")
+                         (:static-file "history.html")
+                         (:static-file "loans.html")
+                         (:static-file "search.html")
+                         (:static-file "stock.html")
+                         (:static-file "sell.html")
+                         (:static-file "receive.html")
+                         (:static-file "card-edit.html")
+                         (:static-file "card-stock.html")
+                         (:static-file "card-page.html")
+                         (:static-file "card-create.html")
+                         (:static-file "permission-denied.html")
+                         (:static-file "no-nav-base.html"))))
 
   ;; :build-operation "program-op"
   :entry-point "bookshops:run"
