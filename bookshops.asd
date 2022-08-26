@@ -111,6 +111,7 @@
                          (:file "messages")
                          (:file "authentication")
                          (:file "search")
+                         (:file "pre-web")
                          (:file "web")
                          (:file "api")))
 
@@ -137,7 +138,13 @@
                          (:static-file "card-page.html")
                          (:static-file "card-create.html")
                          (:static-file "permission-denied.html")
-                         (:static-file "no-nav-base.html"))))
+                         (:static-file "no-nav-base.html")))
+
+               ;; Static files (JS, CSS)
+               (:module "src/static"
+                        :components
+                        ((:static-file "openbookstore.js")
+                         (:static-file "card-page.js"))))
 
   ;; :build-operation "program-op"
   :entry-point "bookshops:run"
@@ -157,6 +164,7 @@
 
 
 ;; Don't ship libssl, rely on the target OS'.
+;; Needs to require or quickload cl+ssl before we can compile and load this .asd file? :S
 #+linux (deploy:define-library cl+ssl::libssl :dont-deploy T)
 #+linux (deploy:define-library cl+ssl::libcrypto :dont-deploy T)
 

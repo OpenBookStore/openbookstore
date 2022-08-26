@@ -156,21 +156,52 @@ Slime reminders:
 ;;;
 ;;; Serve static assets
 ;;;
-(defparameter *default-static-directory* "src/static/"
-  "The directory where to serve static assets from (STRING). If it starts with a slash, it is an absolute directory. Otherwise, it will be a subdirectory of where the system :abstock is installed.
-  Static assets are reachable under the /static/ prefix.")
+;;; Two possibilities:
+;;; - the app is run from source: use the usual create-folder-dispatcher-and-handler
+;;; - the app is built for a standalone binary: we must get the static files content at compilation and serve them later. Hunchentoot must not access the file system, it won't find the files anymore.
+
+;;
+;; 1) The app is run from sources.
+;;
+
+;; *default-static-directory* is defined earlier in pre-web.lisp
 
 (defun serve-static-assets ()
-  ;TODO: does not load our openbookstore.js file. Does it now ?
-  (if (deploy:deployed-p)
-      (progn
-        (log:info "serve-static-assets: handle for standalone binary")
-        "src/static")                      ;; TODO:
-      (push (hunchentoot:create-folder-dispatcher-and-handler
-             "/static/" (merge-pathnames *default-static-directory*
-                                         (asdf:system-source-directory :bookshops) ;; => NOT src/
-                                         ))
-            hunchentoot:*dispatch-table*)))
+  "Serve static assets under the /src/static/ directory when called with the /static/ URL root.
+  See serve-static-assets-for-release to use in a binary release."
+  (push (hunchentoot:create-folder-dispatcher-and-handler
+         "/static/" (merge-pathnames *default-static-directory*
+                                     (asdf:system-source-directory :bookshops) ;; => NOT src/
+                                     ))
+        hunchentoot:*dispatch-table*))
+
+;;
+;; 2) We build a binary and we want to include static files.
+;;
+
+;; see pre-web.lisp
+;; Because we use the #. reader macro, we need to define some things in another file,
+;; that is loaded when this one is loaded.
+
+(defun serve-static-assets-for-release ()
+  "In a binary release, Hunchentoot can not serve files under the file system: we are on another machine and the files are not there.
+  Hence we need to get the content of our static files into memory and give them to Hunchentoot."
+  (push
+   (hunchentoot:create-regex-dispatcher "/static/openbookstore\.js"
+                                        (lambda ()
+                                          ;; Returning the result of the function calls silently fails. We need to return a string.
+                                          ;; Here's the string, read at compile time.
+                                          #.(%serve-static-file "openbookstore.js")))
+   hunchentoot:*dispatch-table*)
+
+  (push
+   (hunchentoot:create-regex-dispatcher "/static/card-page\.js"
+                                        (lambda ()
+                                          #.(%serve-static-file "card-page.js")))
+   hunchentoot:*dispatch-table*))
+
+#+#:only-for-devel
+(setf hunchentoot:*dispatch-table* nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Some web utils.
@@ -551,7 +582,11 @@ Slime reminders:
 
   (setf *server* (make-instance 'easy-routes:easy-routes-acceptor :port port))
   (hunchentoot:start *server*)
-  (serve-static-assets)
+  (if (deploy:deployed-p)
+      ;; Binary release: don't serve files by reading them from disk.
+      (serve-static-assets-for-release)
+      ;; Normal setup, running from sources: serve static files as usual.
+      (serve-static-assets))
   (uiop:format! t "~&Application started on port ~a.~&" port))
 
 (defun stop-app ()
