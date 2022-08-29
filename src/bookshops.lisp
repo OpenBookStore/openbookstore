@@ -3,7 +3,8 @@
 (defun init ()
   "Init i18n, connect to the DB,..."
   (bookshops.models:connect)
-  (i18n-load)
+  ;; Disabled until we ship the translation files into the binary release.
+  ;; (i18n-load)
   (log:config :error))
 
 (defun handle-parser-error (c)

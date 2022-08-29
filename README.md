@@ -414,6 +414,8 @@ This software is available in other languages than english.
 
 See the makefile and `i18n-load` in `utils.lisp`.
 
+NOTE: i18n is currently disabled in the released binary.
+
 
 # Dev
 

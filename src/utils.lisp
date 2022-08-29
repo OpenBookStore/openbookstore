@@ -55,8 +55,11 @@
       (float param)
       (t (error (format nil "ensure-float error: the parameter ~a is of type ~a and we don't know how to make it a float." param (type-of param)))))))
 
-(defun _ (a) (cl-i18n:translate a))
+;; Disabled until we ship the translation files into the binary release.
+;; (defun _ (a) (cl-i18n:translate a))
+(defun _ (s) s)
 
+;; Disabled until we ship the translation files into the binary release.
 (defun i18n-load ()
   (if (deploy:deployed-p)
       ;; Running binary release: we can't find the files on the file system. TODO:
