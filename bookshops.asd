@@ -9,7 +9,7 @@
 (uiop:format! t "~&------- UIOP version: ~a~&" uiop:*uiop-version*)
 
 (asdf:defsystem "bookshops"
-  :version "0.1.1"
+  :version "0.2"
   :author "vindarel"
   :license "GPL3"
   :description "Free software for bookshops."
