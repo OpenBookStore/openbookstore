@@ -120,7 +120,7 @@ Slime reminders:
   (values t :all-done))
 
 ;; Release setting: don't re-compile templates on change.
-;; However we LIKE this for development, see SET-DEVEL-PROFILE.
+;; However we NEED this for development, see SET-DEVEL-PROFILE.
 (format t "~&NOTE: preventing Djula to recompile templates on change… set djula:*recompile-templates-on-change* to T for development (see SET-DEVEL-PROFILE).~&")
 (setf djula:*recompile-templates-on-change* nil)
 
@@ -363,6 +363,7 @@ Slime reminders:
     (bookshops.models:add-to (models:default-place) book :quantity quantity)
     (redirect-to-search-result referer-route q book)))
 
+;; Card view.
 (bookshops.models:define-role-access add-or-create-route :view :visitor)
 (defroute route-card-page ("/card/:slug" :method :GET :decorators ((@check-roles add-or-create-route)))
     (&get raw)
@@ -387,18 +388,31 @@ Slime reminders:
       (t
        (render-template* +404.html+ nil)))))
 
+;; Carde create: GET.
 (models:define-role-access card-create-route :view :editor)
 (defroute card-create-route ("/card/create" :method :get
                                             :decorators ((@check-roles card-create-route)))
-    ()
+    (title isbn price authors shelf-id)
   ;; see also: the API for POST updates.
   ;; (describe (hunchentoot:start-session) t)
   ;; (log:info (bookshops.messages::add-message "Hello message :)"))
-  (render-template* +card-create.html+ nil
-                    :shelves (models::find-shelf)
-                    :title "New book - OpenBookstore"
-                    :messages/status (bookshops.messages:get-message/status)))
+  ;;
+  ;; If we have URL params, that means we tried to submit a form,
+  ;; and got a validation error, so we want to re-show the data submitted.
+  ;; Like a form does.
+  ;; But… we don't show erroneous fields in red and we do very little client side validation…
+  (let ((card (models:make-book :title title
+                                :isbn isbn
+                                :price price
+                                :authors authors
+                                :shelf-id shelf-id)))
+    (render-template* +card-create.html+ nil
+                      :shelves (models::find-shelf)
+                      :title "New book - OpenBookstore"
+                      :card card
+                      :messages/status (bookshops.messages:get-message/status))))
 
+;; Carde create: POST.
 (models:define-role-access card-create/post-route :view :editor)
 (defroute card-create/post-route ("/card/create" :method :post
                                                  :decorators ((@check-roles card-create-route)))
@@ -413,7 +427,15 @@ Slime reminders:
   (when (and (str:non-blank-string-p isbn)
              (not (bookshops.utils:isbn-p isbn)))
     (bookshops.messages::add-message (format nil "This doesn't look like an ISBN: ~a" isbn) :status :warning)
-    (hunchentoot:redirect "/card/create"))
+    (hunchentoot:redirect
+     ;; Redirect to the create page, give the pre-entered data as URL params.
+     ;; We could also use session data.
+     (easy-routes:genurl 'card-create/post-route
+                         :title title
+                         :isbn isbn
+                         :price price
+                         :authors authors
+                         :shelf-id shelf-id)))
   (handler-case
       (let ((book (models:make-book :title title
                                     :isbn (bookshops.utils:clean-isbn isbn)
