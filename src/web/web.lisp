@@ -392,7 +392,7 @@ Slime reminders:
 (models:define-role-access card-create-route :view :editor)
 (defroute card-create-route ("/card/create" :method :get
                                             :decorators ((@check-roles card-create-route)))
-    (title isbn price authors shelf-id)
+    (title isbn price authors shelf-id new-shelf-name)
   ;; see also: the API for POST updates.
   ;; (describe (hunchentoot:start-session) t)
   ;; (log:info (bookshops.messages::add-message "Hello message :)"))
@@ -405,11 +405,16 @@ Slime reminders:
                                 :isbn isbn
                                 :price price
                                 :authors authors
-                                :shelf-id shelf-id)))
+                                :shelf-id shelf-id))
+        ;; More data we want to pass along to the form.
+        ;; so actually… we don't really need the card object, only
+        ;; a big form-data.
+        (more-form-data (dict :new-shelf-name new-shelf-name)))
     (render-template* +card-create.html+ nil
                       :shelves (models::find-shelf)
                       :title "New book - OpenBookstore"
                       :card card
+                      :more-form-data more-form-data
                       :messages/status (bookshops.messages:get-message/status))))
 
 ;; Carde create: POST.
@@ -417,13 +422,13 @@ Slime reminders:
 (defroute card-create/post-route ("/card/create" :method :post
                                                  :decorators ((@check-roles card-create-route)))
     ;; title is mandatory, the rest is optional.
-    (title isbn price authors shelf-id)
+    (title isbn price authors shelf-id new_shelf_name)
 
   (when (str:blankp title)
     (bookshops.messages::add-message "Please enter a title" :status :warning)
     (hunchentoot:redirect "/card/create"))
 
-  ;XXX: handle more than one validation message.
+  ;; XXX: handle more than one validation message.
   (when (and (str:non-blank-string-p isbn)
              (not (bookshops.utils:isbn-p isbn)))
     (bookshops.messages::add-message (format nil "This doesn't look like an ISBN: ~a" isbn) :status :warning)
@@ -435,19 +440,22 @@ Slime reminders:
                          :isbn isbn
                          :price price
                          :authors authors
-                         :shelf-id shelf-id)))
+                         :shelf-id shelf-id
+                         :new-shelf-name new_shelf_name)))
   (handler-case
       (let ((book (models:make-book :title title
                                     :isbn (bookshops.utils:clean-isbn isbn)
                                     :authors authors
                                     :shelf-id shelf-id
+                                    :new-shelf-name new_shelf_name
                                     :price (utils:ensure-float price))))
         (mito:save-dao book)
         (bookshops.messages:add-message "The book was created succesfully.")
         (hunchentoot:redirect "/card/create"))
     (error (c)
       ;; XXX: 404 handled by hunchentoot
-      (format *error-output* c))))
+      (format *error-output* "An unexpected error happened: ~a" c)
+      (error c))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Edit/update an existing card.

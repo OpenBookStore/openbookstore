@@ -487,14 +487,19 @@ searches. This method was thought the most portable.
 
 (defun make-book (&key title isbn authors details-url cover-url publisher
                     date-publication price datasource
-                    shelf-id shelf)
+                    shelf shelf-id new-shelf-name)
   "Create a Book instance. Not yet saved on DB. XXX: my newer methods are not consistent.
   Authors are saved as a string, not as related objects.
 
   - shelf-id: get existing shelf from this ID
-  - shelf: shelf object."
+  - shelf: shelf object
+  - new-shelf-name (string): optional name to create a new shelf."
   (let ((shelf-obj (or shelf
-                       (when shelf-id (find-shelf-by :id shelf-id))))
+                       (when shelf-id
+                         (find-shelf-by :id shelf-id))
+                       (when (and new-shelf-name
+                                  (stringp new-shelf-name))
+                         (make-shelf new-shelf-name))))
         (book (make-instance 'book
                              :datasource datasource
                              :details-url details-url

@@ -81,6 +81,7 @@
                   placeholder="price"/>
             </div>
 
+            <!-- Select an existing shelf -->
             <div class="control">
               <label class="label"> Shelf </label>
               <div  class="select">
@@ -95,6 +96,19 @@
 
                   {% endfor %}
                 </select>
+              </div>
+
+              <!-- or create a new shelf by giving a new name -->
+              <div>
+                <label>
+                   Or, create a new shelf:
+                </label>
+                <input type="text" for="new_shelf_name" name="new_shelf_name" id="new_shelf_name"
+                       {% if more-form-data.new-shelf-name %}
+                       value="{{ more-form-data.new-shelf-name }}"
+                       {% endif %}
+                    class="input"
+                    placeholder="New shelf"/>
               </div>
 
             </div>

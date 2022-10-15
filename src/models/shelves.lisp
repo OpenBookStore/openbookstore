@@ -30,7 +30,7 @@
       (format stream "~a - ~a" (mito:object-id obj) name))))
 
 (defun make-shelf (name)
-  "Save a new shelf in DB.
+  "Get or create a new shelf in DB.
 
   Check if a shelf with that name already exists.
   The check is done with a lowercase and ascii version of the name.
