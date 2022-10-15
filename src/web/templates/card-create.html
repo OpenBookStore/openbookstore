@@ -87,7 +87,6 @@
                 <select id="shelf-id" name="shelf-id" for="shelf-id">
                   <option value="">  </option>
                   {% for shelf in shelves %}
-                  <option value="{{ shelf.id }}"> {{ shelf.name }} </option>
                   {% if card.shelf.id == shelf.id %}
                   <option value="{{ shelf.id }}" selected> {{ shelf.name }} </option>
                   {% else %}
