@@ -203,9 +203,9 @@ searches. This method was thought the most portable.
 
 (defmethod print-object ((book book) stream)
   (print-unreadable-object (book stream :type t)
-    (with-accessors ((title title) (shelf shelf))
+    (with-accessors ((id mito:object-id) (title title) (shelf shelf))
         book
-      (format stream "~a. SHELF: ~a" title (name shelf)))))
+      (format stream "~a - ~a. SHELF: ~a" id title (name shelf)))))
 
 (defun pprint-books (results)
   "Pretty print this list of books, as rows."
