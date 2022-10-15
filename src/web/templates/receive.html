@@ -62,14 +62,22 @@
           <div v-for="card in reversedCards()" :key="counter">
 
             <!-- After fetch, display the book data. -->
+            <!-- Beware of property names: the card object is encoded as JSON,
+                 and currently cl-json will easily transform lisp-case to camelCase. -->
+
+            <!-- A refresher: use Vue's escape symbol + Djula's one in HTML body,
+                 use v-bind: for properties.-->
+
             <div v-if="card.entry.card && card.entry.card.title">
               <div class="card">
                 <div class="card-content">
                   <div class="media">
                     <div class="media-left">
-                      <figure class="image is-48x48">
-                        <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+
+                      <figure class="image is-48x48" >
+                        <img v-bind:src="card.entry.card.coverUrl">
                       </figure>
+
                     </div>
                     <div class="media-content">
                       <div class="title is-5">
