@@ -6,7 +6,8 @@
 -->
 
 {% block search_form %}
-<form id="search-form" action="{{ route }}" style="margin-bottom: 3em;">
+
+<form id="search-form" action="{{ route }}" style="margin-bottom: 3em;" hx-target="results">
 
   <div class="field">
     <label class="label"> Search </label>
