@@ -311,7 +311,7 @@ Slime reminders:
 (bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute add-or-create-route ("/card/add-or-create/" :method :post
                                                       :decorators ((@check-roles add-or-create-route)))
-    (q title isbn cover-url publisher (updatep :parameter-type 'boolean
+    (q title isbn price authors cover-url publisher (updatep :parameter-type 'boolean
                                                :init-form t)
        (book-id :parameter-type 'string :init-form "")
        (referer-route :parameter-type 'string :init-form "/search"))
@@ -319,8 +319,10 @@ Slime reminders:
           (if (str:blank? book-id)
               (models:find-existing
                (models:make-book :title title :isbn isbn :cover-url cover-url
-                          :publisher publisher)
-                             :update updatep)
+                                 :price price
+                                 :authors (str:trim authors)
+                                 :publisher publisher)
+               :update updatep)
               (models:find-by :id book-id))))
     (models:save-book book)
     (render-template* +card-page.html+ nil
@@ -354,7 +356,7 @@ Slime reminders:
 (defroute card-quick-add-route ("/card/quick-add-stock/" :method :post
                                                          :decorators ((@check-roles add-or-create-route)))
     (q (quantity :parameter-type 'integer :init-form 1)
-       title isbn price cover-url publisher
+       title isbn price authors cover-url publisher
        (updatep :parameter-type 'boolean :init-form t)
        (book-id :parameter-type 'string :init-form "")
        (referer-route :parameter-type 'string :init-form "/search"))
@@ -363,6 +365,7 @@ Slime reminders:
              (models:find-existing
               (models:make-book :title title :isbn isbn :cover-url cover-url
                                 :price price
+                                :authors (str:trim authors)
                                 :publisher publisher)
               :update updatep)
              (models:find-by :id book-id))))
@@ -411,7 +414,7 @@ Slime reminders:
   (let ((card (models:make-book :title title
                                 :isbn isbn
                                 :price price
-                                :authors authors
+                                :authors (str:trim authors)
                                 :shelf-id shelf-id))
         ;; More data we want to pass along to the form.
         ;; so actually… we don't really need the card object, only
@@ -446,13 +449,13 @@ Slime reminders:
                          :title title
                          :isbn isbn
                          :price price
-                         :authors authors
+                         :authors (str:trim authors)
                          :shelf-id shelf-id
                          :new-shelf-name new_shelf_name)))
   (handler-case
       (let ((book (models:make-book :title title
                                     :isbn (bookshops.utils:clean-isbn isbn)
-                                    :authors authors
+                                    :authors (str:trim authors)
                                     :shelf-id shelf-id
                                     :new-shelf-name new_shelf_name
                                     :price (utils:ensure-float price))))
@@ -489,7 +492,7 @@ Slime reminders:
     ;; title is mandatory, the rest is optional.
     (title isbn price authors shelf-id)
 
-  (log:info "updating card: " title price)
+  (log:info "updating card: " title price authors)
   ;;
   ;; Begin form validation.
   ;; XXX: handle more than one validation message at the same time.
@@ -512,6 +515,7 @@ Slime reminders:
     (let ((card (models::find-by :id id)))
       ;; Convert the float price back to the integer, price in cents.
       (setf price (utils:price-float-to-integer price))
+      (setf authors (str:trim authors))
       (log:info "new price: " price)
       (setf card (models::update-book-with card
                                            `((:title ,title)
@@ -539,6 +543,7 @@ Slime reminders:
         ;; Convert the float price back to the integer, price in cents.
         (setf price (utils:price-float-to-integer price))
         (log:info "new price: " price)
+        (setf authors (str:trim authors))
 
         (setf book (models::update-book-with book
                                              `((:title ,title)

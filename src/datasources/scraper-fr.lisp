@@ -209,6 +209,10 @@
         (cover-url (parse-cover-url node))
         (details-url (parse-details-url node))
         bk)
+
+    ;; Every field of this dict must be present in search.html
+    ;; for the add-or-create and quick-add-stock forms, where we save
+    ;; the book to our DB.
     (setf bk (make-book :title title
                         :isbn isbn
                         :datasource "fr:librairiedeparis"
