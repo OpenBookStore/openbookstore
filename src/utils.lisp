@@ -7,6 +7,7 @@
            #:clean-isbn
            #:extract-float
            #:ensure-float
+           #:price-float-to-integer
            #:format-date
            #:i18n-load
            #:_
@@ -42,20 +43,59 @@
   (check-type s string)
   (ignore-errors
     ;; the regexp should be enough, given we parse a known html beforehand.
-    (parse-float (ppcre:scan-to-strings "-?\\d+.?\\d*" s))))
+    (parse-float (ppcre:scan-to-strings "-?\\d+.?\\d*" s)
+                 :type 'double-float)))
+
+;; XXX: copied from scraper-fr
+(defun ensure-integer (number)
+  "Return this number as an integer (TRUNCATE and discard decimals).
+  If it isn't a number, return 0.
+
+  Typically, for a price that is parsed as a float, NUMBER should be
+  the price in cents (x 100), and we return it as an integer.
+
+  - number: float
+
+  Return: an integer or 0."
+  ;; warn: copied to model-utils.lisp. The scraper module should stay completely independant of
+  ;; the application code.
+  (if (and number
+           (not (equalp number 0))
+           (numberp number))
+      (truncate number)
+      (progn
+        ;; log or warning? Both!
+        (log:warn "Could not parse ~s to an integer price." number)
+        0)))
 
 (defun ensure-float (param)
-  "Return a float from this param, if possible.
-  If it is a string, parse it for a float."
+  "Return a double float from this param, if possible.
+  If it is a string, parse it for a double float."
   (when param
     (typecase param
-      (string (or (ignore-errors (parse-float:parse-float param))
-                  0.0))
-      (integer (coerce param 'float))
+      (string (or (ignore-errors (parse-float:parse-float param :type 'double-float))
+                  0.0d0))
+      (integer (coerce param 'double-float))
       (float param)
-      (t (error (format nil "ensure-float error: the parameter ~a is of type ~a and we don't know how to make it a float." param (type-of param)))))))
+      (t (error (format nil "ensure-float error: the parameter ~a is of type ~a and we don't know how to make it a double-float." param (type-of param)))))))
 
-;; Disabled until we ship the translation files into the binary release.
+(defun price-float-to-integer (s/float)
+  "From a string or a (double) float, return an integer,
+  the price in cents (x100).
+
+  Use this before updating a book object."
+  (ensure-integer (* 100 (ensure-float s/float))))
+#+(or)
+(progn
+  (assert (= 990 (price-float-to-integer "9.90")))
+  (assert (= 990 (price-float-to-integer 9.90d0)))
+  ;; Beware of single floats:
+  (assert (= 989 (price-float-to-integer 9.90)))
+  ;; Commas don't work:
+  (assert (= 0 (price-float-to-integer "9,90"))))
+
+
+;; i18n disabled until we ship the translation files into the binary release.
 ;; (defun _ (a) (cl-i18n:translate a))
 (defun _ (s) s)
 

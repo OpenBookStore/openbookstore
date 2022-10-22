@@ -64,40 +64,43 @@
         {% endblock card_content %}
       </div>
       <div class="media-right">
-          <div class="level">
-              <span class="level-item" name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
-              <span class="tag level-item
-{{ card | quantity | quantity-style:(:positive "is-success" :negative "is-danger is-light" :zero "") }}">
-                  x {{ card | quantity }}</span>
-          </div>
+        <div class="level">
+          <span class="level-item" name="price" data-price="{{ card.price }}"> {{ card.price | price }} €</span>
+          <span class="tag level-item
+                       {{ card | quantity | quantity-style:(:positive "is-success" :negative "is-danger is-light" :zero "") }}">
+            x {{ card | quantity }}</span>
+        </div>
 
         <!-- TODO how to handle duplication of forms? how to stop them getting out of sync
              with the end point parameters too? -->
         <div class="level">
-            {% block card_button_row %}
-            <form action="/card/add-or-create/" method="POST" class="level-item">
-                <input name="q" type="hidden" value="{{ q }}">
-                <input name="referer-route" type="hidden" value="{{ route }}">
-                <input name="book-id"  type="hidden" value="{{ card.id ]}">
-                <input name="title" type="hidden" value="{{ card.title }}">
-                <input name="title" type="hidden" value="{{ card.title }}">
-                <input name="isbn" type="hidden"  value="{{ card.isbn }}" />
-                <input name="cover-url" type="hidden" value="{{ card.cover-url }}" />
-                <input name="publisher" type="hidden" value="{{ card.publisher }}" />
-                <input type="submit" class="button" value="Add...">
-            </form>
-            <form action="/card/quick-add-stock/" method="POST" class="level-item">
-                <input name="quantity" type="hidden" value="1" />
-                <input name="q" type="hidden" value="{{ q }}">
-                <input name="referer-route" type="hidden" value="{{ route }}">
-                <input name="book-id" type="hidden" value="{{ card.id }}" />
-                <input name="title" type="hidden" value="{{ card.title }}" />
-                <input name="isbn" type="hidden"  value="{{ card.isbn }}" />
-                <input name="cover-url" type="hidden" value="{{ card.cover-url }}"/>
-                <input name="publisher" type="hidden" value="{{ card.publisher }}" />
-                <input type="submit" class="button" value="+1">
-            </form>
-            {% endblock card_button_row %}
+          {% block card_button_row %}
+          <form action="/card/add-or-create/" method="POST" class="level-item">
+            <input name="q" type="hidden" value="{{ q }}">
+            <input name="referer-route" type="hidden" value="{{ route }}">
+            <input name="book-id"  type="hidden" value="{{ card.id ]}">
+            <input name="title" type="hidden" value="{{ card.title }}">
+            <input name="title" type="hidden" value="{{ card.title }}">
+            <input name="isbn" type="hidden"  value="{{ card.isbn }}" />
+            <input name="price" type="hidden"  value="{{ card.price }}" />
+            <input name="cover-url" type="hidden" value="{{ card.cover-url }}" />
+            <input name="publisher" type="hidden" value="{{ card.publisher }}" />
+            <input type="submit" class="button" value="Add...">
+          </form>
+
+          <form action="/card/quick-add-stock/" method="POST" class="level-item">
+            <input name="quantity" type="hidden" value="1" />
+            <input name="q" type="hidden" value="{{ q }}">
+            <input name="referer-route" type="hidden" value="{{ route }}">
+            <input name="book-id" type="hidden" value="{{ card.id }}" />
+            <input name="title" type="hidden" value="{{ card.title }}" />
+            <input name="isbn" type="hidden"  value="{{ card.isbn }}" />
+            <input name="price" type="hidden"  value="{{ card.price }}" />
+            <input name="cover-url" type="hidden" value="{{ card.cover-url }}"/>
+            <input name="publisher" type="hidden" value="{{ card.publisher }}" />
+            <input type="submit" class="button" value="+1">
+          </form>
+          {% endblock card_button_row %}
         </div>
       </div>
 

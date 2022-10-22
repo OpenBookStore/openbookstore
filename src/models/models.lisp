@@ -109,8 +109,8 @@ searches. This method was thought the most portable.
     ;; we don't default it to 0 (nil denotes a missing field),
     ;; and it might be useful for other objects.
     :initform nil
-    :type (or integer float null) ;; integer: for compatibility. Otherwise, Mito is strict about float and fails.
-    :col-type (or :float :null))  ;; (or :integer :float :null) fails in tests
+    :type (or integer null) ;; integer: for compatibility. Otherwise, Mito is strict about float and fails.
+    :col-type (or :integer :null))
 
    (date-publication
     :accessor date-publication
@@ -192,13 +192,14 @@ searches. This method was thought the most portable.
 
 (defmethod price ((book book))
   (cond
-    ;; should not happen now with the initform to 0.
     ((null (slot-value book 'price))
+     ;; should not happen now with the initform to 0.
      0)
     (t (slot-value book 'price))))
 
 (defmethod (setf price) (price (book book))
   "Set the price of this book."
+  ;; TODO: do something to transform float to int x 100 ?
   (setf (slot-value book 'price) price))
 
 (defmethod print-object ((book book) stream)

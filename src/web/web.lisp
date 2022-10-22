@@ -29,7 +29,9 @@ Slime reminders:
 
 ;;; Djula filters.
 (djula:def-filter :price (val)
-  (format nil "~,2F" val))
+  "Price is an integer, divide by 100 to get its value.
+  Return as a string, number printed with 2 decimals."
+  (format nil "~,2F" (/ val 100)))
 
 (defun card-url (card)
   "Create a full URL to uniquely identify this card."
@@ -346,9 +348,13 @@ Slime reminders:
     (redirect-to-search-result referer-route q card)))
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
+;; Create a book in DB given the URL parameters and go back to the search results.
+;; In search.html, the form has hidden fields to pass along the title, the ISBN, the price…
+;; Redirect to the original route.
 (defroute card-quick-add-route ("/card/quick-add-stock/" :method :post
                                                          :decorators ((@check-roles add-or-create-route)))
-    (q (quantity :parameter-type 'integer :init-form 1) title isbn cover-url publisher
+    (q (quantity :parameter-type 'integer :init-form 1)
+       title isbn price cover-url publisher
        (updatep :parameter-type 'boolean :init-form t)
        (book-id :parameter-type 'string :init-form "")
        (referer-route :parameter-type 'string :init-form "/search"))
@@ -356,6 +362,7 @@ Slime reminders:
          (if (str:blank? book-id)
              (models:find-existing
               (models:make-book :title title :isbn isbn :cover-url cover-url
+                                :price price
                                 :publisher publisher)
               :update updatep)
              (models:find-by :id book-id))))
@@ -478,26 +485,39 @@ Slime reminders:
 ;;; card update POST
 (models:define-role-access card-update/post-route :view :editor)
 (defroute card-update/post-route ("/card/update/:id" :method :post
-                                                 :decorators ((@check-roles card-create-route)))
+                                                     :decorators ((@check-roles card-create-route)))
     ;; title is mandatory, the rest is optional.
     (title isbn price authors shelf-id)
 
+  (log:info "updating card: " title price)
+  ;;
   ;; Begin form validation.
+  ;; XXX: handle more than one validation message at the same time.
+  ;;
+  ;; Do we have a title?
+  ;; (shouldn't happen client side, it is a required field)
   (when (str:blankp title)
     (bookshops.messages::add-message "Please enter a title" :status :warning)
+    ;; ;XXX: redirect to update form.
     (hunchentoot:redirect "/card/create"))
 
-  ;XXX: handle more than one validation message.
+  ;; Is it a valid ISBN, if any?
   (when (and (str:non-blank-string-p isbn)
              (not (bookshops.utils:isbn-p isbn)))
     (bookshops.messages::add-message (format nil "This doesn't look like an ISBN: ~a" isbn) :status :warning)
 
+    ;; Update our current card object (don't save it),
+    ;; so we show the user data in the form.
+    ;; See also what I did slightly differently for the creation form.
     (let ((card (models::find-by :id id)))
+      ;; Convert the float price back to the integer, price in cents.
+      (setf price (utils:price-float-to-integer price))
+      (log:info "new price: " price)
       (setf card (models::update-book-with card
-                                             `((:title ,title)
-                                               (:isbn ,isbn)
-                                               (:price ,price)
-                                               (:authors ,authors))))
+                                           `((:title ,title)
+                                             (:isbn ,isbn)
+                                             (:price ,price)
+                                             (:authors ,authors))))
       (return-from card-update/post-route
         (render-template* +card-update.html+ nil
                           :card card
@@ -505,11 +525,21 @@ Slime reminders:
                           :title (format nil "Edit: ~a - OpenBookstore" (str:shorten 40 (models:title card) :ellipsis "…"))
                           :messages/status (bookshops.messages:get-message/status)))))
 
+  ;;
+  ;; XXX: validate other fields, even if they have a little client-side validation:
+  ;; - price
+
+  ;;
   ;; Form validation OK.
+  ;;
   (handler-case
       (let ((book (models:find-by :id id))
             (shelf (models::find-shelf-by :id shelf-id)))
         ;; Update fields.
+        ;; Convert the float price back to the integer, price in cents.
+        (setf price (utils:price-float-to-integer price))
+        (log:info "new price: " price)
+
         (setf book (models::update-book-with book
                                              `((:title ,title)
                                                (:isbn ,isbn)

@@ -55,9 +55,11 @@
     (&post (card-id :real-name "cardId" :parameter-type 'integer)
            (shelf-id :real-name "shelfId" :parameter-type 'integer))
   "Update a Card.
-  Works when we choose the blank option from the HTML select too, yeah:
+  Currently only the shelf: called from card.js with the shelf select.
+  The complete card update form is in card-update/post-route.
+  Changing the shelf works when we choose the blank option from the HTML select too:
   FIND-SHELF-BY :id NIL returns NIL, and it works. Handy."
-  (log:info card-id shelf-id)
+  (log:info "updating card: " card-id shelf-id)
   (let ((card (models:find-by :id card-id))
         (shelf (models::find-shelf-by :id shelf-id)))
     (log:info "existing card: " card)

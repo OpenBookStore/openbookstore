@@ -9,7 +9,7 @@
 (in-package :bookshops.datasources.scraper-fr)
 
 ;; Print hash-tables readably (used for debug logs).
-(serapeum:toggle-pretty-print-hash-table)
+(serapeum:toggle-pretty-print-hash-table t)
 
 (defparameter *french-search* "http://www.librairie-de-paris.fr/listeliv.php?MOTS={QUERY}&SUPPORT=&RECHERCHE=simple&TRI=&DISPOCHE=&RAYONS=&LIVREANCIEN=2&CSR="
   "French source of books. The {query} string will be replaced by the list
@@ -27,13 +27,47 @@
 
 (defparameter *debug* nil "xxx: just use (log:debug)")
 
+;; Conditions.
+(define-condition parse-warning (simple-warning)
+  ((data :initarg :data
+         :initform nil
+         :accessor parse-warning-data
+         :documentation "The element we are trying to parse (ex: the price).")
+   (message :initarg :message
+            :initform ""
+            :accessor parse-warning-message))
+  (:report (lambda (c stream)
+             (format stream "scraper warning: ~a" (parse-warning-message c)))))
+
+(define-condition price-parse-warning (parse-warning)
+  ()
+  (:report (lambda (c stream)
+             (declare (ignorable c))
+             (format stream "scraper warning"))))
+
 ;; bad: copied from utils.lisp.
 (defun extract-float (s)
-  "Extract a float from the given string."
+  "Extract a double float from the given string.
+
+  Use a double float to delay floating point errors.
+  A simple (* 100 9.90), to turn a price into an integer, is not 990.
+  Using a double is OK.
+
+  Return: a double float, or NIL on error."
   (check-type s string)
   (ignore-errors
-    ;; the regexp should be enough, given we parse a known html beforehand.
-    (parse-float (ppcre:scan-to-strings "-?\\d+.?\\d*" s))))
+    ;; The regexp should be enough for this scraper, we parse a known HTML.
+    ;; It will need to be adapted for other scrapers.
+    ;; parse-float has :junk-allowed t, but a regexp is a bit more solid.
+    ;; Example:
+    ;; (parse-float:parse-float "price 9.90 euros" :junk-allowed t)
+    ;; => NIL
+    (parse-float (ppcre:scan-to-strings "-?\\d+.?\\d*" s)
+                 :type 'double-float)))
+#+(or)
+(progn
+  (assert (= 9.90d0 (extract-float "9.90 €")))
+  (assert (= 990 (* 100 9.90d0))))      ;; try 9.90: rounding error.
 
 (defun get-url (url)
   "Http get this url.
@@ -81,9 +115,47 @@
               (attr :title)
               (elt0))))
 
+(defun ensure-integer (number)
+  "Return this number as an integer (TRUNCATE and discard decimals).
+  If it isn't a number, return 0.
+
+  Typically, for a price that is parsed as a float, NUMBER should be
+  the price in cents (x 100), and we return it as an integer.
+
+  - number: float
+
+  Return: an integer or 0."
+  ;; warn: copied to model-utils.lisp. The scraper module should stay completely independant of
+  ;; the application code.
+  (if (and number
+           (not (equalp number 0))
+           (numberp number))
+      (truncate number)
+      (progn
+        ;; log or warning? Both!
+        (log:warn "Could not parse ~s to an integer price." number)
+        (signal (make-condition 'parse-warning
+                                :message (format nil "fr scraper: could not transform ~S to an integer. Returning 0." number)
+                                :data number))
+        0)))
+
+;; usage:
+#+(or)
+(progn
+  (assert (= 1495 (ensure-integer (* 100 14.95))))
+  (handler-case
+      (assert (= 0 (ensure-integer "foo")))
+    (warning (c)
+      (princ c)
+      (print (parse-warning-data c)))))
+
 (defun parse-price (node)
   "Extract the price. `node': plump node."
-  (extract-float (node-selector-to-text ".item_prix" node)))
+  (let ((price (extract-float (node-selector-to-text ".item_prix" node))))
+    (let ((res (ensure-integer (* 100 price))))
+      (log:info "Price ~s is parsed as: ~s~&" price res)
+      res)
+    ))
 
 (defun parse-publisher (node)
   (with-log-error (:publisher)

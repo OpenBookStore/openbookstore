@@ -63,11 +63,12 @@
               <input type="text" for="price" name="price" id="price"
 
                   {% if card.price %}
-                  value="{{ card.price }}"
+                  value="{{ card.price | price }}"
                   {% endif %}
 
                   class="input"
-                  placeholder="price"/>
+                  pattern="[0-9].*"
+                  placeholder="price" />
             </div>
 
             <div class="control">
