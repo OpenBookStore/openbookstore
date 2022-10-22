@@ -3,12 +3,30 @@
         :mito)
   (:import-from :bookshops.models
                 :find-book
-                :price)
+                :price
+                :ensure-integer)
   (:import-from :bookshops.utils)
   (:export :parse-prices)
   (:local-nicknames (:models :bookshops.models)
                     (:utils :bookshops.utils))
-  (:documentation "Commands to work on the database (clean-up,...). Depends on models and needs cl-ppcre."))
+  (:documentation "Commands to work on the database (clean-up,...). Depends on models and needs cl-ppcre.
+
+- parse-prices
+  If some prices were saved as a string, turn them into numbers.
+  NB: might need an upgrade to save them as integers.
+
+- cleanup-prices
+
+- total-price
+  Compute the sum of all prices.
+
+- create-ascii-slots
+
+- cards-prices-to-integers
+  For all books, ensure their price is an integer (the price as cents).
+  Required on Oct, 22, when we changed the DB model to only accept prices as integers.
+
+"))
 
 (in-package :bookshops.management)
 
@@ -55,7 +73,7 @@
 
 
 (defun cleanup-prices ()
-  "When the currency symbol appears in the price, remove it.
+  "When the currency symbol appears in the price (currently only €), remove it.
   This should be useful during development of the datasources."
   (loop for card in (select-dao 'book
                       (sxql:where (:like :price "%€%")))
@@ -63,3 +81,21 @@
      do (setf (price card)
               (str:trim (str:replace-all "€" "" (price card))))
      do (save-dao card)))
+
+(defun cards-prices-to-integers ()
+  "If the price of a book is a float, transform it to an integer.
+
+  This can create rounding errors: if our price was badly saved as a float,
+  it could get rounding errors: 14.9499998092651 instead of 14.95,
+  and we will save 14.94 instead of 14.95.
+  That's OK for now (Oct, 2022), the only users are developers."
+  (let ((books (select-dao 'models::book
+                 (sxql:where (:not-null :price)))))
+    (loop for card in books
+       for price = (price card)
+       for new = (ensure-integer (* 100 price))
+       do (format t "~&~a results." (length books))
+       do (format t "~&converting price of ~a (~a): ~a -> ~a" (models::title card) (models::isbn card) price new)
+       do (setf (price card) new)
+       do (save-dao card)
+       do (format t " OK~&"))))

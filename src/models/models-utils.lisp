@@ -65,3 +65,28 @@ AND we would send a notification to the user."
                       shelf)))
          )
     data))
+
+(defun ensure-integer (number)
+  "Return this number as an integer (TRUNCATE and discard decimals).
+  If it isn't a number, return 0.
+
+  Typically, for a price that is parsed as a float, NUMBER should be
+  the price x 100, and we return it as an integer.
+
+  - number: float
+
+  Return: an integer or 0."
+  (if (and number
+           (not (equalp number 0))
+           (numberp number))
+      (truncate number)
+      (progn
+        ;; log or warning? Both!
+        (log:warn "Could not parse ~s to an integer price." number)
+        0)))
+
+;; usage:
+#+(or)
+(progn
+  (assert (= 1495 (ensure-integer (* 100 14.95))))
+  (assert (= 0 (ensure-integer "foo"))))
