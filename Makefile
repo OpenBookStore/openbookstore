@@ -5,12 +5,16 @@ all: test
 run:
 	rlwrap $(LISP) --load run.lisp
 build:
-	#TODO: update replic with multi args completion
 	# quickload cl+ssl: required to load the .asd, for Deploy.
+	# Don't reload templates and use a memory store.
+	#
+	# I use a feature flag, bc using djula:*recompile-templates-on-change*
+	# requires to load Djula before our app, and it isn't exactly the same meaning.
 	$(LISP)	--non-interactive \
 		--eval '(ql:quickload "deploy")' \
 		--eval '(ql:quickload "cl+ssl")' \
 		--load bookshops.asd \
+		--eval '(push :djula-binary *features*)' \
 		--eval '(ql:quickload :bookshops)' \
 		--eval '(asdf:make :bookshops)'
 

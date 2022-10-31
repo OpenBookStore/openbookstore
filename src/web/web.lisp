@@ -111,22 +111,40 @@ Slime reminders:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setf djula:*current-store*
-      (make-instance 'djula:memory-template-store
-		     :search-path (list (asdf:system-relative-pathname "bookshops"
-                                                                       "src/web/templates/"))))
+      (let ((search-path (list (asdf:system-relative-pathname "bookshops"
+                                                              "src/web/templates/"))))
+
+        ;; Possible issue: when I quickload this, I have a MEMORY store O_o
+        ;; Once I C-c C-c the file, the file system store is correctly created.
+
+        #-djula-binary
+        (progn
+          (uiop:format! t "~&Openbookstore: compiling templates in file system store.~&")
+          ;; By default, use a file-system store,
+          ;; reload templates during development.
+          (setf djula:*recompile-templates-on-change* t)
+          (make-instance 'djula:filesystem-template-store
+		         :search-path search-path))
+
+        ;; But, if this setting is set to NIL at load time, from the Makefile,
+        ;; we are building a standalone binary: use an in-memory template store.
+        ;;
+        ;; We also need to NOT re-compile templates on change.
+        #+djula-binary
+        (progn
+          (uiop:format! t "~&Openbookstore: compiling templates in MEMORY store.~&")
+          (uiop:format! t "~&NOTE: preventing Djula to recompile templates on change… set djula:*recompile-templates-on-change* to T for development (see SET-DEVEL-PROFILE).~&")
+          (setf djula:*recompile-templates-on-change* nil)
+          (make-instance 'djula:memory-template-store
+                         :search-path search-path))))
 
 (let ((paths (djula:list-asdf-system-templates "bookshops" "src/web/templates")))
   (loop for path in paths
-     do (uiop:format! t "~&Compiling template file in memory: ~a…~&" path)
+     do (uiop:format! t "~&Compiling template file: ~a…~&" path)
        (djula:compile-template* path))
   (values t :all-done))
 
-;; Release setting: don't re-compile templates on change.
-;; However we NEED this for development, see SET-DEVEL-PROFILE.
-(format t "~&NOTE: preventing Djula to recompile templates on change… set djula:*recompile-templates-on-change* to T for development (see SET-DEVEL-PROFILE).~&")
-(setf djula:*recompile-templates-on-change* nil)
-
-(uiop:format! t "~&All templates compiled in memory.~&")
+(uiop:format! t "~&Openbookstore: all templates compiled.~&")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Compile and load templates (as usual).
