@@ -41,7 +41,6 @@ const qsearchData = {
             this.$http.get(`/api/quick-search?q=${name}`)
                 .then(({ data }) => {
                     // here we go elsewhere if appropriate.
-                    console.log(data);
                     if (data && data.hasOwnProperty("go")) {
                         window.location = data.go;
                     } else if (data.hasOwnProperty("GO")) {
@@ -264,7 +263,7 @@ const sellPage = {
                 if (book.show && !book.error && book.card && book.quantity != 0) {
                     bk = {
                         id: book.card.id,
-                        price: book.card.price,
+                        price: book.price_sold,
                         quantity: book.quantity,
                         url: book.url
                     };
@@ -310,7 +309,6 @@ const sellPage = {
                     // Search for the bibliographic data.
                     this.$http.get(`/api/sell-search?q=${input}`)
                         .then(({ data }) => {
-                            // console.log("async book result: ", data);
                             var book = {input: this.books[cardindex].input,
                                         show: true,
                                         quantity: 1,
@@ -339,7 +337,6 @@ const sellPage = {
             this.isFetching = true;
             this.$http.get(`/api/sell-search?q=${input}`)
                 .then(({ data }) => {
-                    console.log("sell search results: ", data);
                     // If we get one unique result: add it.
                     if (data && data.hasOwnProperty("card")) {
                         this.newBook({ card: data.card, input });
@@ -363,9 +360,13 @@ const sellPage = {
 
         itemSelected: function (item) {
             // The item to sell is selected amongst the result list.
+            // (it is adding quickly if there is only 1 result, see above).
             if (item) {
-                // console.log("--- itemSelected: ", item, item.title, item.url, "card: ", item.card);
-                this.newBook({ card: item.card, input: this.search, url: item.url });
+                this.newBook({
+                    card: item.card,
+                    input: this.search,
+                    url: item.url,
+                });
             }
         },
 
@@ -384,6 +385,15 @@ const sellPage = {
             // Return: this new book index.
             params.show = true;
             params.quantity = 1;
+            // The price that will be edited by the user will be saved as the sold price.
+            // We don't want to v-bind the input to the original price,
+            // nor to a value we can change (this fails).
+            // We change it to a float (cents / 100).
+            if (params.card && params.card.price) {
+                params.price_sold = params.card.price / 100.0;
+            } else {
+                params.price_sold = 0.0;
+            }
             this.books.push(params);
             setTimeout(function() {this.search = ""; this.unsaved = true;}.bind(this));
             return this.books.length - 1;
@@ -407,7 +417,8 @@ const sellPage = {
         total: function () {
             const reducer = function (accum, val) {
                 if (val.show && val.card) {
-                    return accum + val.quantity * val.card.price;
+                    // Yes parenthesis matter to avoid float precision errors.
+                    return accum + val.quantity * ( val.price_sold * 100 ) / 100.0;
                 } else {
                     return accum;
                 }

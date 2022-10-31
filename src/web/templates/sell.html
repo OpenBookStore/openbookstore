@@ -84,7 +84,7 @@
 
                 <div class="tile" style="padding-left: 3em">
                   <b-field v-if="book.card">
-                    <b-input v-model="book.card.price"></b-input>
+                    <b-input v-model.number="book.price_sold">  </b-input>
                   </b-field>
                   <p class="control">
                     <b-button label="€" />
