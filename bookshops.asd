@@ -41,6 +41,7 @@
                ;; utils
                :alexandria
                :can
+               :function-cache          ;; scrapers
                :str
                :local-time
                :local-time-duration
@@ -70,7 +71,9 @@
                         :components
                         ((:file "dilicom")
                          (:file "dilicom-flat-text")
-                         (:file "scraper-fr")))
+                         (:file "base-scraper")
+                         (:file "scraper-fr")
+                         (:file "scraper-argentina")))
 
                (:module "src"
                         :components

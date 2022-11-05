@@ -39,7 +39,8 @@
   (str:replace-all "-" "" isbn))
 
 (defun extract-float (s)
-  "Extract a float from the given string."
+  "Extract a float from the given string.
+  See also EXTRACT-PRICE-AS-CENTS in the Argentinian scraper."
   (check-type s string)
   (ignore-errors
     ;; the regexp should be enough, given we parse a known html beforehand.

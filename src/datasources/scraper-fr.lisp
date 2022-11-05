@@ -8,6 +8,8 @@
 
 (in-package :bookshops.datasources.scraper-fr)
 
+;; This scraper does not use the base-scraper class and methods (which was created later).
+
 ;; Print hash-tables readably (used for debug logs).
 (serapeum:toggle-pretty-print-hash-table t)
 
