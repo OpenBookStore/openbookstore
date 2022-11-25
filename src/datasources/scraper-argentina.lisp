@@ -7,6 +7,8 @@
            :get-scraper)
   (:documentation "Search for books by ISBN or keywords. Return a list of hash-tables (dict). The exported function is BOOKS.
 
+We currently get data by scraping the site https://cuspide.com.
+
 Usage:
 
 Create an instance of this scraper:
@@ -31,6 +33,9 @@ Call the BOOKS function with this scraper object:
   (if *scraper-argentina*
       *scraper-argentina*
       (setf *scraper-argentina* (make-instance 'bookshops.datasources.base-scraper::scraper-argentina))))
+
+(defun make-argentina-scraper ()
+  (make-instance 'bookshops.datasources.base-scraper::scraper-argentina))
 
 ;;;
 ;;; Change package to define our scraper.
@@ -71,7 +76,7 @@ Call the BOOKS function with this scraper object:
               :initform ".precio")
 
    (css-isbn :initarg :css-isbn
-             :initform ".isbn"
+             :initform ".md-datos h1 a"
              :documentation "Important field, it is required.")
 
    (css-cover-url :initarg :css-cover-url
@@ -166,10 +171,6 @@ May be useful:
   Return: integer, the price as cents (real price multiplied by 100)."
   (extract-price-as-cents (node-selector-to-text (slot-value scraper 'css-price) node)))
 
-;; (defmethod parse-isbn (scraper node)
-;;   (str:trim (first (last (str:lines
-;;                           (node-selector-to-text (slot-value scraper 'css-isbn) node))))))
-
 ;; (defmethod parse-publication-date (scraper node)
 ;;   (with-log-error (:publication-date)
 ;;     (ignore-errors
@@ -184,5 +185,22 @@ May be useful:
 ;; OK
 ;; (defmethod parse-details-url (scraper node))
 
+(defun probably-isbn (s)
+  (when s
+    (and (str:starts-with-p "9" s)
+         (member (length s) '(10 13)))))
+#+(or)
+(progn
+  (assert (probably-isbn "9782806284082"))
+  (not (probably-isbn "Libro")))
+
 (defmethod parse-isbn (scraper node)
-  (warn "TODO: extract the ISBN."))
+  "Extract the ISBN from the search results.
+  It is given in the HREF of the title."
+  (with-log-error (:isbn)
+    (let ((css (slot-value scraper 'css-isbn)))
+      ;; We get "/Libro/9788415510529/Antigona"
+      ;; Extract the ISBN, and be a bit lax on its position, just in case.
+      (find-if #'probably-isbn
+               (str:split "/"
+                          (lquery:$ node css (elt0) (attr "href")))))))
