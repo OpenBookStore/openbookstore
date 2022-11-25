@@ -11,15 +11,21 @@
 
 (defun search-books (query &key (datasource :fr))
   "Dispatch this search query to the appropriate `DATASOURCE'.
+
   Available sources:
-  - :fr -> french scraper
-  - :arg -> argentinian scraper"
-  (case datasource
-    (:fr
+  - :fr or any string starting with \"fr\" -> french scraper
+  - :arg or any string -> argentinian scraper
+  - :dilicom -> dilicom connector."
+  (cond
+    ((or (equal :fr datasource)
+         (str:starts-with-p "fr" datasource))
      (bookshops.datasources.scraper-fr:books query))
-    (:dilicom
+    ((or (equal :dilicom datasource)
+         (equal "dilicom" datasource))
      (bookshops.datasources.dilicom:search-books query))
-    (:ar
+
+    ((or (equal :ar datasource)
+         (str:starts-with-p "ar" datasource))
      ;; We don't use the same mechanism as the french datasource:
      ;; get a scraper instance and call the generic BOOKS function.
      (funcall

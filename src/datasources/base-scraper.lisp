@@ -312,6 +312,7 @@ See: toggle-dev-mode")
 
 (defparameter *last-parsing-res* nil "for debug pursposes.")
 (defparameter *last-results* nil "for debug pursposes.")
+(defparameter *node* nil "a node to inspect, for development purposes.")
 
 (defmethod books-container ((scraper base-scraper) root)
   (clss:select (slot-value scraper 'css-container) root))

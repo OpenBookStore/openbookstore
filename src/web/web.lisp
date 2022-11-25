@@ -300,31 +300,26 @@ Slime reminders:
                                                        (bookshops.models::negative-quantities))))))
 
 (bookshops.models:define-role-access search-route :view :visitor)
-(defroute search-route ("/search" :decorators ((@check-roles search-route))) (&get q)
-  (let ((cards (and q (search-datasources q))))
+(defroute search-route ("/search" :decorators ((@check-roles search-route))) (&get q datasource)
+  (let* ((datasource (str:trim datasource))
+         (cards (and q (search-datasources q
+                                           :datasource (str:downcase datasource)))))
     (if cards
         (render-template* +search.html+ nil
                           :route "/search"
                           :title "Search - OpenBookstore"
                           :q q
                           :cards cards
+                          :datasource datasource
                           :nb-results (length cards)
                           :title (format nil "OpenBookstore - search: ~a" q))
         (render-template* +search.html+ nil
                           :route "/search"
                           :title "Search - OpenBookstore"
+                          :datasource datasource
                           :q q))))
 
-(defroute search-route/post ("/search" :method :POST) (&post q)
-  (let ((cards (and q (search-datasources q))))
-    (if cards
-        (str:concat
-         "<div class=\"dropdown-content\">"
-         "<div class=\"dropdown-item\" href=0> Beer name here </div>"
-         "<div class=\"dropdown-item\" href=0>
-          <p> Other beer name <bold> here </bold>
-           </div>"
-         "</div>"))))
+;; (defroute search-route/post ("/search" :method :POST) (&post q) nil)
 
 (bookshops.models:define-role-access add-or-create-route :view :editor)
 (defroute add-or-create-route ("/card/add-or-create/" :method :post

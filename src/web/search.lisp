@@ -9,34 +9,18 @@
 ;;; Low level stuff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar *isbn-search-cache*
-  (cacle:make-cache 5000 '%isbn-search-datasources :test 'equal :lifetime (* 24 3600)))
-
-(defvar *key-search-cache*
-  (cacle:make-cache 5000 '%key-search-datasources :test 'equal :lifetime (* 24 3600)))
-
-(defun %isbn-search-datasources (q)
+(function-cache:defcached (remote-isbn-search :timeout (* 24 3600)) (q &key datasource)
   (declare (type string q))
   (values
    (if (dilicom:available-p)
        (dilicom:search-books (list q))
-       (fr:books q))
+       (bookshops.datasources.main:search-books q :datasource datasource))
    1))
 
-(defun %key-search-datasources (q)
+(function-cache:defcached (remote-key-search :timeout (* 24 3600)) (q &key datasource)
   (declare (type string q))
-  (values (fr:books q) 1))
-
-(declaim (ftype (function (string) models:list-of-search-results)
-                remote-isbn-search remote-key-search))
-
-(defun remote-isbn-search (q)
-  (declare (type string q))
-  (cacle:cache-fetch *isbn-search-cache* q))
-
-(defun remote-key-search (q)
-  (declare (type string q))
-  (cacle:cache-fetch *key-search-cache* q))
+  (values (bookshops.datasources.main:search-books q :datasource datasource)
+          1))
 
 ;;; Note: the local functions return lists of book objects, not lists of hash tables.
 
@@ -75,16 +59,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(defun search-datasources (q)
-  "Search on Dilicom if possible (ISBN only), otherwise search on the default datasource.
+(defun search-datasources (q &key datasource)
+  "Search by keyword and ISBN on the given datasource.
   After the search, we check if we have these books in our DB. If so, we augment their data with a `quantity' field.
   Results are cached for a day.
-  QUERY can be an ISBN or keywords."
+  QUERY can be an ISBN or keywords.
+  DATASOURCE comes from the web search form."
   (declare (type string q))
   (models::check-in-stock
    (cond
-     ((bookshops.utils:isbn-p q) (remote-isbn-search q))
-     ((not (str:blank? q)) (remote-key-search q))
+     ((bookshops.utils:isbn-p q) (remote-isbn-search q :datasource datasource))
+     ((not (str:blank? q)) (remote-key-search q :datasource datasource))
      (t nil))))
 
 (defvar *single-result* nil)
