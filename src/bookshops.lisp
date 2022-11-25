@@ -26,11 +26,13 @@
         version))
   "The version number as in the asd appended with the current commit id.")
 
-(defun search-books (query)
-
 (defparameter *default-datasource* :fr
-  ;TODO: merge with *datasource* above.
   "The default datasource to where search for books, by ISBN or keywords. Defaults to the french scraper.")
+
+(defvar *datasource* "french"
+  "The current datasource for this command-line query.
+  Use --datasource on the CLI to change it.
+  Available options: france, argentina, dilicom (for French profesionals).")
 
 (defun search-books (query &key (datasource *default-datasource*))
   "Search on datasources, get a list of hash-tables, transform them to book objects,
@@ -73,15 +75,16 @@
     (bookshops.models::initialize-database))
 
   (opts:define-opts
-    (:name :help
-           :description "print this help and exit."
-           :short #\h
-           :long "help")
+      (:name :help
+             :description "print this help and exit."
+             :short #\h
+             :long "help")
 
-    (:name :version
-           :description "print the version number and exit."
-           :short #\v
-           :long "version")
+      (:name :version
+             :description "print the version number and exit."
+             :short #\v
+             :long "version")
+
     (:name :verbose
            :description "print debug info."
            :short #\V
@@ -102,6 +105,12 @@
            :description "set the port for the web server. You can also use the OBS_PORT environment variable."
            :short #\p
            :long "port")
+
+    (:name :datasource
+           :arg-parser #'identity
+           :description "Choose the datasource to search books on. Available choices are: France, Argentina, Dilicom (for France too)."
+           :short #\s
+           :long "datasource")
 
     (:name :manage
            :arg-parser #'identity
@@ -125,7 +134,7 @@
     (when (getf options :verbose)
       (print-system-info))
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; Management commands.
     ;; Create a superuser with admin rights.
     (when (getf options :manage)
@@ -140,8 +149,20 @@
           ;; we can't load it before. Fix.
           (eval (read-from-string "(bookshops.manager::add-superuser)")))))
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; Run the interactive terminal application.
+    (when (getf options :datasource)
+      (format t "datasource: ~a" (getf options :datasource))
+      (let ((datasource (str:downcase (getf options :datasource))))
+        (cond
+          ((str:starts-with-p "fr" datasource)
+           (setf *datasource* :fr))
+          ((str:starts-with-p "ar" datasource)
+           (setf *datasource* :ar))
+          (t
+           (log:info "Using default datasource: ~a" *default-datasource*)
+           (setf *datasource* *default-datasource*)))))
+
     (when (getf options :interactive)
       (format t "Initializing...~&")
 
@@ -164,13 +185,13 @@
 
       (handler-case
           (when free-args
-            (search-books (str:join " " free-args)))
+            (search-books (str:join " " free-args) :datasource *datasource*))
         (error (c)
           (progn
             (format *error-output* "~a~&" c)
             (uiop:quit 1)))))
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; Run the web app.
     (when (getf options :web)
       (handler-case
@@ -197,18 +218,15 @@
           ;; (uiop:quit 1)
           )))
 
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; Search on data sources, print results and exit.
-    (when free-args
-      (handler-case
-          (progn
-            (init)
-            (bookshops.models::pprint-books (search-books (str:join " " free-args))))
-        (error (c)
-          (progn
-            (format *error-output* "~a~&" c)
-            (uiop:quit 1)))))
 
+    ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; Search on data sources, print results and exit.
+    ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    (when free-args
+      (init)
+      (bookshops.models::pprint-books
+       (search-books (str:join " " free-args)
+                                 :datasource *datasource*)))
     ))
 
 (defun run ()
