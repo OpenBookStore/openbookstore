@@ -159,6 +159,8 @@
            (setf *datasource* :fr))
           ((str:starts-with-p "ar" datasource)
            (setf *datasource* :ar))
+          ((str:starts-with-p "dilicom" datasource)
+           (setf *datasource* :dilicom))
           (t
            (log:info "Using default datasource: ~a" *default-datasource*)
            (setf *datasource* *default-datasource*)))))

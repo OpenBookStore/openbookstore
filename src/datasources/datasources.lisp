@@ -17,6 +17,8 @@
   (case datasource
     (:fr
      (bookshops.datasources.scraper-fr:books query))
+    (:dilicom
+     (bookshops.datasources.dilicom:search-books query))
     (:ar
      ;; We don't use the same mechanism as the french datasource:
      ;; get a scraper instance and call the generic BOOKS function.

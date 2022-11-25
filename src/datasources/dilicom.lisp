@@ -2,7 +2,14 @@
   (:use :cl)
   (:export :search-books
            :available-p)
-  (:documentation "Search books by ISBN (and ISBN only, no free search) with the \"FEL à la demande\" by Dilicom, the professional provider."))
+  (:documentation "Search books by ISBN (and ISBN only, no free search) with the \"FEL à la demande\" by Dilicom, the professional provider.
+
+You must set your *user* and *password*:
+
+(setf bookshops.datasources.dilicom::*user* \"user\"
+      bookshops.datasources.dilicom::*password* \"password\")
+
+It will be possible to set them in environment variables and in the config file."))
 
 (in-package :bookshops.datasources.dilicom)
 
