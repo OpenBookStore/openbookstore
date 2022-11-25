@@ -73,7 +73,9 @@
                          (:file "dilicom-flat-text")
                          (:file "base-scraper")
                          (:file "scraper-fr")
-                         (:file "scraper-argentina")))
+                         (:file "scraper-argentina")
+                         ;; Depends on the above.
+                         (:file "datasources")))
 
                (:module "src"
                         :components

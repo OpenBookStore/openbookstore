@@ -27,9 +27,19 @@
   "The version number as in the asd appended with the current commit id.")
 
 (defun search-books (query)
+
+(defparameter *default-datasource* :fr
+  ;TODO: merge with *datasource* above.
+  "The default datasource to where search for books, by ISBN or keywords. Defaults to the french scraper.")
+
+(defun search-books (query &key (datasource *default-datasource*))
   "Search on datasources, get a list of hash-tables, transform them to book objects,
-  and check if some already exist in our DB. In that case, update them."
-  (let ((res (books query)))
+  and check if some already exist in our DB. In that case, update them.
+
+  - DATASOURCE: where to search for books, by ISBN or keywords. Defaults to the french one (:fr). See *default-datasource*.
+
+  Return: a list of BOOK objects."
+  (let ((res (datasources:search-books query :datasource datasource)))
     (loop for bk in res
        collect (find-existing (make-book
                                :title (access bk :title)

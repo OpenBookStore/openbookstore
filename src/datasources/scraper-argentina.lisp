@@ -1,13 +1,40 @@
-(defpackage bookshops.datasources.scraper-argentina
+(uiop:define-package bookshops.datasources.scraper-argentina
   (:use :cl
         :cl-ansi-text
         :parse-float
         :log4cl)
-  (:export :books)
-  (:documentation "Search for books by ISBN or keywords. Return a list of hash-tables (dict). The exported function is BOOKS."))
+  (:export :books
+           :get-scraper)
+  (:documentation "Search for books by ISBN or keywords. Return a list of hash-tables (dict). The exported function is BOOKS.
+
+Usage:
+
+Create an instance of this scraper:
+
+(defparameter *argentina-scraper* (make-instance 'scraper-argentina))
+
+Call the BOOKS function with this scraper object:
+
+(books *argentina-scraper* \"antigona\")
+"))
 
 ;;TODO: extract ISBN
+;; https://www.cuspide.com/resultados.aspx?c=antigona&por=pal
 
+(in-package :bookshops.datasources.scraper-argentina)
+
+(defparameter *scraper-argentina* nil
+  "Current scraper.")
+
+(defun get-scraper ()
+  "Get or create a scraper instance for Argentina."
+  (if *scraper-argentina*
+      *scraper-argentina*
+      (setf *scraper-argentina* (make-instance 'bookshops.datasources.base-scraper::scraper-argentina))))
+
+;;;
+;;; Change package to define our scraper.
+;;;
 (in-package :bookshops.datasources.base-scraper)
 
 (defclass scraper-argentina (base-scraper)

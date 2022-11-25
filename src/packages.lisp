@@ -114,6 +114,7 @@
            :run)
   (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
                     (#:fr #:bookshops.datasources.scraper-fr)
+                    (#:datasources #:bookshops.datasources.main)
                     (#:a #:alexandria))
   (:documentation "CLI interface"))
 
@@ -131,6 +132,7 @@
 
   (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
                     (#:fr #:bookshops.datasources.scraper-fr)
+                    (#:argentina #:bookshops.datasources.scraper-argentina)
                     (#:models #:bookshops.models)
                     (#:utils #:bookshops.utils)
                     (#:a #:alexandria)))
