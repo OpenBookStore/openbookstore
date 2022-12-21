@@ -1,9 +1,13 @@
 LISP ?= sbcl
 
+# List lisp files, unless they contains a #
+SRC := $(shell find src/ -name '*.lisp' -a ! -name '*#*')
+
 all: test
 
 run:
 	rlwrap $(LISP) --load run.lisp
+
 build:
 	# quickload cl+ssl: required to load the .asd, for Deploy.
 	# Don't reload templates and use a memory store.
@@ -61,21 +65,30 @@ install:
 # It seems we can not parse messages with the #! prefix, as does cl-i18n with its lisp storage.
 # Needed to set the charset to UTF-8 in the pot manually.
 # http://www.labri.fr/perso/fleury/posts/programming/a-quick-gettext-tutorial.html
-translation-base:
-	xgettext --keyword=_ --language=lisp -o locale/messages.pot src/*.lisp
 
-translation-init-locales:
-	mkdir -p locale/po/fr_FR/
-	mkdir -p locale/mo/fr_FR/
-	mkdir -p locale/po/en_GB/
-	mkdir -p locale/mo/en_GB/
-	msginit --input=locale/messages.pot --locale=fr_FR -o locale/po/fr_FR/messages.po
-	msginit --input=locale/messages.pot --locale=en_GB -o locale/po/en_GB/messages.po
+# list of supported locales
+LOCALES := fr_FR # en_GB
+# list of .po files
+POS := $(foreach locale,$(LOCALES),locale/po/$(locale)/messages.po)
+# list of .mo files
+MOS := $(foreach locale,$(LOCALES),locale/mo/$(locale)/messages.mo)
 
-translation-update: translation-base
-	msgmerge --update locale/po/fr_FR/messages.po locale/messages.pot
-	msgmerge --update locale/po/en_GB/messages.po locale/messages.pot
+.PHONY: tr
+tr: ${MOS}
 
-translation-compile:
-	msgfmt -o locale/mo/fr_FR/messages.mo locale/po/fr_FR/messages.po
-	msgfmt -o locale/mo/en_GB/messages.mo locale/po/en_GB/messages.po
+# Rule to extract translatable strings from SRC
+locale/messages.pot: ${SRC}
+	xgettext --keyword=_ --language=lisp -o locale/messages.pot $^
+
+# Rule to generate or update the .po files from the .pot file
+locale/po/%/messages.po: locale/messages.pot
+	mkdir -p $(@D)
+	[ -f $@ ] || msginit --locale=$* \
+          -i $< \
+          -o $@ \
+	&& msgmerge --update $@ $<
+
+# rule to create the .mo files from the .po files
+locale/mo/%/messages.mo: locale/po/%/messages.po
+	mkdir -p $(@D)
+	msgfmt -o $@ $<
