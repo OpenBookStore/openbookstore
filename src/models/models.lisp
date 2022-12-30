@@ -870,7 +870,7 @@ to join them with another filter (shelf)."
   (log:info from (mito:object-id from)
             to (mito:object-id to))
   (if (= (mito:object-id from) (mito:object-id to))
-      (format t (utils:_ "No need to move this book from and to the same place (~a).~&")
+      (format t (_ "No need to move this book from and to the same place (~a).~&")
               (name to))
       (when (remove-from from bk :quantity quantity)
         (add-to to bk :quantity quantity)

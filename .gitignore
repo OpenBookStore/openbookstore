@@ -6,8 +6,15 @@
 *.x86f
 *~
 .#*
-*mo/
 /config.lisp
 /db.db
 /db.db-journal
 /bookshops
+/bin/
+
+
+### Locales
+# These are generated binary files
+*.mo
+# This is also generated, from other .pot files
+/locale/templates/LC_MESSAGES/bookshops.pot

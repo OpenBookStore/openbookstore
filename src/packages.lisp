@@ -13,6 +13,9 @@
   (:import-from :serapeum
                 :dict)
 
+  (:import-from :bookshops.i18n
+                :_)
+
   (:export :connect
            :add-to
            :ensure-tables-exist

@@ -27,6 +27,12 @@ Slime reminders:
 
 (defparameter *port* 4242)
 
+(setf djula::*gettext-domain* (gettext:textdomain))
+
+(setf djula::*translation-backend* :gettext)
+
+(setf djula:*current-language* :en)
+
 ;;; Djula filters.
 (djula:def-filter :price (val)
   "Price is an integer, divide by 100 to get its value.

@@ -65,7 +65,7 @@
                :cl-json
                :cl-slug
 
-               :cl-i18n
+               :gettext
                )
 
   :components ((:module "src/datasources"
@@ -83,6 +83,7 @@
                         ;; stand-alone packages.
                         ((:file "parameters")
                          (:file "utils")
+                         (:file "i18n")
                          (:file "termp")
                          ;; they depend on the above.
                          (:file "packages")

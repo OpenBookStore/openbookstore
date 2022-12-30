@@ -17,7 +17,6 @@ let
       p.cacle
       p.can
       p.cl-ansi-text
-      p.cl-i18n
       p.cl-json
       p.cl-ppcre
       p.cl-slug
@@ -27,6 +26,7 @@ let
       p.djula
       p.easy-routes
       p.function-cache
+      p.gettext
       p.hunchentoot
       p.local-time
       p.local-time-duration
@@ -50,23 +50,23 @@ let
       p.slynk
     ]));
 
-  deps = stdenv.mkDerivation {
-    name = "bookshops-deps";
+  # deps = stdenv.mkDerivation {
+  #   name = "bookshops-deps";
 
-    src = ./bookshops.asd;
+  #   src = ./bookshops.asd;
 
-    phases = [ "installPhase" ];
-    installPhase = ''
-      echo Dependencies: >> $out
-      ${sbcl}/bin/sbcl \
-        --noinform \
-        --non-interactive \
-        --eval '(require :asdf)' \
-        --eval '(asdf:load-asd "'$src'")' \
-        --eval '(format t "~{ - ~a~^~&~}" (asdf:system-depends-on (asdf:find-system "bookshops")))' \
-        | sort >> $out
-    '';
-  };
+  #   phases = [ "installPhase" ];
+  #   installPhase = ''
+  #     echo Dependencies: >> $out
+  #     ${sbcl}/bin/sbcl \
+  #       --noinform \
+  #       --non-interactive \
+  #       --eval '(require :asdf)' \
+  #       --eval '(asdf:load-asd "'$src'")' \
+  #       --eval '(format t "~{ - ~a~^~&~}" (asdf:system-depends-on (asdf:find-system "bookshops")))' \
+  #       | sort >> $out
+  #   '';
+  # };
 
 in mkShell {
   buildInputs = with pkgs; [
@@ -74,14 +74,12 @@ in mkShell {
     sbcl
     gnumake
     gettext
+    python310Packages.pygments
   ] ++ libraries;
   shellHook = ''
-    export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath(libraries)}
+    export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath(libraries)}:."
     # fstamour: I run it on a different port because 4242 is
     # already used on my computer
     export OBS_PORT=4343
-    # uncomment to get a list of dependencies without building
-    # the whole application
-    # cat ${deps}
   '';
 }

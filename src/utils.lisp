@@ -9,10 +9,7 @@
            #:ensure-float
            #:price-float-to-integer
            #:format-date
-           #:i18n-load
-           #:_
            #:parse-iso-date
-
            ;; local-time extras
            #:yesterday
            #:tomorrow
@@ -86,6 +83,8 @@
 
   Use this before updating a book object."
   (ensure-integer (* 100 (ensure-float s/float))))
+
+;; TODO Make a test
 #+(or)
 (progn
   (assert (= 990 (price-float-to-integer "9.90")))
@@ -94,36 +93,6 @@
   (assert (= 989 (price-float-to-integer 9.90)))
   ;; Commas don't work:
   (assert (= 0 (price-float-to-integer "9,90"))))
-
-
-;; i18n disabled until we ship the translation files into the binary release.
-;; (defun _ (a) (cl-i18n:translate a))
-(defun _ (s) s)
-
-;; Disabled until we ship the translation files into the binary release.
-(defun i18n-load ()
-  (if (deploy:deployed-p)
-      ;; Running binary release: we can't find the files on the file system. TODO:
-      (uiop:format! *error-output* "~&init: we don't load translation files in a binary release yet. The application stays untranslated.~&")
-      ;; Otherwise, find them.
-      (let ((lang (uiop:getenv "LANG"))
-            (cl-i18n:*translation-file-root*
-             (if (deploy:deployed-p)
-                 "." ;; TODO: just trying a fix to not run any asdf function with the binary.
-                 (asdf:system-relative-pathname :bookshops ""))))
-        (if (str:starts-with? "fr" lang)
-            (setf cl-i18n::*translation-table*
-                  (cl-i18n:load-language "locale/mo/fr_FR/messages.mo"
-                                         :store-hashtable nil
-                                         :store-plural-function t
-                                         :update-translation-table nil))
-            (progn
-              ;; Default locale.
-              (setf cl-i18n::*translation-table*
-                    (cl-i18n:load-language "locale/mo/en_GB/messages.mo"
-                                           :store-hashtable nil
-                                           :store-plural-function t
-                                           :update-translation-table nil)))))))
 
 (defun format-date (date)
   "Format the given date with the default date format (yyyy-mm-dd). Return a string."

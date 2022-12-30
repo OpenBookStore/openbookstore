@@ -1,7 +1,10 @@
 LISP ?= sbcl
+# SHELL := bash
 
 # List lisp files, unless they contains a #
 SRC := $(shell find src/ -name '*.lisp' -a ! -name '*#*')
+HTML := $(shell find src/ -name '*.html' -a ! -name '*#*')
+DEPS := $(SRC) $(HTML) bookshops.asd # and some more...
 
 all: test
 
@@ -65,23 +68,41 @@ install:
 # It seems we can not parse messages with the #! prefix, as does cl-i18n with its lisp storage.
 # Needed to set the charset to UTF-8 in the pot manually.
 # http://www.labri.fr/perso/fleury/posts/programming/a-quick-gettext-tutorial.html
+#
+# TODO Take a look at msguniq
 
 # list of supported locales
 LOCALES := fr_FR # en_GB
 # list of .po files
-POS := $(foreach locale,$(LOCALES),locale/po/$(locale)/messages.po)
+POS := $(foreach locale,$(LOCALES),locale/$(locale)/LC_MESSAGES/bookshops.po)
 # list of .mo files
-MOS := $(foreach locale,$(LOCALES),locale/mo/$(locale)/messages.mo)
+MOS := $(foreach locale,$(LOCALES),locale/$(locale)/LC_MESSAGES/bookshops.mo)
 
 .PHONY: tr
 tr: ${MOS}
 
+PO_TEMPLATE_DIR := locale/templates/LC_MESSAGES
+PO_TEMPLATE := ${PO_TEMPLATE_DIR}/bookshops.pot
+
+${PO_TEMPLATE_DIR}/lisp.pot: $(SRC)
+	mkdir -p $(@D)
+	xgettext -k_ -kN_ --language=lisp -o $@ $^
+
+${PO_TEMPLATE_DIR}/djula.pot: $(HTML) src/i18n.lisp
+	$(LISP) --non-interactive \
+		--eval '(asdf:load-system "deploy")' \
+		--eval '(asdf:load-system  "cl+ssl")' \
+		--eval '(asdf:load-asd (truename "bookshops.asd"))' \
+		--eval '(push :djula-binary *features*)' \
+		--eval '(asdf:load-system :bookshops)' \
+		--eval '(bookshops.i18n:update-djula.pot)'
+
 # Rule to extract translatable strings from SRC
-locale/messages.pot: ${SRC}
-	xgettext --keyword=_ --language=lisp -o locale/messages.pot $^
+${PO_TEMPLATE}: ${PO_TEMPLATE_DIR}/djula.pot ${PO_TEMPLATE_DIR}/lisp.pot
+	msgcat $^ > $@
 
 # Rule to generate or update the .po files from the .pot file
-locale/po/%/messages.po: locale/messages.pot
+locale/%/LC_MESSAGES/bookshops.po: ${PO_TEMPLATE}
 	mkdir -p $(@D)
 	[ -f $@ ] || msginit --locale=$* \
           -i $< \
@@ -89,6 +110,6 @@ locale/po/%/messages.po: locale/messages.pot
 	&& msgmerge --update $@ $<
 
 # rule to create the .mo files from the .po files
-locale/mo/%/messages.mo: locale/po/%/messages.po
+locale/%/LC_MESSAGES/bookshops.mo: locale/%/LC_MESSAGES/bookshops.po
 	mkdir -p $(@D)
 	msgfmt -o $@ $<

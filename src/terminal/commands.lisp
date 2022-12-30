@@ -6,15 +6,18 @@
   (:shadow :search
            :delete)
   (:import-from :bookshops
-                :search-books
+                :search-books)
+
+  (:import-from :bookshops.i18n
                 :_)
 
   (:import-from :bookshops.models
                 ;; utils
-                print-quantity-red-green)
+                :print-quantity-red-green)
 
   (:local-nicknames (#:models #:bookshops.models)
-                    (#:utils #:bookshops.utils))
+                    (#:utils #:bookshops.utils)
+                    (#:i18n #:bookshops.i18n))
 
   (:export :main
            :search
@@ -500,3 +503,31 @@ By default, add to the stock. If an optional list name is given, add it to the l
   (setf *page-size* 15)
   (setf *current-page* 1)
   (setf models:*current-place* (models:default-place)))
+
+;; I used that as a sanity check
+
+(defun locale (&optional (locale nil locale-provided-p))
+  "List the available locales, or change the current one."
+  (if locale-provided-p
+      (let ((previous-locale i18n:*current-locale*))
+         (i18n:set-locale locale)
+         (format t "~&Locale changed from ~a to ~a.~%"
+                 previous-locale
+                 i18n:*current-locale*))
+      (progn
+        (format t "~&Current locale: ~a~%" i18n:*current-locale*)
+        (format t "Available locales: ~{~% - ~a~%~}"
+                (i18n:list-loaded-locales))
+        (format t "~%~{~% - ~a~%~}"
+                (alexandria:hash-table-keys gettext::*catalog-cache*))
+        (format t "~%~%~a~%"
+                (alexandria:hash-table-plist
+                 (gettext::catalog-messages
+                  (gethash (list gettext:*current-locale*
+                                 :LC_MESSAGES
+                                 (gettext:textdomain))
+                           gettext::*catalog-cache*)))))))
+
+(export 'locale)
+
+(replic.completion:add-completion "locale" #'i18n:list-loaded-locales)
