@@ -70,6 +70,15 @@
 
 (defun main ()
 
+  ;; Read the ini-style config file.
+  ;; It is searched for: at the project root, at ~/.config/.replic.conf and at ~/.replic.conf.
+  ;; It reads the "default" section.
+  ;;
+  ;; [default]
+  ;; confirm-exit = false
+  ;;
+  (replic.config:apply-config)
+
   (unless (uiop:file-exists-p (bookshops.models::db-name))
     (uiop:format! t "Creating the database into ~a...~&" (bookshops.models::db-name))
     (bookshops.models::initialize-database))
