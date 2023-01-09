@@ -479,7 +479,7 @@ Slime reminders:
                                     :new-shelf-name new_shelf_name
                                     :price (utils:ensure-float price))))
         (mito:save-dao book)
-        (bookshops.messages:add-message "The book was created succesfully.")
+        (bookshops.messages:add-message "The book was created successfully.")
         (hunchentoot:redirect "/card/create"))
     (error (c)
       ;; XXX: 404 handled by hunchentoot
@@ -574,7 +574,7 @@ Slime reminders:
         ;; Save.
         (mito:save-dao book)
         ;; We don't see the message after a redirect, too bad.
-        ;; (bookshops.messages:add-message "The book was updated succesfully.")
+        ;; (bookshops.messages:add-message "The book was updated successfully.")
         (hunchentoot:redirect (easy-routes:genurl 'route-card-page
                                                   :slug (str:concat id "-" (slug:slugify title)))))
     (error (c)
