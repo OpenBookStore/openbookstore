@@ -17,19 +17,24 @@
 
 (gettext:setup-gettext #.*package* "bookshops")
 
+;; Only preload the translations into the image if we're not deployed yet.
 (unless (deploy:deployed-p)
   (format *debug-io* "~%Reading all *.mo files...")
   (gettext:preload-catalogs
+   ;; Tell gettext where to find the .mo files
    #.(asdf:system-relative-pathname :bookshops "locale/")))
 
 ;; Run this when developping
 #+ (or)
 (progn
+  ;; Clear gettext's cache
   (clrhash gettext::*catalog-cache*)
+  ;; Tell gettext where to find the .mo files
   (setf (gettext:textdomaindir "bookshops")
         (asdf:system-relative-pathname :bookshops "locale/")))
 
 (defun list-loaded-locales ()
+  "Get the list of locales loaded in gettext's cache."
   (remove-duplicates
    (mapcar #'first
            (alexandria:hash-table-keys
@@ -37,15 +42,19 @@
    :test #'string=))
 
 (defun set-locale (locale)
+  "Setf gettext:*current-locale* and djula:*current-language* if LOCALE seems valid."
   ;; It is valid to set the locale to nil.
   (when (and locale
              (not (member locale (list-loaded-locales)
                           :test 'string=)))
     (error "Locale not valid or not available: ~s" locale))
-  (setf *current-locale* locale))
+  (setf *current-locale* locale
+        djula:*current-language* locale))
 
 (defmacro with-locale ((locale) &body body)
-  `(let (*current-locale*)
+  "Calls BODY with gettext:*current-locale* and djula:*current-language* set to LOCALE."
+  `(let (*current-locale*
+         djula:*current-language*)
      (set-locale ,locale)
      ,@body))
 
@@ -55,6 +64,14 @@
 
 ;; (_ "hi")
 
+#|
+This could technically be just
+(mapcan #'djula.locale:file-template-translate-strings
+        (djula:list-asdf-system-templates "bookshops" "src/web/templates"))
+
+But I (fstamour) made it just a bit more complex in order to keep track of the source (just the
+filename) of each translatable strings. Hence why the hash-table returned is named `locations`.
+|#
 (defun extract-translate-strings ()
   "Extract all {_ ... _} string from the djula templates."
   (loop
