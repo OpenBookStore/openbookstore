@@ -468,6 +468,41 @@ To test DB operations, use our macro `with-empty-db`.
 
 - `DB is locked`: close and re-open: `(mito:disconnect-toplevel)` and `(bookshops.model:connect)`. => [fixed upstream](https://github.com/fukamachi/mito/pull/28#issuecomment-377450798) ?
 
+## Translations
+
+`make tr` takes care of extracting the strings (generating `.pot`
+files) and generating or updating (with `msgmerge`) `.po` and `.mo`
+files for each locale. The `.mo` files are loaded in the lisp image at
+compile-time (or run-time, when developing the application).
+
+### How to add a new locale?
+
+1. Add the new locale to the `LOCALES` variable in the makefile.
+2. Call `make tr`. This will generate the `.po` file (and directory)
+   for the new locale.
+
+### How to add a translation for an existing string?
+
+1. Update the `.po` file for the locale.
+    1. Find the `msgid` that corresponds to the string you want to
+       translate.
+    2. Fill the `msgstr`.
+2. Call `make tr` to update the `.mo` file for the locale.
+
+### More technical details
+
+- The majority of the code that deals with internationalization is in
+  `i18n.lisp`. The rest is in `web.lisp`, where `djula` is configured
+  to use `gettext` as a back-end.
+- `djula` uses the special variable `djula:*current-language*` to
+  determine which language to show.
+- `gettext` uses the special variable `gettext:*current-locale*` to
+  determine which language to show.
+- `gettext` stores the translations in a hash-table named
+  `gettext::*catalog-cache*`
+- `gettext:setup-gettext` adds and export a few utilities in the given
+  package.
+
 # Lisp ?!
 
 - http://common-lisp.net/
