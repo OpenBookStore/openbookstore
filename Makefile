@@ -6,12 +6,22 @@ SRC := $(shell find src/ -name '*.lisp' -a ! -name '*#*')
 HTML := $(shell find src/ -name '*.html' -a ! -name '*#*')
 DEPS := $(SRC) $(HTML) bookshops.asd # and some more...
 
+# list of supported locales
+LOCALES := fr_FR
+# Example of how the variable should look after adding a new locale:
+# LOCALES := fr_FR en_GB
+
+# list of .po files (computed from the LOCALES variable)
+PO_FILES := $(foreach locale,$(LOCALES),locale/$(locale)/LC_MESSAGES/bookshops.po)
+# list of .mo files (computed from the LOCALES variable)
+MO_FILES := $(foreach locale,$(LOCALES),locale/$(locale)/LC_MESSAGES/bookshops.mo)
+
 all: test
 
 run:
 	rlwrap $(LISP) --load run.lisp
 
-build:
+build: ${MO_FILES}
 	# quickload cl+ssl: required to load the .asd, for Deploy.
 	# Don't reload templates and use a memory store.
 	#
@@ -69,25 +79,25 @@ install:
 # Needed to set the charset to UTF-8 in the pot manually.
 # http://www.labri.fr/perso/fleury/posts/programming/a-quick-gettext-tutorial.html
 #
-# TODO Take a look at msguniq
+# lisp.pot contains the string to translate that were extracted from
+# the .lisp files.
+#
+# djula.pot contains the strings to transtlate that were extracted
+# from the djula templates.
 
-# list of supported locales
-LOCALES := fr_FR # en_GB
-# list of .po files
-POS := $(foreach locale,$(LOCALES),locale/$(locale)/LC_MESSAGES/bookshops.po)
-# list of .mo files
-MOS := $(foreach locale,$(LOCALES),locale/$(locale)/LC_MESSAGES/bookshops.mo)
 
 .PHONY: tr
-tr: ${MOS}
+tr: ${MO_FILES}
 
 PO_TEMPLATE_DIR := locale/templates/LC_MESSAGES
 PO_TEMPLATE := ${PO_TEMPLATE_DIR}/bookshops.pot
 
+# Rule to extract translatable strings from SRC
 ${PO_TEMPLATE_DIR}/lisp.pot: $(SRC)
 	mkdir -p $(@D)
 	xgettext -k_ -kN_ --language=lisp -o $@ $^
 
+# Rule to extract translatable strings from djula templates
 ${PO_TEMPLATE_DIR}/djula.pot: $(HTML) src/i18n.lisp
 	$(LISP) --non-interactive \
 		--eval '(asdf:load-system "deploy")' \
@@ -97,9 +107,9 @@ ${PO_TEMPLATE_DIR}/djula.pot: $(HTML) src/i18n.lisp
 		--eval '(asdf:load-system :bookshops)' \
 		--eval '(bookshops.i18n:update-djula.pot)'
 
-# Rule to extract translatable strings from SRC
+# Rule to combine djula.pot and lisp.pot into bookshops.pot
 ${PO_TEMPLATE}: ${PO_TEMPLATE_DIR}/djula.pot ${PO_TEMPLATE_DIR}/lisp.pot
-	msgcat $^ > $@
+	msgcat --use-first $^ > $@
 
 # Rule to generate or update the .po files from the .pot file
 locale/%/LC_MESSAGES/bookshops.po: ${PO_TEMPLATE}
@@ -109,7 +119,7 @@ locale/%/LC_MESSAGES/bookshops.po: ${PO_TEMPLATE}
           -o $@ \
 	&& msgmerge --update $@ $<
 
-# rule to create the .mo files from the .po files
+# Rule to create the .mo files from the .po files
 locale/%/LC_MESSAGES/bookshops.mo: locale/%/LC_MESSAGES/bookshops.po
 	mkdir -p $(@D)
 	msgfmt -o $@ $<
