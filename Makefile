@@ -63,7 +63,7 @@ test:
 	$(LISP) --non-interactive \
 		--load bookshops.asd \
 		--load bookshops-test.asd \
-	     	--eval '(ql:quickload :bookshops-test)' # prove tests are run when loaded.
+		--eval '(ql:quickload :bookshops-test)' # prove tests are run when loaded.
 
 # Install dependencies, mostly for docker (gitlab CI).
 install:
@@ -100,11 +100,11 @@ ${PO_TEMPLATE_DIR}/lisp.pot: $(SRC)
 # Rule to extract translatable strings from djula templates
 ${PO_TEMPLATE_DIR}/djula.pot: $(HTML) src/i18n.lisp
 	$(LISP) --non-interactive \
-		--eval '(asdf:load-system "deploy")' \
-		--eval '(asdf:load-system  "cl+ssl")' \
+		--eval '(ql:quickload "deploy")' \
+		--eval '(ql:quickload "cl+ssl")' \
 		--eval '(asdf:load-asd (truename "bookshops.asd"))' \
 		--eval '(push :djula-binary *features*)' \
-		--eval '(asdf:load-system :bookshops)' \
+		--eval '(ql:quickload :bookshops)' \
 		--eval '(bookshops.i18n:update-djula.pot)'
 
 # Rule to combine djula.pot and lisp.pot into bookshops.pot
