@@ -4,6 +4,7 @@
 
 (require "asdf")  ;; for CI
 (require "uiop")  ;; for CI?
+(require "cl+ssl")
 
 (uiop:format! t "~&------- ASDF version: ~a~&" (asdf:asdf-version))
 (uiop:format! t "~&------- UIOP version: ~a~&" uiop:*uiop-version*)
