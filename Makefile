@@ -7,7 +7,7 @@ HTML := $(shell find src/ -name '*.html' -a ! -name '*#*')
 DEPS := $(SRC) $(HTML) bookshops.asd # and some more...
 
 # list of supported locales
-LOCALES := fr_FR
+LOCALES := fr_fr
 # Example of how the variable should look after adding a new locale:
 # LOCALES := fr_FR en_GB
 
