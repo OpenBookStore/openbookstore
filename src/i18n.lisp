@@ -24,14 +24,33 @@
    ;; Tell gettext where to find the .mo files
    #.(asdf:system-relative-pathname :bookshops "locale/")))
 
-;; Run this when developping
+;; Run this when developping to reload the translations
 #+ (or)
 (progn
   ;; Clear gettext's cache
   (clrhash gettext::*catalog-cache*)
-  ;; Tell gettext where to find the .mo files
-  (setf (gettext:textdomaindir "bookshops")
-        (asdf:system-relative-pathname :bookshops "locale/")))
+  (gettext:preload-catalogs
+   ;; Tell gettext where to find the .mo files
+   #.(asdf:system-relative-pathname :bookshops "locale/")))
+
+;; Run this to see the list of loaded message for a specific locale
+#+ (or)
+(gettext::catalog-messages
+ (gethash '("fr_fr" :LC_MESSAGES "bookshops")
+	  gettext::*catalog-cache*))
+
+;; Test the translation of a string
+#+ (or)
+(with-locale ("fr_fr")
+  (_ "Please login to continue"))
+
+
+#+ (or)
+(set-locale "fr_fr")
+
+#+ (or)
+*current-locale*
+
 
 (defun list-loaded-locales ()
   "Get the list of locales loaded in gettext's cache."
