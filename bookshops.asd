@@ -62,6 +62,7 @@
                :hunchentoot
                :easy-routes
                :djula
+               :djula-gettext
                :cl-json
                :cl-slug
 
