@@ -9,7 +9,7 @@
   <section class="hero is-info">
     <div class="hero-body">
       <div class="container">
-        <h1 class="title is-3"> Welcome to OpenBookStore </h1>
+        <h1 class="title is-3">{_ "Welcome to OpenBookStore" _}</h1>
         <p class="subtitle is-5">{_ "Please login to continue" _}</p>
       </div>
     </div>
@@ -21,7 +21,7 @@
         <form id="login" action="/login" method="POST">
           <input name="referer-route" type="hidden" value="{{ referer-route }}"/>
           <div class="field" >
-            <label class="label">Email</label>
+            <label class="label">{_ "Email" _}</label>
             <p class="control has-icons-left">
               <input name="email" value="" class="input" type="text" >
               <span class="icon is-small is-left" >
@@ -30,7 +30,7 @@
             </p>
           </div>
           <div clas="field">
-            <label class="label" >Password</label>
+            <label class="label" >{_ "Password" _}</label>
             <p class="control has-icons-left">
               <input name="password" class="input" type="password" value="" >
               <span class="icon is-small is-left" >
@@ -40,7 +40,7 @@
           </div>
           <div class="field">
             <p class="control">
-              <button class="button is-primary">Login</button>
+              <button class="button is-primary">{_ "Login" _}</button>
             </p>
           </div>
         </form>

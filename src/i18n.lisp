@@ -19,7 +19,7 @@
 
 ;; Only preload the translations into the image if we're not deployed yet.
 (unless (deploy:deployed-p)
-  (format *debug-io* "~%Reading all *.mo files...")
+  (format *debug-io* "~%gettext: reading all *.mo files...")
   (gettext:preload-catalogs
    ;; Tell gettext where to find the .mo files
    #.(asdf:system-relative-pathname :bookshops "locale/")))
