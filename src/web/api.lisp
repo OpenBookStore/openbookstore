@@ -49,25 +49,48 @@
               (list :counter counter
                     :card "bad query")))))
 
-(models:define-role-access route-card-edit :view :editor)
-(defroute route-card-edit ("/api/card/update" :method :POST
-                                              :decorators ((easy-routes:@json)))
-    (&post (card-id :real-name "cardId" :parameter-type 'integer)
-           (shelf-id :real-name "shelfId" :parameter-type 'integer))
+(models:define-role-access route-api-card-update :view :editor)
+(defroute route-api-card-update ("/api/card/update" :method :POST
+                                                    :decorators ((easy-routes:@json)))
+    ((card-id :real-name "cardId" :parameter-type 'integer)
+     (shelf-id :real-name "shelfId" :parameter-type 'integer))
   "Update a Card.
-  Currently only the shelf: called from card.js with the shelf select.
-  The complete card update form is in card-update/post-route.
+
+  Args:
+  - card-id: necessary (GET parameter on the URL)
+  - shelf-id (GET parameter)
+  - review (request body)
+
+  Called from card.js to update the shelf and the review.
+
+  The complete card update form, used from the edit page, is in card-update/post-route.
+
   Changing the shelf works when we choose the blank option from the HTML select too:
   FIND-SHELF-BY :id NIL returns NIL, and it works. Handy."
-  (log:info "updating card: " card-id shelf-id)
-  (let ((card (models:find-by :id card-id))
-        (shelf (models::find-shelf-by :id shelf-id)))
-    (log:info "existing card: " card)
-    (setf (models::shelf card) shelf)
-    (log:info "new card: " card)
-    (mito:save-dao card)
+  (let* ((data (hunchentoot:raw-post-data :force-text t))
+         (card (models:find-by :id card-id))
+         (shelf (when shelf-id
+                  (models::find-shelf-by :id shelf-id)))
+         ;; review is given only in the request body.
+         (review (when data
+                   data))
+         (update-p nil))
 
-    (cl-json:encode-json-to-string (dict "status" 200))))
+    (when (and card shelf)
+      (setf (models::shelf card) shelf)
+      (setf update-p t))
+    (when (and card review)
+      (setf (models::review card) (str:trim review))
+      (setf update-p t))
+
+    (cond
+      (card
+       (when update-p
+         (mito:save-dao card))
+       (cl-json:encode-json-to-string (dict "status" 200)))
+      (t
+       (cl-json:encode-json-to-string (dict "status" 400 "message" "no card to save"))))
+    ))
 
 (models:define-role-access api-quick-search :view :editor)
 (defroute api-quick-search

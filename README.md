@@ -37,6 +37,7 @@ Command line interface and web UI to search for books, add them to your stock, s
     - [Run at startup with Systemd](#run-at-startup-with-systemd)
 - [Usage](#usage)
     - [Bibliographic search, adding books to your stock](#bibliographic-search-adding-books-to-your-stock)
+    - [What's in a book?](#whats-in-a-book)
     - [Seeing your stock](#seeing-your-stock)
     - [Selling books, history](#selling-books-history)
     - [History (of sells)](#history-of-sells)
@@ -49,6 +50,10 @@ Command line interface and web UI to search for books, add them to your stock, s
 - [Dev](#dev)
     - [Testing](#testing)
     - [Troubleshooting](#troubleshooting)
+    - [Translations](#translations)
+        - [How to add a new locale?](#how-to-add-a-new-locale)
+        - [How to add a translation for an existing string?](#how-to-add-a-translation-for-an-existing-string)
+        - [More technical details](#more-technical-details)
 - [Lisp ?!](#lisp-)
 - [See also](#see-also)
 - [Licence](#licence)
@@ -250,6 +255,21 @@ mandatory field (showed like in web forms with a red asterisk).
 See also
 
 - `delete <i>`
+
+## What's in a book?
+
+A book has these fields:
+
+- title
+- author(s)
+- EAN13
+- public price
+- quantity in stock
+- shelf
+- your review, that you can edit on the book's page with a WYSIWYG editor.
+
+![](antigona.png)
+
 
 ## Seeing your stock
 
@@ -509,7 +529,7 @@ compile-time (or run-time, when developing the application).
 - http://lisp-lang.org/
 - [awesome-cl](https://github.com/CodyReichert/awesome-cl) (and a list of [companies](https://github.com/azzamsa/awesome-lisp-companies) using CL)
 - https://lispcookbook.github.io/cl-cookbook/
-- [learn Common Lisp with this video course](https://www.udemy.com/course/common-lisp-programming/?referralCode=2F3D698BBC4326F94358)
+- [learn Common Lisp with this video course on Udemy](https://www.udemy.com/course/common-lisp-programming/?referralCode=2F3D698BBC4326F94358)
 
 # See also
 

@@ -17,7 +17,7 @@
                 </div>
 
                 <p style="padding-top: 1em">
-                  <a href="/card/update/{{ card.id }}"> Edit </a>
+                  <a href="/card/update/{{ card.id }}"> {_ "Edit" _} </a>
                 </p>
 
             </div>
@@ -59,6 +59,7 @@
                         {% endif %}
 
                         {% if card.price %}
+                        <!--TODO: hard-coded € currency -->
                         <div class="title is-6"> {{ card.price | price }} €</div>
                         {% endif %}
 
@@ -72,7 +73,7 @@
                     <tr>
                       <td>
                         <div id="quantity">
-                          In stock
+                          {_ "In stock" _}
                       </td>
 
                       <td>
@@ -114,7 +115,7 @@
                         <!-- <span class="tag" title="{{ card.shelf.name }}"> {{ card.shelf.name | truncatechars:27 }} </span> -->
                         <!-- </a> -->
 
-                        Shelf
+                        {_ "Shelf" _}
 
                       </td>
                       <td>
@@ -159,7 +160,9 @@
                         <input name="referer-route" type="hidden" value="{{ referer-route }}">
                         <input name="isbn" type="hidden" value="{{ card.isbn }}"/>
                         <div class="field" >
-                            <label class="label"> Place </label>
+                          <label class="label">
+                            {_ "Place" _}
+                          </label>
                             <select name="place-id" class="select" >
                                 {% for place in places %}
                                 <option value="{{ place.id }}">{{ place.name }}</option>
@@ -167,11 +170,13 @@
                             </select>
                         </div>
                         <div class="field">
-                            <label class="label"> Quantity </label>
+                            <label class="label"> {_ "Quantity" _} </label>
                             <input name="quantity" type="text" id="quantity-input" value="0"/>
                         </div>
                         <div class="field is-grouped" >
-                            <button action="submit" class="button is-link" >Add</button>
+                          <button action="submit" class="button is-link" >
+                            {_ "Add" _}
+                          </button>
                         </div>
                     </form>
                 </div>
@@ -184,6 +189,58 @@
         </div>
 
     </div>
+
+
+    <div>
+      <div>
+        <div class="columns">
+          <div class="column is-four-fifths">
+
+            <h4 class="title is-6"
+                href="#review"
+                title="">
+              <span class="icon">
+                <i class="fas fa-comment" aria-hidden="true"></i>
+              </span>
+              Critique
+            </h4>
+
+            <em>
+              {_ "Pour modifier le texte, cliquez dessus. Pour mettre en forme, sélectionnez du texte et utilisez la barre d'outils qui apparaît. N'écrivez pas de code HTML directement." _}
+            </em>
+
+          </div>
+
+          <div class="column">
+          </div>
+
+        </div>
+
+        <stylo-editor></stylo-editor>
+
+        <!-- This editor id matches with the custom textid -->
+        <article contenteditable="true" id="card_review">
+
+          {% if card.review %}
+
+          {{ card.review | safe }}
+
+          {% else %}
+
+          <div>Lorem ipsum dolor sit amet.</div>
+
+          {% endif %}
+
+        </article>
+        <br/>
+
+        <button class="button"
+            onclick="save_review('card_review')"> save
+        </button>
+
+      </div>
+    </div>
+
 </div>
 
 <!-- Load JavaScript for this page: handle a change of the shelf select -->

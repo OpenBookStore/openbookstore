@@ -1,7 +1,6 @@
 
 console.log("--- card page: watching Shelf change.");
 
-(function() {
     let shelves = [];
     let shelf_select = document.getElementById('shelf-select');
 
@@ -30,19 +29,16 @@ console.log("--- card page: watching Shelf change.");
     }
 
     function update_shelf(shelf_id) {
-        console.log("--- save shelf…");
         let card_id = url_id(window.location.pathname);
-        let url = "/api/card/update";
-        let json_body = '{"card_id": ' + card_id + ', ' +
-            '"shelf_id": ' + shelf_id +
-            '}';
+        let url = "/api/card/update?cardId=" + card_id + "&shelfId" + shelf_id;
         fetch(url, {
             method: 'POST',
             headers: new Headers({
                 // *not* json, so it works out of the box with my Hunchentoot handlers.
                 'Content-Type': 'application/x-www-form-urlencoded',
             }),
-            body: "cardId=" + card_id + "&shelfId=" + shelf_id,
+            // body is reserved for the review text.
+            // body: ""
         })
             .then((response) => {
                 return response.json();
@@ -68,5 +64,50 @@ console.log("--- card page: watching Shelf change.");
             });
     };
 
-}
-)();
+function save_review(textid) {
+        // Get the editor element equal to the given textid.
+        //
+        // We might use more than one editor fields.
+        // And this is a copy-paste ;)
+        let card_id = url_id(window.location.pathname);
+        let url = "/api/card/update?cardId=" + card_id;
+
+        let editor = document.getElementById(textid);
+        let review = editor.innerHTML;
+
+        if (textid) {
+            url += "&textid=" + textid;
+        }
+
+        // TODO: handle CSRF token.
+        // Use hunchentools library?
+        // let token = document.getElementById('api-token').innerText;
+        // console.log("token: ", token);
+
+        fetch(url, {
+            method: 'POST',
+            headers: new Headers({
+                // 'api-token': token,  // unused, handle CSRF.
+            }),
+            body: review
+        })
+            .then((response) => {
+                console.log("response is ", response);
+                return response.json();
+            })
+            .then((myJson) => {
+                if (myJson.status == 200 || myJson.status == "success") {
+                    console.log("-- success.");;
+                    Notiflix.Notify.Success('OK');
+                }
+                else {
+                    console.log("status is not success: ", myJson.status);
+                    Notiflix.Notify.Warning(myJson.message);
+                }
+            })
+            .catch((error) => {
+                console.error('There has been a problem with your fetch operation:', error);
+                Notiflix.Notify.Warning("An error occured. We have been notified.");
+            });
+
+    };
