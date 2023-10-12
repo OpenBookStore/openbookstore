@@ -33,6 +33,10 @@
 
 (defun migrate-all ()
   "Migrate the Book table after we changed the class definition."
+  ;; We'd rather use a "with-connexion" style to drop the connection afterwards.
+  ;; Use mito:*auto-migration-mode* to nil to delete migration intermediate tables used with sqlite3.
+  (unless mito::*connection*
+    (connect))
   (mapcar #'mito:migrate-table *tables*))
 
 (defun bootstrap-base-roles ()

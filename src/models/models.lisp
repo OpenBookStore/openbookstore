@@ -154,7 +154,15 @@ searches. This method was thought the most portable.
     :initarg :cover-url
     :initform nil
     :type (or string null)
-    :col-type (or (:varchar 1024) :null)))
+    :col-type (or (:varchar 1024) :null))
+
+   (review
+    :accessor review
+    :initarg :review
+    :initform nil
+    :type (or string null)
+    :col-type (or :text :null)))
+
   (:metaclass mito:dao-table-class)
   (:documentation "A book represents the book entity, not the physical object.
      It may not have an isbn.
