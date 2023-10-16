@@ -23,7 +23,12 @@ Slime reminders:
 |#
 
 (defvar *server* nil
-  "Current instance of easy-acceptor.")
+  "Current instance of easy-acceptor.
+  Create with make-instance 'acceptor (that uses easy-routes and hunchentoot-errors).")
+
+(defclass acceptor (easy-routes:easy-routes-acceptor hunchentoot-errors:errors-acceptor)
+  ()
+  (:documentation "Our Hunchentoot acceptor that uses easy-routes and hunchentoot-errors."))
 
 (defparameter *port* 4242)
 
@@ -664,7 +669,8 @@ Slime reminders:
   (setf json:*json-identifier-name-to-lisp* #'json:camel-case-to-lisp)
   (setf json:*lisp-identifier-name-to-json* #'json:lisp-to-camel-case)
 
-  (setf *server* (make-instance 'easy-routes:easy-routes-acceptor :port port))
+  ;; (setf *server* (make-instance 'easy-routes:easy-routes-acceptor :port port))
+  (setf *server* (make-instance 'acceptor :port port))
   (hunchentoot:start *server*)
   (if (deploy:deployed-p)
       ;; Binary release: don't serve files by reading them from disk.

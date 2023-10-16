@@ -60,6 +60,7 @@
 
                ;; web app
                :hunchentoot
+               :hunchentoot-errors  ;; augment stacktrace with request data: params, headers…
                :easy-routes
                :djula
                :djula-gettext
