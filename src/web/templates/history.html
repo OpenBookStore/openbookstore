@@ -22,8 +22,11 @@
 <div id="history-page">
 
   <h3 class="is-size-3">
-    History
+    History &bull; {{ min-date | date:(:short-month ", " :year) }}
   </h3>
+
+  <!-- Here: add previous and next month buttons etc -->
+  <!-- <a href=""> {{ min-date | date:(:short-month ", " :year) }} </a> -->
 
   <table class="table">
     <thead>

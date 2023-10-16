@@ -626,13 +626,41 @@ Slime reminders:
 (bookshops.models:define-role-access history-route :view :editor)
 (defroute history-route ("/history" :decorators ((@check-roles history-route))
                                     :method :get)
-    ()  ;; args
-  (let ((data (models::group-sells-and-soldcards :order :desc
-                                                 :min-date (utils::x-days-ago 30)
-                                                 :max-date (local-time:today))))
+    () ;; args
+  (let ((now (local-time:now)))
+    (hunchentoot:redirect
+     (easy-routes:genurl
+      'history-route-month
+      :yearmonth (local-time:format-timestring nil now :format '(:year "-" (:month 2)))))))
+
+(bookshops.models:define-role-access history-route :view :editor)
+(defroute history-route-month ("/history/month/:yearmonth" :decorators ((@check-roles history-route))
+                                                           :method :get)
+    () ;; args
+  (let* ((today (local-time:today))
+         ;; OK, so this works but is fragile.
+         (slugdate (str:split "-" yearmonth))
+         (min-date (local-time:encode-timestamp 0 0 0 0 1 ;; first day of month.
+                                                (parse-integer (second slugdate))
+                                                (parse-integer (first slugdate))))
+         ;; (min-date (utils::x-days-ago 30))
+         ;; (max-date (local-time:today))
+         (max-date (local-time:encode-timestamp 0 0 0 0
+                                                (local-time:days-in-month (parse-integer (second slugdate))
+                                                                          (parse-integer (first slugdate)))
+                                                (parse-integer (second slugdate))
+                                                (parse-integer (first slugdate))))
+         ;; We could have a search function that accepts strings for dates
+         ;; (easier for testing).
+         (data (models::group-sells-and-soldcards :order :desc
+                                                  :min-date min-date
+                                                  :max-date max-date)))
     (render-template* +history.html+ nil
                       :route "/history"
-                      :title "History - OpenBookstore"
+                      :title (format nil "History ~a - OpenBookstore" yearmonth)
+                      :min-date min-date
+                      :max-date max-date
+                      :today today
                       :data data)))
 
 (bookshops.models:define-role-access loans-route :view :editor)
