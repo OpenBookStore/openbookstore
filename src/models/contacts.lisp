@@ -17,18 +17,22 @@
 ;;   (:metaclass dao-table-class))
 
 (defclass contact-copies ()
-  ;xxx: use dao-table-mixin, do not inherit from place-copies, or maybe factorize book and quantity, not place and contact (we'll get place of id 1 instead of the contact).
+  ;; XXX: use dao-table-mixin, do not inherit from place-copies, or maybe factorize book and quantity, not place and contact (we'll get place of id 1 instead of the contact).
   ;; Not inheriting = having to define the methods (title, name, quantity).
+  ;; Update <2023-12-22 Fri> uh what does that old comment mean?
+  ;; I simplified the accessor names to simply book, contact, quantity, and defined title and name. All is well…
   ((book
-    :accessor contact-copies-book
+    :accessor book
     :initarg :book
+    :initform nil
     :col-type book)
    (contact
-    :accessor contact-copies-contact
+    :accessor contact
     :initarg :contact
+    :initform nil
     :col-type contact)
    (quantity
-    :accessor contact-copies-quantity
+    :accessor quantity
     :initform 0
     :col-type (or (:integer) :null))
    (max-time
@@ -42,17 +46,13 @@
     :documentation "Date when the loan should end and the book come back."))
   (:metaclass mito:dao-table-class))
 
-(defmethod quantity ((it contact-copies))
-  (contact-copies-quantity it))
-
-(defmethod (setf quantity) (val (it contact-copies))
-  (setf (contact-copies-quantity it) val))
-
+;; Other generic functions to shorten chaining to common elements:
+;; use (title <contact-copies>) instead of (title (book <contact-copies>)).
 (defmethod title ((it contact-copies))
-  (title (contact-copies-book it)))
+  (title (book it)))
 
 (defmethod name ((it contact-copies))
-  (name (contact-copies-contact it)))
+  (name (contact it)))
 
 (defun contact-books (contact)
   (contact-copies-book contact))
