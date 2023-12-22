@@ -418,6 +418,7 @@ Slime reminders:
                          :card card
                          :places-copies (models::book-places-quantities card)
                          :shelves shelves
+                         :borrowed-books (models::find-book-loans card)
                          :raw raw))
       (t
        (render-template* +404.html+ nil)))))

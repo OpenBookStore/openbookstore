@@ -54,8 +54,12 @@
 (defmethod name ((it contact-copies))
   (name (contact it)))
 
-(defun contact-books (contact)
-  (contact-copies-book contact))
+(defmethod created-at ((it contact-copies))
+  "Wrapper around mito:object-created-at, to have it in templates,
+  and to control how the date is printed."
+  ;; Doesn't show??
+  (local-time:format-timestring nil (mito:object-created-at it)
+                                :format local-time:+asctime-format+))
 
 (defmethod print-object ((contact contact) stream)
   (print-unreadable-object (contact stream :type t)
@@ -102,6 +106,21 @@ If `contact' is given, filter by this contact."
                    (when contact
                      (sxql:where (:= :contact contact)))
                    (sxql:order-by :object-created))))
+
+(defun find-contact-loans (contact)
+  "Find this contact's borrowed books."
+  (declare (type contact contact))
+  ;; I initially wrote the following function. Some refactoring might be needed.
+  (find-contacts-copies :contact contact))
+
+(defun find-book-loans (book)
+  "Find who borrowed this book."
+  (mito:select-dao 'contact-copies
+    (when book
+      (sxql:where (:= :book book)))
+    (sxql:order-by :object-created)))
+#+(or)
+(find-book-loans (third (bookshops.models::find-book :query "comprendre")))
 
 (defgeneric loan-too-long-p (obj)
   (:documentation "Return t if this loan bypasses the number of days allowed."))
