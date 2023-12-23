@@ -207,9 +207,9 @@
     (when (getf options :web)
       (handler-case
           (progn
-            (bookshops/web::start-app :port (or (getf options :port)
+            (openbookstore/web::start-app :port (or (getf options :port)
                                                 (ignore-errors (parse-integer (uiop:getenv "OBS_PORT")))
-                                                bookshops/web::*port*))
+                                                openbookstore/web::*port*))
             ;; Without this, the binary exits immediately after having
             ;; run the web server in its thread.
             (bt:join-thread

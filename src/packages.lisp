@@ -122,7 +122,7 @@
                     (#:a #:alexandria))
   (:documentation "CLI interface"))
 
-(uiop:define-package bookshops/web
+(uiop:define-package openbookstore/web
   (:use :cl)
   (:import-from :easy-routes
                 :defroute)

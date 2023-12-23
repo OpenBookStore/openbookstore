@@ -121,7 +121,7 @@ Quit with `C-d`.
 - run it from the REPL:
 
 ```
-(bookshops/web:start-app :port 4242)
+(openbookstore/web:start-app :port 4242)
 ```
 
 - initialize the database if not already done, see above.

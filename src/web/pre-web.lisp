@@ -1,4 +1,4 @@
-(in-package :bookshops/web)
+(in-package :openbookstore/web)
 
 ;;; Parameters and functions required before loading web.lisp
 ;;;

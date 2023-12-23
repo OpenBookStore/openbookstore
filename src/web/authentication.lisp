@@ -1,4 +1,4 @@
-(in-package #:bookshops/web)
+(in-package #:openbookstore/web)
 
 (defun current-user ()
   (hunchentoot:session-value :user))

@@ -1,5 +1,5 @@
 
-(in-package :bookshops/web)
+(in-package :openbookstore/web)
 
 #|
 

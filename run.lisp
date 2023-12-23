@@ -16,7 +16,7 @@ Another solution to run the app is to run the executable (see README).
 
 (ql:quickload "openbookstore")
 
-(in-package :bookshops/web)
+(in-package :openbookstore/web)
 (handler-bind ((error (lambda (c)
                         (format *error-output* "~&An error occured: ~a~&" c)
                         (format *error-output* "~&Backtrace:~&")
