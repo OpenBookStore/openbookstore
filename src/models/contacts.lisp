@@ -54,13 +54,6 @@
 (defmethod name ((it contact-copies))
   (name (contact it)))
 
-(defmethod created-at ((it contact-copies))
-  "Wrapper around mito:object-created-at, to have it in templates,
-  and to control how the date is printed."
-  ;; Doesn't show??
-  (local-time:format-timestring nil (mito:object-created-at it)
-                                :format local-time:+asctime-format+))
-
 (defmethod print-object ((contact contact) stream)
   (print-unreadable-object (contact stream :type t)
       (format stream "~a" (name contact))))

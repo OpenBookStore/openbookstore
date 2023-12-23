@@ -156,10 +156,17 @@
                         {% for borrowed in borrowed-books %}
                         <div>
                           <!--TODO: click on the contact name to see the contact page. -->
-                          <!--TODO: if the due date is late, show in red / orange. See our date-style filter.-->
-                          <!--TODO: add an HTMX button to cancel and valide this loan. -->
-                          <!--XXX: I though my created-at method would print an asctime date but it gives the raw date to the filter… -->
-                          {{ borrowed.contact.name }} since {{ borrowed.created-at | date-hour-minute }}
+                          <!--TODO: add an HTMX button to borrow the book, to cancel or validate a loan. -->
+                          {{ borrowed.contact.name }}
+                          <span>
+                            due date:
+                            <div class="tag level-item {{ borrowed | date-style:(:positive "is-success" :negative "is-danger is-light" :zero "") }}">
+                              {{ borrowed.due-date
+                              | date:(:year "-" (:month 2) "-" (:day 2))
+                              }}
+                            </div>
+                          </span>
+
                         </div>
                         {% endfor %}
                       </td>

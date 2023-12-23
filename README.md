@@ -412,9 +412,11 @@ Be more useful and easier to install and use than our Abelujo web app.
 - [X] readline UI
 - [X] Web interface (~~with Weblocks~~)
   - [X] search the stock
-  - [X] search new books
+  - [X] search for new books on internet sources
   - [X] sell view
   - [X] history of sells
+  - [X] write a review with a WYSIWYG editor
+  - [X] see who borrowed a book
   - all the rest
 - GUI (postponed)
   - [X] proof of concept with LTk
