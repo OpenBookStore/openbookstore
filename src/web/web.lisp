@@ -82,8 +82,8 @@ Slime reminders:
 (djula:def-filter :contact-name (contact-copy)
   ;; see why in loans.html. Mito limitation or me? Dec 2021.
   (if (and contact-copy
-           (models::contact-copies-contact contact-copy))
-      (format nil "~a" (models::name (models::contact-copies-contact contact-copy)))
+           (models::contact contact-copy))
+      (format nil "~a" (models::name (models::contact contact-copy)))
       "?"))
 
 ;; If a load is outdated, show the due date in red.

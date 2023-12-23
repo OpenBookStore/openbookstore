@@ -101,7 +101,7 @@
   "Return the list of borrowed books, most recent last.
 If `contact' is given, filter by this contact."
   ;; (warn "Exclude loans with a quantity at 0 ?")
-  (remove-if-not #'contact-copies-book
+  (remove-if-not #'book
                  (mito:select-dao 'contact-copies
                    (when contact
                      (sxql:where (:= :contact contact)))
@@ -165,7 +165,7 @@ If `contact' is given, filter by this contact."
 (defun print-borrowed-books (contact)
   (let ((title-length 40))
     (mapcar (lambda (it)
-              (let ((book (contact-copies-book it)))
+              (let ((book (book it)))
                 (if book
                     (format t "~t~2a- ~va since ~a~&"
                             (mito:object-id book)
@@ -206,7 +206,7 @@ If `contact' is given, filter by this contact."
     (if existing
         (progn
           (log:info "The book ~a was already lended to ~a." book contact)
-          (incf (contact-copies-quantity existing) quantity)
+          (incf (quantity existing) quantity)
           (mito:save-dao existing)
           (quantity existing))
         (progn
@@ -228,7 +228,7 @@ If `contact' is given, filter by this contact."
          (title-length 40)
          (padding (+ title-length 9))) ;; color escape strings.
     (mapcar (lambda (copy)
-              (let ((book (contact-copies-book copy)))
+              (let ((book (book copy)))
                 (if book
                     (format t "~2a- ~va since ~a by ~a~&"
                             (mito:object-id book)
@@ -242,10 +242,10 @@ If `contact' is given, filter by this contact."
             copies)
     ;; We return a list of copies, not contact-copies, for the command level,
     ;; to get pagination completion right.
-    (mapcar #'contact-copies-book copies)))
+    (mapcar #'book copies)))
 
 (defun find-loans (&key (limit 20) (order :asc))
-  (remove-if-not #'contact-copies-book
+  (remove-if-not #'book
                  (mito:select-dao 'contact-copies
                    (sxql:limit limit)
                    (sxql:order-by `(,order :due-date)))))
@@ -254,7 +254,7 @@ If `contact' is given, filter by this contact."
   "Return a list of loans whose due date is exhausted (lower than today).
 
   Filter out loans whose card is null."
-  (remove-if-not #'contact-copies-book
+  (remove-if-not #'book
                  (mito:select-dao 'contact-copies
                    (sxql:where (:< :due-date (local-time:now)))
                    (sxql:limit limit)
@@ -262,7 +262,7 @@ If `contact' is given, filter by this contact."
 
 (defun loans-without-cards ()
   "Find loans without a card. Should not happen, but can happen during development when a card is deleted."
-  (remove-if #'contact-copies-book
+  (remove-if #'book
              (mito:select-dao 'contact-copies)))
 
 (defun count-outdated-loans ()
