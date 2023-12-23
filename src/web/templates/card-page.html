@@ -156,10 +156,10 @@
                         {% for borrowed in borrowed-books %}
                         <div>
                           <!--TODO: click on the contact name to see the contact page. -->
-                          <!--TODO: if the due date is late, show in red / orange. -->
+                          <!--TODO: if the due date is late, show in red / orange. See our date-style filter.-->
                           <!--TODO: add an HTMX button to cancel and valide this loan. -->
-                          <!--TODO: I though my created-at method would print an asctime date… -->
-                          {{ borrowed.contact.name }} since {{ borrowed.created-at }}
+                          <!--XXX: I though my created-at method would print an asctime date but it gives the raw date to the filter… -->
+                          {{ borrowed.contact.name }} since {{ borrowed.created-at | date-hour-minute }}
                         </div>
                         {% endfor %}
                       </td>

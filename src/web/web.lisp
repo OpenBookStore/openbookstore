@@ -86,6 +86,11 @@ Slime reminders:
       (format nil "~a" (models::name (models::contact contact-copy)))
       "?"))
 
+(djula:def-filter :date-hour-minute (date)
+  "Print this date as YYY/MM/DD HH:MM."
+  (local-time:format-timestring nil date
+                                :format '(:year "/" (:month 2) "/" (:day 2) " " (:hour 2) ":" (:min 2))))
+
 ;; If a load is outdated, show the due date in red.
 (djula:def-filter :date-style (date raw-options)
   (let ((options (read-from-string raw-options)))

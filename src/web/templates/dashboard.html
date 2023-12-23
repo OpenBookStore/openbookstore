@@ -65,7 +65,7 @@
                 <td>
                   <a href="/card/{{ loan.book-id }}">{{ loan.book-id | print-book }}
                   </a>
-                  lended to {{ loan.contact-id | print-contact }}, due on {{ loan.due-date | date:(:year "/" (:month 2) "/" (:day 2) " " (:hour 2) ":" (:min 2)) }} </td>
+                  lended to {{ loan.contact-id | print-contact }}, due on {{ loan.due-date | date-hour-minute }} </td>
                 <td class="level-right"><a class="button is-small is-primary" href="#">Action</a></td>
               </tr>
               {% endfor %}
