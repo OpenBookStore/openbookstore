@@ -1,5 +1,5 @@
 #|
-  This file is a part of bookshops project.
+  This file is part of the OpenBookstore project.
 |#
 
 (require "asdf")  ;; for CI
@@ -9,7 +9,7 @@
 (uiop:format! t "~&------- ASDF version: ~a~&" (asdf:asdf-version))
 (uiop:format! t "~&------- UIOP version: ~a~&" uiop:*uiop-version*)
 
-(asdf:defsystem "bookshops"
+(asdf:defsystem "openbookstore"
   :version "0.2"
   :author "vindarel"
   :license "GPL3"
@@ -17,11 +17,6 @@
   :homepage "https://gitlab.com/myopenbookstore/openbookstore/"
   :bug-tracker "https://gitlab.com/myopenbookstore/openbookstore/-/issues/"
   :source-control (:git "https://gitlab.com/myopenbookstore/openbookstore/")
-
-  ;; Create .deb package.
-  ;; :defsystem-depends-on ("linux-packaging")
-  ;; :class "linux-packaging:deb"
-  ;; :package-name "bookshops"
 
   :depends-on (
                ;; web client
@@ -156,8 +151,8 @@
                          (:static-file "card-page.js"))))
 
   ;; :build-operation "program-op"
-  :entry-point "bookshops:run"
-  :build-pathname "bookshops"
+  :entry-point "openbookstore:run"
+  :build-pathname "openbookstore"
 
   ;; For a .deb (with the two lines above).
   ;; :build-operation "linux-packaging:build-op"

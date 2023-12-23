@@ -8,7 +8,7 @@
   (:import-from :access
                 :access)
   (:export :books)
-  (:documentation "Search for books by ISBN or keywords on a website. Return a list of hash-tables. Don't create Book objects from bookshops.models here."))
+  (:documentation "Search for books by ISBN or keywords on a website. Return a list of hash-tables. Don't create Book objects from openbookstore.models here."))
 
 (in-package :bookshops.datasources.base-scraper)
 

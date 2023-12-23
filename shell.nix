@@ -53,7 +53,7 @@ let
   # deps = stdenv.mkDerivation {
   #   name = "bookshops-deps";
 
-  #   src = ./bookshops.asd;
+  #   src = ./openbookstore.asd;
 
   #   phases = [ "installPhase" ];
   #   installPhase = ''
@@ -63,7 +63,7 @@ let
   #       --non-interactive \
   #       --eval '(require :asdf)' \
   #       --eval '(asdf:load-asd "'$src'")' \
-  #       --eval '(format t "~{ - ~a~^~&~}" (asdf:system-depends-on (asdf:find-system "bookshops")))' \
+  #       --eval '(format t "~{ - ~a~^~&~}" (asdf:system-depends-on (asdf:find-system "openbookstore")))' \
   #       | sort >> $out
   #   '';
   # };

@@ -1,13 +1,13 @@
 (defpackage bookshops.management
   (:use :cl
         :mito)
-  (:import-from :bookshops.models
+  (:import-from :openbookstore.models
                 :find-book
                 :price
                 :ensure-integer)
   (:import-from :bookshops.utils)
   (:export :parse-prices)
-  (:local-nicknames (:models :bookshops.models)
+  (:local-nicknames (:models :openbookstore.models)
                     (:utils :bookshops.utils))
   (:documentation "Commands to work on the database (clean-up,...). Depends on models and needs cl-ppcre.
 

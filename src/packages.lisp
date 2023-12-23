@@ -1,6 +1,7 @@
-;; XXX: all packages are not here.
+;; XXX: all packages are not here,
+;; see also bookshops.lisp, paramaters.lisp (and more?).
 
-(uiop:define-package bookshops.models
+(uiop:define-package openbookstore.models
   (:use :cl
         :cl-ansi-text)
 
@@ -78,7 +79,7 @@
    (#:utils #:bookshops.utils)
    (#:a #:alexandria)))
 
-(defpackage bookshops
+(uiop:define-package openbookstore
   (:use :cl
         :cl-ansi-text
         :parse-float
@@ -86,7 +87,7 @@
         ;;
         :bookshops.utils)
 
-  (:import-from :bookshops.models
+  (:import-from :openbookstore.models
                 :default-place
                 ;; accessors
                 :publisher
@@ -136,6 +137,6 @@
   (:local-nicknames (#:dilicom #:bookshops.datasources.dilicom)
                     (#:fr #:bookshops.datasources.scraper-fr)
                     (#:argentina #:bookshops.datasources.scraper-argentina)
-                    (#:models #:bookshops.models)
+                    (#:models #:openbookstore.models)
                     (#:utils #:bookshops.utils)
                     (#:a #:alexandria)))

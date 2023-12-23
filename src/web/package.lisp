@@ -3,4 +3,4 @@
 ;; so than every file can refer to its symbol.
 (in-package #:bookshops/web)
 (djula:add-template-directory
- (asdf:system-relative-pathname "bookshops" "src/web/templates/"))
+ (asdf:system-relative-pathname "openbookstore" "src/web/templates/"))

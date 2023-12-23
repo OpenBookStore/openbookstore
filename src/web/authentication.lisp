@@ -4,7 +4,7 @@
   (hunchentoot:session-value :user))
 
 (defun web-login (email password)
-  (let ((user (bookshops.models:login email password)))
+  (let ((user (openbookstore.models:login email password)))
     (when user
       (setf (hunchentoot:session-value :user) user))))
 
@@ -25,7 +25,7 @@
     `(djula:render-template* ,template ,stream ,@ template-arguments)))
 
 (djula:def-filter :user-name (user)
-  (bookshops.models::user-name user))
+  (openbookstore.models::user-name user))
 
 (djula:def-filter :user-roles (user)
   ;; iterate the roles, convert them to lower case and ensure there's a trailing comma.

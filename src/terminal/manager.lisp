@@ -30,7 +30,7 @@ $ ./bookshops -i
 
 (defpackage bookshops.manager
   (:use :cl)
-  (:import-from :bookshops.models
+  (:import-from :openbookstore.models
                 :create-superuser
                 :create-role
                 :search-user

@@ -2,7 +2,7 @@
   (:shadow :search)
   (:use :cl
         :bookshops
-        :bookshops.models
+        :openbookstore.models
         :mito
         :sxql
         :prove
@@ -87,7 +87,7 @@
 (subtest "Create a default place"
   (with-empty-db
     (is (type-of (default-place))
-        'bookshops.models::place
+        'openbookstore.models::place
         "we create a default place if there is none.")))
 
 
@@ -118,7 +118,7 @@
 (subtest "search books with permutations of keywords"
   (with-empty-db
     (with-fixtures
-      (let ((res (bookshops.models:find-book :query "title1")))
+      (let ((res (openbookstore.models:find-book :query "title1")))
         (is (length res)
             1
             "search one keyword")
@@ -126,12 +126,12 @@
             "title1"
             "titles match"))
 
-      (let ((res (bookshops.models:find-book :query "title1 author1"))
-            (res2 (bookshops.models:find-book :query "author1 title1"))
-            (res3 (bookshops.models:find-book :query "title1 author2"))
-            (res4 (bookshops.models:find-book :query "author2 title1"))
-            (res5 (bookshops.models:find-book :query "titl"))
-            (res6 (bookshops.models:find-book :query "titl author2")))
+      (let ((res (openbookstore.models:find-book :query "title1 author1"))
+            (res2 (openbookstore.models:find-book :query "author1 title1"))
+            (res3 (openbookstore.models:find-book :query "title1 author2"))
+            (res4 (openbookstore.models:find-book :query "author2 title1"))
+            (res5 (openbookstore.models:find-book :query "titl"))
+            (res6 (openbookstore.models:find-book :query "titl author2")))
 
         (is (length res)
             1

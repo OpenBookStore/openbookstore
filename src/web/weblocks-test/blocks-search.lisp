@@ -61,7 +61,7 @@
   (log:info "--- calling save-book with " result-widget)
   (let ((book (result result-widget)))
     (log:info "-- bookresult is" book)  ;; not seen.
-    (bookshops.models:add-to (bookshops.models:default-place)
+    (openbookstore.models:add-to (openbookstore.models:default-place)
                              book)
     (update result-widget)))
 
@@ -70,11 +70,11 @@
     (with-html
       (:div :class "grid-x"
             (:div :class "cell medium-6"
-                  (:div :class "cell medium-6" (bookshops.models:title book))
-                  (:div :class "cell medium-4" (bookshops.models:authors book)))
+                  (:div :class "cell medium-6" (openbookstore.models:title book))
+                  (:div :class "cell medium-4" (openbookstore.models:authors book)))
             (:div :class "cell medium-5"
-                  (:div :class "cell medium-1" (bookshops.models:price book) "€")
-                  (:div :class "cell medium-2" "x" (bookshops.models:quantity book)))
+                  (:div :class "cell medium-1" (openbookstore.models:price book) "€")
+                  (:div :class "cell medium-2" "x" (openbookstore.models:quantity book)))
             (with-html-form (:POST (lambda (&key query &allow-other-keys)
                                      (declare (ignorable query))
                                      ;TODO:

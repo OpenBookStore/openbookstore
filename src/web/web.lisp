@@ -127,7 +127,7 @@ Slime reminders:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setf djula:*current-store*
-      (let ((search-path (list (asdf:system-relative-pathname "bookshops"
+      (let ((search-path (list (asdf:system-relative-pathname "openbookstore"
                                                               "src/web/templates/"))))
 
         ;; Possible issue: when I quickload this, I have a MEMORY store O_o
@@ -154,7 +154,7 @@ Slime reminders:
           (make-instance 'djula:memory-template-store
                          :search-path search-path))))
 
-(let ((paths (djula:list-asdf-system-templates "bookshops" "src/web/templates")))
+(let ((paths (djula:list-asdf-system-templates "openbookstore" "src/web/templates")))
   (loop for path in paths
      do (uiop:format! t "~&Compiling template file: ~a…~&" path)
        (djula:compile-template* path))
@@ -207,7 +207,7 @@ Slime reminders:
   See serve-static-assets-for-release to use in a binary release."
   (push (hunchentoot:create-folder-dispatcher-and-handler
          "/static/" (merge-pathnames *default-static-directory*
-                                     (asdf:system-source-directory :bookshops) ;; => NOT src/
+                                     (asdf:system-source-directory :openbookstore) ;; => NOT src/
                                      ))
         hunchentoot:*dispatch-table*))
 
@@ -255,7 +255,7 @@ Slime reminders:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Routes.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(bookshops.models:define-role-access home-route :view :visitor)
+(openbookstore.models:define-role-access home-route :view :visitor)
 (defroute home-route ("/" :decorators ((@check-roles home-route))) ()
   ;; aka dashboard-route
   (render-template* +dashboard.html+ nil
@@ -272,7 +272,7 @@ Slime reminders:
                                 )))
 
 ;XXX: we don't need a similar define-role-access for each route.
-(bookshops.models:define-role-access stock-route :view :visitor)
+(openbookstore.models:define-role-access stock-route :view :visitor)
 (defroute stock-route ("/stock" :decorators ((@check-roles stock-route)))
     (&get q
           (shelf-name-ascii-or-id :real-name "shelf"))
@@ -310,12 +310,12 @@ Slime reminders:
                       :form-shelf shelf
                       :nb-results (length cards)
                       :q q
-                      :data (list :nb-titles (bookshops.models:count-book)
-                                  :nb-books (bookshops.models::total-quantities)
+                      :data (list :nb-titles (openbookstore.models:count-book)
+                                  :nb-books (openbookstore.models::total-quantities)
                                   :nb-titles-negative (length
-                                                       (bookshops.models::negative-quantities))))))
+                                                       (openbookstore.models::negative-quantities))))))
 
-(bookshops.models:define-role-access search-route :view :visitor)
+(openbookstore.models:define-role-access search-route :view :visitor)
 (defroute search-route ("/search" :decorators ((@check-roles search-route))) (&get q datasource)
   (let* ((datasource (str:trim datasource))
          (cards (and q (search-datasources q
@@ -337,7 +337,7 @@ Slime reminders:
 
 ;; (defroute search-route/post ("/search" :method :POST) (&post q) nil)
 
-(bookshops.models:define-role-access add-or-create-route :view :editor)
+(openbookstore.models:define-role-access add-or-create-route :view :editor)
 (defroute add-or-create-route ("/card/add-or-create/" :method :post
                                                       :decorators ((@check-roles add-or-create-route)))
     (q title isbn price authors cover-url publisher (updatep :parameter-type 'boolean
@@ -359,8 +359,8 @@ Slime reminders:
                       :card book
                       :referer-route referer-route
                       :places-copies
-                      (bookshops.models::book-places-quantities book)
-                      :places (bookshops.models:find-places))))
+                      (openbookstore.models::book-places-quantities book)
+                      :places (openbookstore.models:find-places))))
 
 (defun redirect-to-search-result (route query book)
   (hunchentoot:redirect
@@ -368,17 +368,17 @@ Slime reminders:
            (and (str:non-empty-string-p query) query)
            (mito:object-id book))))
 
-(bookshops.models:define-role-access add-or-create-route :view :editor)
+(openbookstore.models:define-role-access add-or-create-route :view :editor)
 (defroute card-add-stock-route ("/card/add-stock/" :method :post
                                                    :decorators ((@check-roles add-or-create-route)))
     (q place-id (quantity :parameter-type 'integer :init-form 0) isbn
        (referer-route :parameter-type 'string :init-form "/search"))
   (let ((card (models:find-by :isbn isbn))
         (place (models:find-place-by :id place-id)))
-    (bookshops.models:add-to place card :quantity quantity)
+    (openbookstore.models:add-to place card :quantity quantity)
     (redirect-to-search-result referer-route q card)))
 
-(bookshops.models:define-role-access add-or-create-route :view :editor)
+(openbookstore.models:define-role-access add-or-create-route :view :editor)
 ;; Create a book in DB given the URL parameters and go back to the search results.
 ;; In search.html, the form has hidden fields to pass along the title, the ISBN, the price…
 ;; Redirect to the original route.
@@ -399,11 +399,11 @@ Slime reminders:
               :update updatep)
              (models:find-by :id book-id))))
     (models:save-book book)
-    (bookshops.models:add-to (models:default-place) book :quantity quantity)
+    (openbookstore.models:add-to (models:default-place) book :quantity quantity)
     (redirect-to-search-result referer-route q book)))
 
 ;; Card view.
-(bookshops.models:define-role-access add-or-create-route :view :visitor)
+(openbookstore.models:define-role-access add-or-create-route :view :visitor)
 (defroute route-card-page ("/card/:slug" :method :GET :decorators ((@check-roles add-or-create-route)))
     (&get raw)
   "Show a card.
@@ -593,7 +593,7 @@ Slime reminders:
       (format *error-output* c))))
 
 
-(bookshops.models:define-role-access receive-route :view :editor)
+(openbookstore.models:define-role-access receive-route :view :editor)
 (defroute receive-route ("/receive" :method :get
                                     :decorators ((@check-roles receive-route)))
     ()  ;; args
@@ -621,7 +621,7 @@ Slime reminders:
                     :route "/receive-ws"
                     :title "Receive WS Devel- OpenBookstore"))
 
-(bookshops.models:define-role-access sell-route :view :editor)
+(openbookstore.models:define-role-access sell-route :view :editor)
 (defroute sell-route ("/sell" :method :get
                               :decorators ((@check-roles sell-route)))
     ()  ;; args
@@ -629,7 +629,7 @@ Slime reminders:
                     :route "/sell"
                     :title "Sell - OpenBookstore"))
 
-(bookshops.models:define-role-access history-route :view :editor)
+(openbookstore.models:define-role-access history-route :view :editor)
 (defroute history-route ("/history" :decorators ((@check-roles history-route))
                                     :method :get)
     () ;; args
@@ -639,7 +639,7 @@ Slime reminders:
       'history-route-month
       :yearmonth (local-time:format-timestring nil now :format '(:year "-" (:month 2)))))))
 
-(bookshops.models:define-role-access history-route :view :editor)
+(openbookstore.models:define-role-access history-route :view :editor)
 (defroute history-route-month ("/history/month/:yearmonth" :decorators ((@check-roles history-route))
                                                            :method :get)
     () ;; args
@@ -669,7 +669,7 @@ Slime reminders:
                       :today today
                       :data data)))
 
-(bookshops.models:define-role-access loans-route :view :editor)
+(openbookstore.models:define-role-access loans-route :view :editor)
 (defroute loans-route ("/stock/loans" :decorators ((@check-roles history-route))
                                       :method :get)
     (outdated)  ;; args
@@ -687,7 +687,7 @@ Slime reminders:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun start-app (&key (port *port*))
-  (bookshops.models:connect)
+  (openbookstore.models:connect)
 
   ;; fix a puri bug. puri:parse-uri "/login?referer-route=/stock?q=lisp" fails,
   ;; it doesn't like the last ?. See https://gitlab.common-lisp.net/clpm/puri/-/issues/2

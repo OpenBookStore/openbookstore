@@ -1,8 +1,8 @@
-(in-package :bookshops)
+(in-package :openbookstore)
 
 (defun init ()
   "Init i18n, connect to the DB,..."
-  (bookshops.models:connect)
+  (openbookstore.models:connect)
   ;; Disabled until we ship the translation files into the binary release.
   ;; (i18n-load)
   (log:config :error))
@@ -13,8 +13,8 @@
   (uiop:quit 1))
 
 (defparameter +version+
-  (let ((version (asdf/component:component-version (asdf:find-system :bookshops)))
-        (directory (asdf:system-source-directory :bookshops)))
+  (let ((version (asdf/component:component-version (asdf:find-system :openbookstore)))
+        (directory (asdf:system-source-directory :openbookstore)))
     (or (ignore-errors
           (uiop:with-current-directory (directory)
             (multiple-value-bind (current-commit)
@@ -79,9 +79,9 @@
   ;;
   (replic.config:apply-config)
 
-  (unless (uiop:file-exists-p (bookshops.models::db-name))
-    (uiop:format! t "Creating the database into ~a...~&" (bookshops.models::db-name))
-    (bookshops.models::initialize-database))
+  (unless (uiop:file-exists-p (openbookstore.models::db-name))
+    (uiop:format! t "Creating the database into ~a...~&" (openbookstore.models::db-name))
+    (openbookstore.models::initialize-database))
 
   (opts:define-opts
       (:name :help
@@ -179,7 +179,7 @@
 
       (init)
 
-      (setf replic:*prompt* (cl-ansi-text:green "bookshops > "))
+      (setf replic:*prompt* (cl-ansi-text:green "openbookstore > "))
       (setf replic:*prompt-prefix* (format nil "(~a) " (name (default-place))))
 
       ;; create commands from the exported functions and variables.
@@ -235,7 +235,7 @@
     ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (when free-args
       (init)
-      (bookshops.models::pprint-books
+      (openbookstore.models::pprint-books
        (search-books (str:join " " free-args)
                                  :datasource *datasource*)))
     ))

@@ -1,7 +1,7 @@
 
 (defpackage bookshops-test.utils
   (:use :cl)
-  (:import-from :bookshops.models
+  (:import-from :openbookstore.models
                 :*db*
                 :*db-name*
                 :connect

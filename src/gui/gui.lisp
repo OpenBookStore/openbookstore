@@ -1,12 +1,12 @@
 (defpackage :bookshops.gui
   (:use :cl
         :nodgui)
-  (:import-from :bookshops
+  (:import-from :openbookstore
                 :books
                 :authors
                 :publisher
                 :price)
-  (:import-from :bookshops.models
+  (:import-from :openbookstore.models
                 :find-book
                 :last-books)
   (:export :main))
@@ -106,7 +106,7 @@
 
 (defun main ()
   "Connect to the database and start the main GUI."
-  (bookshops.models:connect)
+  (openbookstore.models:connect)
   (with-nodgui ()
     (wm-title *tk* "OpenBookStore")
     (minsize *tk* 500 170)

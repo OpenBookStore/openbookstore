@@ -3,8 +3,8 @@
 
 (defpackage :bookshops.iup
   (:use :cl
-        :bookshops.models)
-  (:import-from :bookshops
+        :openbookstore.models)
+  (:import-from :openbookstore
                 :books
                 :authors
                 :editor
@@ -171,5 +171,5 @@
         (bookslist)
       (connect-db ()
         :report "Connect to the DB"
-        (bookshops.models:connect)
+        (openbookstore.models:connect)
         (main)))))

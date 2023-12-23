@@ -169,9 +169,9 @@ Load the system definition, `bookshops.asd`, with C-c C-k in Slime,
 
 Load the dependencies: `(ql:quickload "bookshops")`,
 
-Create the DB: `(bookshops.models::initialize-database)`
+Create the DB: `(openbookstore.models::initialize-database)`
 
-Create a superuser: `(bookshops.models::create-superuser name email password)`
+Create a superuser: `(openbookstore.models::create-superuser name email password)`
 
 Connect to the DB: `(bookshops:init)`
 
@@ -378,9 +378,9 @@ and when your friend returns a book back:
 In **Lisp**, get them with:
 
 ~~~lisp
-(bookshops.models::loans)
+(openbookstore.models::loans)
 ;; and
-(bookshops.models::outdated-loans)
+(openbookstore.models::outdated-loans)
 ~~~
 
 
@@ -464,7 +464,7 @@ To test DB operations, use our macro `with-empty-db`.
 
 
 ```lisp
-(use-package :bookshops.models)
+(use-package :openbookstore.models)
 (use-package :bookshops-test.utils)
 
 (with-empty-db

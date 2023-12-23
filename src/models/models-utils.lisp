@@ -1,4 +1,4 @@
-(in-package :bookshops.models)
+(in-package :openbookstore.models)
 
 (defun data2books (data)
   "Transform search results to a list of book objects."
@@ -33,7 +33,7 @@ AND we would send a notification to the user."
                                                              (access it :isbn))
                                                            data)))))))
          (shelf (when shelf-id
-                  (bookshops.models::find-shelf-by :id shelf-id))))
+                  (openbookstore.models::find-shelf-by :id shelf-id))))
     ;; Add :in-stock to matches only.
     (loop for book in (print in-stock)
        for elt = (find (isbn book) data

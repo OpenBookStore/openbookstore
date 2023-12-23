@@ -30,25 +30,25 @@ build: ${MO_FILES}
 	$(LISP)	--non-interactive \
 		--eval '(ql:quickload "deploy")' \
 		--eval '(ql:quickload "cl+ssl")' \
-		--load bookshops.asd \
+		--load openbookstore.asd \
 		--eval '(push :djula-binary *features*)' \
-		--eval '(ql:quickload :bookshops)' \
-		--eval '(asdf:make :bookshops)'
+		--eval '(ql:quickload :openbookstore)' \
+		--eval '(asdf:make :openbookstore)'
 
 build-package:
 	# This must use a custom-built SBCL with a special parameter,
 	# see linux-packaging README.
 	# I have it under ~/.local/bin/bin/sbcl
 	$(LISP) --non-interactive \
-		--load bookshops.asd \
-		--eval '(ql:quickload :bookshops)' \
+		--load openbookstore.asd \
+		--eval '(ql:quickload :openbookstore)' \
 		--eval '(load "~/common-lisp/asdf/tools/load-asdf.lisp")' \
 		--eval '(setf *debugger-hook* (lambda (c h) (declare (ignore h)) (format t "~A~%" c) (sb-ext:quit :unix-status -1)))' \
-		--eval '(asdf:make :bookshops)'
+		--eval '(asdf:make :openbookstore)'
 
 build-gui:
 	$(LISP)	--non-interactive \
-		--load bookshops.asd \
+		--load openbookstore.asd \
 		--eval '(ql:quickload :bookshops/gui)' \
 		--eval '(asdf:make :bookshops/gui)'
 
@@ -61,7 +61,7 @@ docker-run:
 
 test:
 	$(LISP) --non-interactive \
-		--load bookshops.asd \
+		--load openbookstore.asd \
 		--load bookshops-test.asd \
 		--eval '(ql:quickload :bookshops-test)' # prove tests are run when loaded.
 
@@ -102,9 +102,9 @@ ${PO_TEMPLATE_DIR}/djula.pot: $(HTML) src/i18n.lisp
 	$(LISP) --non-interactive \
 		--eval '(ql:quickload "deploy")' \
 		--eval '(ql:quickload "cl+ssl")' \
-		--eval '(asdf:load-asd (truename "bookshops.asd"))' \
+		--eval '(asdf:load-asd (truename "openbookstore.asd"))' \
 		--eval '(push :djula-binary *features*)' \
-		--eval '(ql:quickload :bookshops)' \
+		--eval '(ql:quickload :openbookstore)' \
 		--eval '(bookshops.i18n:update-djula.pot)'
 
 # Rule to combine djula.pot and lisp.pot into bookshops.pot

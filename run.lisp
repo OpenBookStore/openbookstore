@@ -12,9 +12,9 @@ Another solution to run the app is to run the executable (see README).
 "
 
 (require "asdf")  ;; for Docker
-(load "bookshops.asd")
+(load "openbookstore.asd")
 
-(ql:quickload "bookshops")
+(ql:quickload "openbookstore")
 
 (in-package :bookshops/web)
 (handler-bind ((error (lambda (c)

@@ -1,5 +1,5 @@
 
-(in-package :bookshops.models)
+(in-package :openbookstore.models)
 
 (export '(*print-details*))
 
@@ -39,7 +39,7 @@ searches. This method was thought the most portable.
       ;; XXX: search on other locations such as ~/.config/openbookstore/
       (merge-pathnames (deploy:runtime-directory) "db.db")
       ;; Get it at the project root.
-      (asdf:system-relative-pathname :bookshops "db.db")))
+      (asdf:system-relative-pathname :openbookstore "db.db")))
 
 (defparameter *db* nil
   "DB connection object, returned by (connect).")
@@ -776,7 +776,7 @@ to join them with another filter (shelf)."
   Sums all quantities."
   (let ((places (find-places)))
     (loop for place in places
-       sum (bookshops.models:quantity place))))
+       sum (openbookstore.models:quantity place))))
 
 (defmethod quantity ((book book))
   "Sum of the quantities in all places."

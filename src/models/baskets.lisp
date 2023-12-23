@@ -1,4 +1,4 @@
-(in-package :bookshops.models)
+(in-package :openbookstore.models)
 
 (export '(find-baskets))
 

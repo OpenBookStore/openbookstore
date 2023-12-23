@@ -17,7 +17,7 @@ See also:
 
 * `authentication.lisp`: defines the `user`, `role`, `user-role`,
   `role-copy` classes, and associated actions, in package
-  `bookshops.models`):
+  `openbookstore.models`):
 
     * `create-user`, `create-superuser`, `create-role`, `login` (just
       returns the user object if password is correct), `get-user`,

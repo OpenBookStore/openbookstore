@@ -22,7 +22,7 @@
 (defparameter *port* 8888)
 
 (defroutes main-routes
-  ("/stock/" (make-book-list-widget (bookshops.models:find-book)))
+  ("/stock/" (make-book-list-widget (openbookstore.models:find-book)))
   ("/search/" (make-search-widget))
   ("/" (weblocks/response:redirect "/stock/")))
 
@@ -38,7 +38,7 @@
 (defun add-book (book-widget)
   "Add one copy to the default place."
   (let ((book (book book-widget)))
-    (bookshops.models:add-to (bookshops.models:default-place)
+    (openbookstore.models:add-to (openbookstore.models:default-place)
                              book)
     (update book-widget)))
 
@@ -46,10 +46,10 @@
 ;;   (log:debug "-- render book-widget")
 ;;   (let ((book (book widget)))
 ;;     (with-html
-;;       (:td (bookshops.models:title book))
-;;       (:td (bookshops.models:authors book))
-;;       (:td (bookshops.models:price book) "€")
-;;       (:td (format nil "x ~a" (bookshops.models:quantity book)))
+;;       (:td (openbookstore.models:title book))
+;;       (:td (openbookstore.models:authors book))
+;;       (:td (openbookstore.models:price book) "€")
+;;       (:td (format nil "x ~a" (openbookstore.models:quantity book)))
       ;; (:td (with-html-form (:POST (lambda (&key &allow-other-keys)
       ;;                               (add-book widget)))
       ;;        (:input :type "submit"
@@ -61,11 +61,11 @@
     (with-html
       (:div :class "grid-x"
             (:div :class "cell medium-6"
-                  (:div :class "cell medium-6" (bookshops.models:title book))
-                  (:div :class "cell medium-4" (bookshops.models:authors book)))
+                  (:div :class "cell medium-6" (openbookstore.models:title book))
+                  (:div :class "cell medium-4" (openbookstore.models:authors book)))
             (:div :class "cell medium-5"
-                  (:div :class "cell medium-1" (bookshops.models:price book) "€")
-                  (:div :class "cell medium-2" "x" (bookshops.models:quantity book)))
+                  (:div :class "cell medium-1" (openbookstore.models:price book) "€")
+                  (:div :class "cell medium-2" "x" (openbookstore.models:quantity book)))
             (with-html-form (:POST (lambda (&key &allow-other-keys)
                                      (add-book widget)))
               (:input :type "submit"
@@ -80,7 +80,7 @@
     :accessor books)))
 
 (defun stock-search (list-widget query)
-  (let* ((results (bookshops.models:find-book :query query))
+  (let* ((results (openbookstore.models:find-book :query query))
          (book-widgets (mapcar #'make-book-widget results)))
     (setf (books list-widget) book-widgets)
     (update list-widget)))
@@ -114,12 +114,12 @@
   ;; (weblocks/server:start :port *port*))
   ;(setf weblocks/default-init::*welcome-screen-enabled* nil)
   (unless mito::*connection*
-    (bookshops.models:connect))
+    (openbookstore.models:connect))
   (restart-case
       (weblocks/server:start :port *port*)
     (connect-to-db ()
       :report "Connect to the DB"
-      (bookshops.models:connect))))
+      (openbookstore.models:connect))))
 
 
 #+nil

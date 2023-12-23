@@ -2,20 +2,20 @@
   (:use :cl
         :mito
         :cl-ansi-text)
-  (:local-nicknames (:models :bookshops.models))
+  (:local-nicknames (:models :openbookstore.models))
   (:shadow :search
            :delete)
-  (:import-from :bookshops
+  (:import-from :openbookstore
                 :search-books)
 
   (:import-from :bookshops.i18n
                 :_)
 
-  (:import-from :bookshops.models
+  (:import-from :openbookstore.models
                 ;; utils
                 :print-quantity-red-green)
 
-  (:local-nicknames (#:models #:bookshops.models)
+  (:local-nicknames (#:models #:openbookstore.models)
                     (#:utils #:bookshops.utils)
                     (#:i18n #:bookshops.i18n))
 

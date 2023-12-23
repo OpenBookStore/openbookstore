@@ -1,5 +1,5 @@
 
-(in-package :bookshops.models)
+(in-package :openbookstore.models)
 
 ;; see exports below.
 
@@ -113,7 +113,7 @@ If `contact' is given, filter by this contact."
       (sxql:where (:= :book book)))
     (sxql:order-by :object-created)))
 #+(or)
-(find-book-loans (third (bookshops.models::find-book :query "comprendre")))
+(find-book-loans (third (openbookstore.models::find-book :query "comprendre")))
 
 (defgeneric loan-too-long-p (obj)
   (:documentation "Return t if this loan bypasses the number of days allowed."))

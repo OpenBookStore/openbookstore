@@ -13,16 +13,17 @@
 
 (in-package :bookshops.i18n)
 
-(setf (gettext:textdomain) "bookshops")
+(setf (gettext:textdomain) "openbookstore")
 
-(gettext:setup-gettext #.*package* "bookshops")
+(gettext:setup-gettext #.*package* "openbookstore")
 
 ;; Only preload the translations into the image if we're not deployed yet.
 (unless (deploy:deployed-p)
   (format *debug-io* "~%gettext: reading all *.mo files...")
   (gettext:preload-catalogs
    ;; Tell gettext where to find the .mo files
-   #.(asdf:system-relative-pathname :bookshops "locale/")))
+   #.(asdf:system-relative-pathname :openbookstore "locale/"))
+  (format *debug-io* "done.~&"))
 
 ;; Run this when developping to reload the translations
 #+ (or)
@@ -31,12 +32,12 @@
   (clrhash gettext::*catalog-cache*)
   (gettext:preload-catalogs
    ;; Tell gettext where to find the .mo files
-   #.(asdf:system-relative-pathname :bookshops "locale/")))
+   #.(asdf:system-relative-pathname :openbookstore "locale/")))
 
 ;; Run this to see the list of loaded message for a specific locale
 #+ (or)
 (gettext::catalog-messages
- (gethash '("fr_fr" :LC_MESSAGES "bookshops")
+ (gethash '("fr_fr" :LC_MESSAGES "openbookstore")
 	  gettext::*catalog-cache*))
 
 ;; Test the translation of a string
@@ -86,7 +87,7 @@
 #|
 This could technically be just
 (mapcan #'djula.locale:file-template-translate-strings
-        (djula:list-asdf-system-templates "bookshops" "src/web/templates"))
+        (djula:list-asdf-system-templates "openbookstore" "src/web/templates"))
 
 But I (fstamour) made it just a bit more complex in order to keep track of the source (just the
 filename) of each translatable strings. Hence why the hash-table returned is named `locations`.
@@ -95,7 +96,7 @@ filename) of each translatable strings. Hence why the hash-table returned is nam
   "Extract all {_ ... _} string from the djula templates."
   (loop
     :with locations = (make-hash-table :test 'equal)
-    :for path :in (djula:list-asdf-system-templates "bookshops" "src/web/templates")
+    :for path :in (djula:list-asdf-system-templates "openbookstore" "src/web/templates")
     :for strings = (djula.locale:file-template-translate-strings path)
     :do (loop :for string :in strings
               :unless (gethash string locations)
@@ -105,7 +106,7 @@ filename) of each translatable strings. Hence why the hash-table returned is nam
 
 (defun update-djula.pot ()
   "Update djula.pot from *.html files."
-  (with-open-file (s (asdf:system-relative-pathname "bookshops" "locale/templates/LC_MESSAGES/djula.pot")
+  (with-open-file (s (asdf:system-relative-pathname "openbookstore" "locale/templates/LC_MESSAGES/djula.pot")
                      :direction :output
                      :if-exists :supersede
                      :if-does-not-exist :create)
@@ -116,5 +117,5 @@ filename) of each translatable strings. Hence why the hash-table returned is nam
         :for location = (gethash string locations)
         :do
            (format s "~%#: ~a~%#, lisp-format~%msgid ~s~%msgstr \"\" ~%"
-                   (enough-namestring location (asdf:system-relative-pathname "bookshops" ""))
+                   (enough-namestring location (asdf:system-relative-pathname "openbookstore" ""))
                    string)))))

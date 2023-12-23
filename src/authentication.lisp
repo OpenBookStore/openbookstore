@@ -1,4 +1,4 @@
-(in-package #:bookshops.models)
+(in-package #:openbookstore.models)
 
 #|
 
@@ -8,7 +8,7 @@ Create a superuser:
 
 Create a normal user:
 
-(bookshops.models::create-user "Joe Blogg" "JoeBlogg@example.com" "i<3books")
+(openbookstore.models::create-user "Joe Blogg" "JoeBlogg@example.com" "i<3books")
 
 Give him rights:
 

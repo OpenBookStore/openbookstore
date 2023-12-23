@@ -19,7 +19,7 @@
   (loop for file in (list "openbookstore.js"
                           "card-page.js")
      with static-directory = (merge-pathnames *default-static-directory*
-                                              (asdf:system-source-directory :bookshops))
+                                              (asdf:system-source-directory :openbookstore))
      for content = (uiop:read-file-string (merge-pathnames file static-directory))
      do (setf (gethash file *static-files-content*) content)
      finally (return *static-files-content*)))

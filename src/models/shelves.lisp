@@ -1,5 +1,5 @@
 
-(in-package :bookshops.models)
+(in-package :openbookstore.models)
 
 (defclass shelf ()
   ((name
