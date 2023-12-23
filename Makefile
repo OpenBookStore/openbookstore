@@ -2,8 +2,8 @@ LISP ?= sbcl
 # SHELL := bash
 
 # List lisp files, unless they contains a #
-SRC := $(shell find src/ -name '*.lisp' -a ! -name '*#*')
-HTML := $(shell find src/ -name '*.html' -a ! -name '*#*')
+SRC := $(shell find src/ -name '*.lisp' -a ! -name '*\#*')
+HTML := $(shell find src/ -name '*.html' -a ! -name '*\#*')
 DEPS := $(SRC) $(HTML) bookshops.asd # and some more...
 
 # list of supported locales
