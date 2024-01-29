@@ -1,0 +1,76 @@
+# Build a Ubuntu and Windows binary.
+#
+# https://github.com/melusina-org/make-common-lisp-program/actions/runs/6415297009/workflow
+
+name: 'Windows build'
+
+# Takes 13min to install QL dependencies…
+# windows: Unable to load foreign library (READLINE).
+#    Error opening shared object "libreadline.dll":
+
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore:
+      - v1
+    tags-ignore:
+      - v1.*
+
+jobs:
+  build-on-tier-1-platforms:
+    strategy:
+      matrix:
+        implementation: ['sbcl']
+        # there is also 'ubuntu-latest', 'macos-latest'
+        os: ['windows-latest']
+    runs-on: '${{ matrix.os }}'
+    name: 'Build on Tier 1 Platform (Windows for now)'
+
+    timeout-minutes: 20
+    steps:
+      # Clone our repository.
+      - uses: actions/checkout@v4
+
+      # - name: 'Install MacPorts'
+      #   if: runner.os == 'macOS'
+      #   uses: melusina-org/setup-macports@v1
+
+      - name: 'Setup Common Lisp'
+        uses: melusina-org/setup-common-lisp@v1
+        with:
+          implementation: '${{ matrix.implementation }}'
+      - name: 'Setup Quicklisp'
+        uses: melusina-org/setup-quicklisp@v1
+        id: quicklisp
+        with:
+          implementation: '${{ matrix.implementation }}'
+
+      # - name: 'Install CL-GITHUB-ACTIONS'
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: melusina-org/cl-github-actions
+      #     path: ${{ steps.quicklisp.outputs.quicklisp-local-projects }}/cl-github-actions
+      # - name: 'Run unit tests'
+      #   uses: melusina-org/run-common-lisp-program@v1
+      #   with:
+      #     implementation: '${{ matrix.implementation }}'
+      #     system: 'org.melusina.github-action.make-common-lisp-program/testsuite'
+      #     entrypoint: 'unit-tests'
+
+      # Build:
+      - name: 'Build OpenBookStore'
+        run: make build
+        id: make
+        # with:
+          # implementation: '${{ matrix.implementation }}'
+          # system: 'org.melusina.reference-utility/executable'
+
+      # Publish:
+      # does this work?
+      - name: 'Upload binary'
+        uses: actions/upload-artifact@v3
+        with:
+          name: openbookstore binary ${{ matrix.implementation }} ${{ runner.os }} ${{ runner.arch }}
+          path: ${{ steps.make.outputs.build-pathname }}
+          # or just say bin/* ?
+          if-no-files-found: error
