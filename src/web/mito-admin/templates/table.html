@@ -1,0 +1,26 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+Openbookstore admin · {{ table }}
+{% endblock %}
+
+{% block content %}
+
+<h3 class="title"> {{ table }} </h3>
+
+<table class="table is-hoverable">
+  <tbody>
+
+    {% for record in records %}
+    <tr>
+      <td>
+        <a href="/admin/{{table}}/{{ record.id }}"> {{ record }} </a>
+      </td>
+    </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+
+{% endblock %}

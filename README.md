@@ -457,6 +457,13 @@ We use the [Mito](https://github.com/fukamachi/mito) ORM. See the [Cookbook tuto
 <!-- And you can see some basic instructions on how to create your own commands -->
 <!-- on file "src/manager.lisp" -->
 
+## TODO
+
+So much.
+
+- [X] sketch an admin dashboard: show tables, show records, show fields and values.
+- [ ] edit records (see cl-forms)
+
 
 ## Testing
 
