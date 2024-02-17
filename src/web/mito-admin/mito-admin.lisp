@@ -10,6 +10,11 @@
 ;;    (lisper
 ;;     :initform nil
 ;;     :accessor lisper)))
+;;
+;; Column types:
+;;
+;;     :col-type (:varchar 128))
+;;     :col-type (or :null shelf)
 
 ;; An object.
 (defparameter p (make-instance 'book :title "clos introspection" :price "10k"))
@@ -53,6 +58,11 @@
 ;; (DATASOURCE DETAILS-URL TITLE TITLE-ASCII ISBN PRICE DATE-PUBLICATION PUBLISHER
 ;; PUBLISHER-ASCII AUTHORS AUTHORS-ASCII SHELF SHELF-ID COVER-URL
 ;; REVIEW)
+;; so:
+(defun class-direct-slot-names (class-symbol)
+  (mapcar #'slot-name (mopp:class-direct-slots (find-class class-symbol))))
+#+(or)
+(class-slot-names 'book)
 
 (defun slot-value? (o slot)
   "slot: slot-definition or symbol."
@@ -169,4 +179,5 @@
 (mapcar (^ (slot) (render-input p (slot-name slot)))
         slots)
 
-;; don't re-do cl-forms!
+;; Don't re-do cl-forms!
+;; But it doesn't totally do what we need: automatic form, exclude some fields.

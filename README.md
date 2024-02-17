@@ -462,6 +462,9 @@ We use the [Mito](https://github.com/fukamachi/mito) ORM. See the [Cookbook tuto
 So much.
 
 - [X] sketch an admin dashboard: show tables, show records, show fields and values.
+- [X] create records
+  - [X] simple form: no related column etc
+  - [ ] try again with cl-forms
 - [ ] edit records (see cl-forms)
 
 

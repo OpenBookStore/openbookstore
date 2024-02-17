@@ -1,0 +1,37 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+Openbookstore admin · {{ record }}
+{% endblock %}
+
+{% block content %}
+
+<h3 class="title"> {{ table }}: create </h3>
+
+<form class="form" target="{{ target }}" method="POST">
+
+  {% for error in errors %}
+  <div class="notification is-danger">
+    <button class="delete"> </button>
+    {{ error }}
+  </div>
+  {% endfor %}
+
+
+  {% for input in inputs %}
+  {{ input.html | safe }}
+  {% endfor %}
+
+  <div class="field is-grouped">
+    <div class="control">
+      <button class="button is-link">Submit</button>
+    </div>
+    <div class="control">
+      <button class="button is-link is-light">Cancel</button>
+    </div>
+  </div>
+
+</form>
+
+{% endblock %}

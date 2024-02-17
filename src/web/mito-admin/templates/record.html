@@ -1,0 +1,57 @@
+
+
+{% extends "base.html" %}
+
+{% block title %}
+Openbookstore admin · {{ record }}
+{% endblock %}
+
+{% block content %}
+
+<h3 class="title"> {{ table }} </h3>
+
+<h4 class="title"> {{ record }} </h4>
+
+<!-- {% if raw %} -->
+<!-- <pre> -->
+<!--   {{ raw }} -->
+<!-- </pre> -->
+<!-- {% endif %} -->
+
+
+<table class="table is-hoverable">
+  <tbody>
+
+    {% for field in fields %}
+    <tr>
+      <td>
+        {{ field.name }}
+      </td>
+      <td>
+        {{ field.value }}
+      </td>
+    </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+
+With rendered slots:
+
+<table class="table is-hoverable">
+  <tbody>
+    {% for field in rendered-fields %}
+    <tr>
+      <td>
+        {{ field.name }}
+      </td>
+      <td>
+        {{ field.html | safe }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+{% endblock %}

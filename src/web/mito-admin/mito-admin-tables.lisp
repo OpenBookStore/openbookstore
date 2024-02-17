@@ -22,8 +22,11 @@
 
 (defgeneric render-table (table ) ;; &key (page 1) (page-size 200) (order-by :desc))
   (:method (table)
-    (let ((records (mito:select-dao table (sxql:order-by (:desc :created-at)))))
+    (let ((records (mito:select-dao table (sxql:order-by (:desc :created-at))))
+          (messages (bookshops.messages:get-message/status)))
+      (log:info messages)
       (djula:render-template* *admin-table* nil
+                              :messages messages
                               :table table
                               :tables (tables)
                               :records records)
