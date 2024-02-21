@@ -90,8 +90,12 @@ but not (or null shelf) ?
 
 ;; => automatically create a <table>-form class for all tables.
 
-
 (defparameter book-form (make-instance 'book-form :model 'book))
+
+
+(defparameter *select-input* (djula:compile-template* "mito-admin/templates/includes/select.html"))
+
+(defparameter *admin-create-record* (djula:compile-template* "mito-admin/templates/create.html"))
 
 (defmethod initialize-instance :after ((obj form) &key)
   "Populate fields from the class name."
@@ -100,6 +104,10 @@ but not (or null shelf) ?
       (setf fields
             ;; Use direct slots.
             ;; If we get all slot names, we get MITO.DAO.MIXIN::SYNCED and the like.
+            ;;TODO: exclude -ID fields.
+            ;;(mito.class:table-column-type (mito.class:find-slot-by-name 'book 'shelf-id))
+            ;; SHELF
+            ;; => it's a table, so exclude shelf-id.
             (class-direct-slot-names model)))))
 
 (defmethod exclude-fields (book-form)
@@ -108,10 +116,11 @@ but not (or null shelf) ?
     publisher-ascii
     authors-ascii
     datasource
-    ;; todo: handle relations
+    ;; ongoing: handle relations
     ;; we need to exclude shelf, or we'll get an error on mito:insert-dao if the field is NIL.
-    shelf
+    ;; shelf
     shelf-id
+    shelf2-id
     ))
 
 (defgeneric form-fields (form)
@@ -141,6 +150,18 @@ but not (or null shelf) ?
 </div>
 </div>" field field)))
 
+;; We can override an input fields for a form & field name
+;; by returning HTML.
+(defmethod field-input ((form book-form) (field (eql 'shelf)))
+  (let ((shelves (mito:select-dao field)))
+    (djula:render-template* *select-input* nil
+                            :name field
+                            :options shelves
+                            :empty-choice t
+                            :empty-choice-label "-- choose a shelf… --"
+                            :label "select a shelf"
+                            :select-id "shelf-select")))
+
 (defun collect-slot-inputs (form fields)
   (loop for field in fields
         collect (list :name field
@@ -165,7 +186,6 @@ but not (or null shelf) ?
      "")))
 
 ;; Serve the form.
-(defparameter *admin-create-record* (djula:compile-template* "mito-admin/templates/create.html"))
 (defgeneric create-record (table)
   (:method (table)
     (let* ((form (make-form table))

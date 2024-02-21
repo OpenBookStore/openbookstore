@@ -1,0 +1,12 @@
+<div class="field">
+  <label class="label" for="{{ name }}">{{ label }}</label>
+
+       <select name="{{ name }}" id="{{ select-id }}" class="select">
+         {% if empty-choice %}
+         <option value=""> {{ empty-choice-label }} </option>
+         {% endif %}
+         {% for option in options %}
+         <option value="{{ option.id }}">{{ option.name }}</option>
+         {% endfor %}
+       </select>
+</div>
