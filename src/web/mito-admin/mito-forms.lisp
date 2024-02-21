@@ -137,18 +137,104 @@ but not (or null shelf) ?
                   (form-fields (make-instance 'book-form :model 'book))
                   '(COVER-URL SHELF-ID SHELF AUTHORS PUBLISHER DATE-PUBLICATION PRICE ISBN TITLE DETAILS-URL))))
 
+
+;;;
+;;; How best define the input types/widgets ?
+;;;
+(defgeneric input-fields (form)
+  (:documentation "Define the fields' widgets. Return: a hash-table with key (field symbol name) and property list with keys: :widget, :validator…
+
+  Widgets are: :textarea, :datetime-local… TBC
+
+  Shall we infer the widgets more thoroughly?")
+  (:method (form)
+    (dict)))
+
+(defun validate-ok (&optional it)
+  (declare (ignorable it))
+  (print "ok!"))
+
+(defmethod input-fields ((form book-form))
+  ;; Here we don't use another class to not bother with special :widget slots and a metaclass…
+  (dict 'review (list :widget :textarea :validator #'validate-ok)
+        'date-publication (list :widget :datetime-local)))
+
+;; so, an "accessor":
+(defun input-field-widget (form field)
+  (access:accesses (input-fields form) field :widget))
+#+(or)
+(input-field-widget BOOK-FORM 'review)
+;; :TEXTAREA
+
+;; That's a second way to define form inputs isn't it?
+;; We added field-input first, but it's to render HTML.
+(defgeneric render-widget (form field widget &key name)
+  (:documentation "Return HTML to render a widget given a form, a field name (symbol), a widget type (keyword).
+
+  The user simply chooses the widget type and doesn't write HTML.
+
+  NAME: the column type field (symbol). If \"shelf2\" refers to the \"shelf\" table, FIELD is \"shelf2\" and NAME must be \"shelf\".
+
+  See also `field-input'.")
+  (:method (form field widget &key name)
+    (case widget
+      (:select
+          (let ((objects (mito:select-dao field)))
+            (log:info "caution: we expect ~a objects to have an ID and a NAME field" field)
+            (djula:render-template* *select-input* nil
+                                    :name (or name field)
+                                    :options objects
+                                    :empty-choice t
+                                    :empty-choice-label (format nil "-- choose a ~a… --"
+                                                                (str:downcase field))
+                                    :label field
+                                    :select-id (format nil "~a-select" (str:downcase field)))))
+      (:textarea
+       (format nil "<div class=\"field\">
+<label class=\"label\"> ~a </label>
+ <div class=\"control\">
+  <textarea name=\"~a\" class=\"input\" rows=\"5\"> </textarea>
+</div>
+</div>" field field))
+      (:datetime-local
+       (format nil "<div class=\"field\">
+<label class=\"label\"> ~a </label>
+ <div class=\"control\">
+  <input type=\"datetime-local\" name=\"~a\" class=\"input\"> </input>
+</div>
+</div>" field field))
+      (t
+       (format nil "<div> todo for ~a </div>" field)))))
+
+;;;
+;;; end of input types/widgets experiment.
+;;;
+
+;;;
 ;;; Let's continue and generate a form.
+;;;
 
 (defgeneric field-input (form field)
-  (:documentation "Return HTML for this field. It's important to have a name=\"FIELD\" for each input, so that they appear in POST parameters.")
+  (:documentation "Return HTML for this field. It's important to have a name=\"FIELD\" for each input, so that they appear in POST parameters.
+
+  This is the method called by the form creation. When we find a widget specified for a field, we call render-widget.
+
+  A user can subclass this method and return HTML or just set the widget type and let the default rendering.")
   (:method (form field)
     (declare (ignorable form))
-    (format nil "<div class=\"field\">
+    (cond
+      ((field-is-related-column field)
+       (log:info "render column for ~a" field)
+       (render-widget form (field-is-related-column field) :select :name field))
+      ((not (null (input-field-widget form field)))
+       (render-widget form field (input-field-widget form field)))
+      (t
+       (format nil "<div class=\"field\">
 <label class=\"label\"> ~a </label>
  <div class=\"control\">
   <input name=\"~a\" class=\"input\" type=\"text\"> </input>
 </div>
-</div>" field field)))
+</div>" field field)))))
 
 ;; We can override an input fields for a form & field name
 ;; by returning HTML.
