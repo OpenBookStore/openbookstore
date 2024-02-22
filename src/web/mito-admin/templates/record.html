@@ -10,7 +10,24 @@ Openbookstore admin · {{ record }}
 
 <h3 class="title"> {{ table }} </h3>
 
-<h4 class="title"> {{ record }} </h4>
+<div class="columns">
+  <div class="column is-four-fifths">
+    <h4 class="title"> {{ record }} </h4>
+  </div>
+  <div class="column">
+
+    <form action="/admin/{{table}}/{{ record.id }}/delete" method="POST"
+        onsubmit="return confirm('Are you sure to delete this record?');">
+      <button class="button is-danger" >
+        <span class="icon">
+          <i class="fas fa-trash"></i>
+        </span>
+      </button>
+    </form>
+
+  </div>
+</div>
+
 
 <!-- {% if raw %} -->
 <!-- <pre> -->

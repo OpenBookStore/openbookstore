@@ -46,5 +46,3 @@
                               :tables (tables)
                               :record record)
       )))
-
-(defgeneric render-field (

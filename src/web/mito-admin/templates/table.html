@@ -22,7 +22,40 @@ Openbookstore admin · {{ table }}
     {% for record in records %}
     <tr>
       <td>
-        <a href="/admin/{{table}}/{{ record.id }}"> {{ record }} </a>
+        <a href="/admin/{{ table | lower }}/{{ record.id }}">
+
+          <!-- We might want a special method, similar to print-object but without the formatting. -->
+          <!-- Because print-object might show more data than only the record name. -->
+
+          {% if record.name %}
+          {{ record.name }}
+
+          {% elif record.title %}
+          {{ record.title }}
+
+          {% else %}
+          {{ record }}
+          {% endif %}
+        </a>
+      </td>
+
+      <td>
+        <a class="button" href="/admin/{{ table | lower }}/{{ record.id }}/edit">
+          <span class="icon">
+            <i class="fas fa-edit"></i>
+          </span>
+        </a>
+      </td>
+
+      <td>
+        <form action="/admin/{{table}}/{{ record.id }}/delete" method="POST"
+            onsubmit="return confirm('Are you sure to delete this record?');">
+          <button class="button is-danger" >
+            <span class="icon">
+              <i class="fas fa-trash"></i>
+            </span>
+          </button>
+        </form>
       </td>
     </tr>
     {% endfor %}
