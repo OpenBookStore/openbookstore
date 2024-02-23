@@ -64,25 +64,7 @@ searches. This method was thought the most portable.
   ;;
   ;; - create a date: (local-time:now)
   ;; "
-  ((datasource
-    :accessor datasource
-    :initarg :datasource
-    :initform nil
-    :type (or string null)
-    ;; how to use a variable for 128 ?
-    ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
-    :col-type (or (:varchar 128) :null)
-    :documentation "The source name (website) we took bibliographic information from.")
-
-   (details-url
-    :accessor details-url
-    :initarg :details-url
-    :initform nil
-    :type (or string null)
-    :col-type (or (:varchar 128) :null)
-    :documentation "Link to the book's page on its datasource.")
-
-   (title
+  ((title
     :accessor title
     :initarg :title
     :initform nil
@@ -112,6 +94,36 @@ searches. This method was thought the most portable.
     :type (or integer null) ;; integer: for compatibility. Otherwise, Mito is strict about float and fails.
     :col-type (or :integer :null))
 
+   (authors
+    :accessor authors
+    :initarg :authors                   ;TODO: relationship
+    :initform nil
+    :col-type (or (:varchar 128) :null))
+
+   (authors-ascii
+    :accessor authors-ascii
+    :initform nil
+    :col-type (or (:varchar 128) :null)
+    :documentation "Normalized representation of authors, without accentuated letters.")
+
+   (datasource
+    :accessor datasource
+    :initarg :datasource
+    :initform nil
+    :type (or string null)
+    ;; how to use a variable for 128 ?
+    ;; we get datasource VARCHAR(+varchar-length+) NOT NULL,
+    :col-type (or (:varchar 128) :null)
+    :documentation "The source name (website) we took bibliographic information from.")
+
+   (details-url
+    :accessor details-url
+    :initarg :details-url
+    :initform nil
+    :type (or string null)
+    :col-type (or (:varchar 128) :null)
+    :documentation "Link to the book's page on its datasource.")
+
    (date-publication
     :accessor date-publication
     :initarg :date-publication
@@ -130,18 +142,6 @@ searches. This method was thought the most portable.
     :initform nil
     :type (or string null)
     :col-type (or (:varchar 128) :null))
-
-   (authors
-    :accessor authors
-    :initarg :authors                   ;TODO: relationship
-    :initform nil
-    :col-type (or (:varchar 128) :null))
-
-   (authors-ascii
-    :accessor authors-ascii
-    :initform nil
-    :col-type (or (:varchar 128) :null)
-    :documentation "Normalized representation of authors, without accentuated letters.")
 
    (shelf
     :accessor shelf
