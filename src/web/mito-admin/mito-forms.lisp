@@ -79,8 +79,18 @@ but not (or null shelf) ?
    (target
     :initarg :target
     :initform "/admin/:table/create"
-    :documentation "The form URL POST target when creating or updating a record.
-      Allows a :table placeholder to be replaced by the model name. Use with `form-target'.")))
+    :documentation "The form URL POST target when creating a record.
+      Allows a :table placeholder to be replaced by the model name. Use with `form-target'.")
+   (view-record-target
+    :initarg :view-target
+    :initform "/admin/:table/:id"
+    :documentation "The form URL POST target to view a record.
+      Allows a :table and a :id placeholder. Use with `view-record-target'.")
+   (edit-target
+    :initarg :edit-target
+    :initform "/admin/:table/:id/edit"
+    :documentation "The form URL POST target when updating a record.
+      Allows a :table and a :id placeholder. Use with `edit-form-target'.")))
 
 (defclass book-form (form)
   ())
@@ -95,7 +105,7 @@ but not (or null shelf) ?
 
 (defparameter *select-input* (djula:compile-template* "mito-admin/templates/includes/select.html"))
 
-(defparameter *admin-create-record* (djula:compile-template* "mito-admin/templates/create.html"))
+(defparameter *admin-create-record* (djula:compile-template* "mito-admin/templates/create_or_edit.html"))
 
 (defmethod initialize-instance :after ((obj form) &key)
   "Populate fields from the class name."
@@ -166,6 +176,8 @@ but not (or null shelf) ?
 (input-field-widget BOOK-FORM 'review)
 ;; :TEXTAREA
 
+
+;; section: define forms.
 ;; That's a second way to define form inputs isn't it?
 ;; We added field-input first, but it's to render HTML.
 (defgeneric render-widget (form field widget &key name)
@@ -210,17 +222,18 @@ but not (or null shelf) ?
 ;;; end of input types/widgets experiment.
 ;;;
 
+
 ;;;
-;;; Let's continue and generate a form.
+;;; section: let's continue and generate a form.
 ;;;
 
-(defgeneric field-input (form field)
+(defgeneric field-input (form field &key record)
   (:documentation "Return HTML for this field. It's important to have a name=\"FIELD\" for each input, so that they appear in POST parameters.
 
   This is the method called by the form creation. When we find a widget specified for a field, we call render-widget.
 
   A user can subclass this method and return HTML or just set the widget type and let the default rendering.")
-  (:method (form field)
+  (:method (form field &key record)
     (declare (ignorable form))
     (cond
       ((field-is-related-column field)
@@ -230,15 +243,21 @@ but not (or null shelf) ?
        (render-widget form field (input-field-widget form field)))
       (t
        (format nil "<div class=\"field\">
-<label class=\"label\"> ~a </label>
- <div class=\"control\">
-  <input name=\"~a\" class=\"input\" type=\"text\"> </input>
-</div>
-</div>" field field)))))
+         <label class=\"label\"> ~a </label>
+         <div class=\"control\">
+           <input name=\"~a\" class=\"input\" type=\"text\" ~a> </input>
+         </div>
+        </div>"
+               field
+               field
+               (if record
+                   (format nil "value=\"~a\"" (slot-value? record field))
+                   "")
+               )))))
 
 ;; We can override an input fields for a form & field name
 ;; by returning HTML.
-(defmethod field-input ((form book-form) (field (eql 'shelf)))
+(defmethod field-input ((form book-form) (field (eql 'shelf)) &key record)
   (let ((shelves (mito:select-dao field)))
     (djula:render-template* *select-input* nil
                             :name field
@@ -248,10 +267,10 @@ but not (or null shelf) ?
                             :label "select a shelf"
                             :select-id "shelf-select")))
 
-(defun collect-slot-inputs (form fields)
+(defun collect-slot-inputs (form fields &key record)
   (loop for field in fields
         collect (list :name field
-                      :html (field-input form field))))
+                      :html (field-input form field :record record))))
 
 (defun make-form (table)
   "From this table name, return a new form."
@@ -270,6 +289,44 @@ but not (or null shelf) ?
            target)))
     (t
      "")))
+
+(defmethod edit-form-target ((obj form) id)
+  "Return the POST URL of the edit form.
+
+  Replace the :table placeholder by the model name and the :id placeholder."
+  (cond
+    ((slot-boundp obj 'model)
+     (with-slots (edit-target model) obj
+       (cond
+         ((str:containsp ":table" edit-target)
+          (str:replace-using (list ":table" (str:downcase model)
+                                   ":id" (string id))
+                             edit-target))
+         (t
+          edit-target))))
+    (t
+     "")))
+
+(defgeneric table-target (form)
+  (:documentation "/admin/:table/ URL to view a list of records of this table. ")
+  (:method (form)
+    (str:concat "/admin/" (str:downcase (slot-value? form 'model)) "/")))
+
+(defgeneric view-record-target (form id)
+  (:documentation "/admin/:table/:id URL to view a record. ")
+  (:method ((obj form) id)
+    (cond
+      ((slot-boundp obj 'model)
+       (with-slots (view-record-target model) obj
+         (cond
+           ((str:containsp ":table" view-record-target)
+            (str:replace-using (list ":table" (str:downcase model)
+                                     ":id" (princ-to-string id))
+                               view-record-target))
+           (t
+            view-record-target))))
+      (t
+       ""))))
 
 ;; Serve the form.
 (defgeneric create-record (table)
@@ -320,6 +377,11 @@ Tryng out…
 
 ok!
 |#
+
+
+;;;
+;;; section: Save
+;;;
 
 (defparameter *catch-errors* nil
   "Set to T to not have the debugger on an error. We could use hunchentoot's *catch-errors*.")
@@ -376,12 +438,13 @@ ok!
   (assert (not (equal (cdr (assoc "SHELF" params :test #'equal))
                       "1"))))
 
-
-(defgeneric save-record (table &key params &allow-other-keys)
-  (:documentation "Process POST paramaters, create a new record or return a form with errors.
+;; ???: we dispatch on table (symbol), but we use a form object,
+;; and we always create a new form object. Are the two useful?
+(defgeneric save-record (table &key params record &allow-other-keys)
+  (:documentation "Process POST paramaters, create or edit a new record or return a form with errors.
 
     Return a hash-table to tell the route what to do: render a template or redirect.")
-  (:method (table &key params &allow-other-keys)
+  (:method (table &key params record &allow-other-keys)
     (log:info params)
     (setf params (replace-related-objects params))
     (log:info "params with relations: ~a" params)
@@ -391,20 +454,26 @@ ok!
            (inputs (collect-slot-inputs form fields))
            (keywords (params-keywords params))
            (params-symbols-alist (params-symbols-alist params))
-           (record nil)
+           (record-provided (and record))
            (model (slot-value form 'model))
            (errors nil))
 
       ;;TODO: form validation…
 
-      ;; Create object.
-      (handler-case
-          ;; produce:
-          ;; (MAKE-INSTANCE 'BOOK :TITLE "new title")
-          (setf record
-                (apply #'make-instance model (alexandria:flatten keywords)))
-        (error (c)
-          (push (format nil "~a" c) errors)))
+      ;; Create or update?
+      (cond
+        ;; Create object, unless we are editing one.
+        ((null record)
+         (handler-case
+             ;; produce:
+             ;; (MAKE-INSTANCE 'BOOK :TITLE "new title")
+             (setf record
+                   (apply #'make-instance model (alexandria:flatten keywords)))
+           (error (c)
+             (push (format nil "~a" c) errors))))
+        ;; Update
+        (t
+         (update-record-with-params record params-symbols-alist)))
 
       (when errors
         (return-from save-record
@@ -426,7 +495,11 @@ ok!
       (handler-case
           (progn
             (log:info "saving record in DB…" record)
-            (mito:insert-dao record))
+            (if record-provided
+                ;; save (update)
+                (mito:save-dao record)
+                ;; create new.
+                (mito:insert-dao record)))
         (error (c)
           ;; dev
           (unless *catch-errors*
@@ -492,3 +565,40 @@ Works:
 (mito:insert-dao *)
 
 |#
+
+
+;;;
+;;; section: Edit
+;;;
+(defgeneric edit-record (table id)
+  (:documentation "Edit record with a pre-filled form.")
+  (:method (table id)
+    (let* ((form (make-form table))
+           (fields (form-fields form))
+           (record (mito:find-dao table :id id))
+           (inputs (collect-slot-inputs form fields :record record)))
+      (log:info form (form-target form))
+      (djula:render-template* *admin-create-record* nil
+                              :form form
+                              :target (print (edit-form-target form id))
+                              :fields fields
+                              :inputs inputs
+                              :table table
+                              ;; global display
+                              :tables (tables)))))
+
+(defgeneric update-record-with-params (record params)
+  (:documentation "Update slots, don't save to DB.
+
+   RECORD: DB object. PARAMS: alist with key (symbol), val.")
+  (:method (record params)
+    (loop for (key . val) in params
+          unless (equal "ID" key)       ;; just in case.
+          do (setf (slot-value record key) val))))
+
+#+test-openbookstore
+(let ((place (mito:find-dao 'place :id 2)))
+  (loop for (key . val) in '((NAME . "test place"))
+        do (setf (slot-value place key) val))
+  (describe place)
+  place)

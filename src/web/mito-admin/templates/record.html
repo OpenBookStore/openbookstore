@@ -14,8 +14,16 @@ Openbookstore admin · {{ record }}
   <div class="column is-four-fifths">
     <h4 class="title"> {{ record }} </h4>
   </div>
-  <div class="column">
 
+  <div class="column">
+    <a class="button" href="/admin/{{ table | lower }}/{{ record.id }}/edit">
+      <span class="icon">
+        <i class="fas fa-edit"></i>
+      </span>
+    </a>
+  </div>
+
+  <div class="column">
     <form action="/admin/{{table}}/{{ record.id }}/delete" method="POST"
         onsubmit="return confirm('Are you sure to delete this record?');">
       <button class="button is-danger" >

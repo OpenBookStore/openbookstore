@@ -24,10 +24,6 @@
   "Create record: show a form."
   (create-record (alexandria:symbolicate (str:upcase table))))
 
-(easy-routes:defroute route-admin-record-edit ("/admin/:table/edit" :method :get) ()
-  "Edit record: show a pre-filled form."
-  (edit-record (alexandria:symbolicate (str:upcase table))))
-
 (easy-routes:defroute route-admin-record-create/post ("/admin/:table/create" :method :post) ()
   "Create record (POST).
 
@@ -58,3 +54,28 @@
        ;; Does it in the session activated?
        (mapcar #'bookshops.messages:add-message (access action :messages))
        (hunchentoot:redirect (access action :redirect))))))
+
+(easy-routes:defroute route-admin-record-edit ("/admin/:table/:id/edit" :method :get) ()
+  "Edit record: show a pre-filled form."
+  (edit-record (alexandria:symbolicate (str:upcase table))
+               id))
+
+(easy-routes:defroute route-admin-record-edit/post ("/admin/:table/:id/edit" :method :post) ()
+  "Save edited record (POST)."
+  (log:info table id (hunchentoot:post-parameters*))
+  (let* ((table (alexandria:symbolicate (str:upcase table)))
+         (record (mito:find-dao table :id id))
+         (action (save-record table
+                              :params (hunchentoot:post-parameters*)
+                              :record record)))
+    (cond
+      ((equal :error (access action :status))
+       (hunchentoot:redirect (access action :redirect)))
+      (t
+       (log:info action)
+       ;; Does my messages helper work? nope
+       ;; Does it in the session activated?
+       (mapcar #'bookshops.messages:add-message (access action :messages))
+       (hunchentoot:redirect (access action :redirect)))))
+  )
+

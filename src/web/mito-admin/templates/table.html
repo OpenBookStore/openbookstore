@@ -9,12 +9,12 @@ Openbookstore admin · {{ table }}
 
 <h3 class="title"> {{ table }} </h3>
 
-  {% for message in messages %}
-  <div class="notification {{ message.class }}">
-    <button class="delete"> </button>
-    {{ message.message }}
-  </div>
-  {% endfor %}
+{% for message in messages %}
+<div class="notification {{ message.class }}">
+  <button class="delete"> </button>
+  {{ message.message }}
+</div>
+{% endfor %}
 
 <table class="table is-hoverable">
   <tbody>
