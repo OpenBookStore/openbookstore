@@ -76,6 +76,11 @@ but not (or null shelf) ?
     :initarg :exclude-fields
     :initform nil
     :documentation "List of field names to exclude. Better use the `exclude-fields' method.")
+   (search-fields
+    :initargs :search-fields
+    :initform '(title name)
+    :accessor search-fields
+    :documentation "List of fields to query when searching for records. Defaults to 'title and 'name, two often used field names. Overwrite them with the `search-fields' method.")
    (target
     :initarg :target
     :initform "/admin/:table/create"
@@ -132,6 +137,16 @@ but not (or null shelf) ?
     shelf-id
     shelf2-id
     ))
+
+;; Do we want to get the search fields from a table name or a form class?
+(defmethod search-fields (table)
+  '(title name))
+
+(defmethod search-fields ((form book-form))
+  '(title))
+
+(defmethod search-fields ((table (eql 'book)))
+  '(title authors-ascii))
 
 (defgeneric form-fields (form)
   (:documentation "Return a list of this form's fields, excluding the fields given in the constructor and in the `exclude-fields' method.")

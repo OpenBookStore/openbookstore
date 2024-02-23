@@ -11,6 +11,11 @@
 (defparameter *admin-table* (djula:compile-template* "mito-admin/templates/table.html"))
 (defparameter *admin-record* (djula:compile-template* "mito-admin/templates/record.html"))
 
+;;; We might want a admin-page class and instances, to set parameters:
+;;; - show the search input on the table view?
+;;; - action buttons (to do)
+;;; - more settings.
+
 (defgeneric tables ()
   (:method ()
     *tables*))
@@ -20,17 +25,19 @@
     (djula:render-template* *admin-index* nil
                             :tables (tables))))
 
-(defgeneric render-table (table ) ;; &key (page 1) (page-size 200) (order-by :desc))
-  (:method (table)
-    (let ((records (mito:select-dao table (sxql:order-by (:desc :created-at))))
+(defgeneric render-table (table &key records search-value) ;; &key (page 1) (page-size 200) (order-by :desc))
+  (:method (table &key (records nil records-provided-p) search-value)
+    (let ((records (if records-provided-p
+                       records
+                       (mito:select-dao table (sxql:order-by (:desc :created-at)))))
           (messages (bookshops.messages:get-message/status)))
       (log:info messages)
       (djula:render-template* *admin-table* nil
                               :messages messages
                               :table table
+                              :search-value search-value
                               :tables (tables)
-                              :records records)
-      )))
+                              :records records))))
 
 (defgeneric render-record (table id)
   (:method (table id)

@@ -16,8 +16,23 @@ Openbookstore admin · {{ table }}
 </div>
 {% endfor %}
 
+<div>
+  <form action="/admin/{{ table | lower }}/search">
+    <input name="q" type="text" class="input"
+        {% if search-value %}
+        value="{{ search-value }}"
+        {% else %}
+        placeholder="search"
+        {% endif %}/>
+  </form>
+</div>
+
 <table class="table is-hoverable">
   <tbody>
+
+    {% if not records %}
+    <div> no results </div>
+    {% endif %}
 
     {% for record in records %}
     <tr>

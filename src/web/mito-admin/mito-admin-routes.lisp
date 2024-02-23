@@ -79,3 +79,23 @@
        (hunchentoot:redirect (access action :redirect)))))
   )
 
+
+;;;
+;;; section: search
+;;;
+
+(easy-routes:defroute route-admin-table-search ("/admin/:table/search" :method :get) (q)
+  "Search records.
+
+  Search on the table or form `search-fields'."
+  (log:info "search! " q)
+  (let* ((table (alexandria:symbolicate (str:upcase table)))
+         (records (search-records table q)))
+    (render-table table
+                  :records records
+                  :search-value q)))
+
+(defun toggle-devel-profile (&optional (val nil val-p))
+  "Show Lisp errors in the browser."
+  (setf hunchentoot:*catch-errors-p* (if val-p val t))
+  (setf hunchentoot:*show-lisp-errors-p* (if val-p val t)))
