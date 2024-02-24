@@ -6,7 +6,24 @@
          <option value=""> {{ empty-choice-label }} </option>
          {% endif %}
          {% for option in options %}
-         <option value="{{ option.id }}">{{ option.name }}</option>
+
+         {% if record %}
+         {% if selected-option-id == option.id %}
+         <option value="{{ option.id }}" selected>
+           {{ option.name }}
+         </option>
+         {% else %}
+         <option value="{{ option.id }}">
+           {{ option.name }}
+         </option>
+         {% endif %}
+
+         {% else %}
+         <option value="{{ option.id }}">
+           {{ option.name }}
+         </option>
+         {% endif %}
+
          {% endfor %}
        </select>
 </div>

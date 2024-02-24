@@ -195,7 +195,7 @@ but not (or null shelf) ?
 ;; section: define forms.
 ;; That's a second way to define form inputs isn't it?
 ;; We added field-input first, but it's to render HTML.
-(defgeneric render-widget (form field widget &key name)
+(defgeneric render-widget (form field widget &key name record)
   (:documentation "Return HTML to render a widget given a form, a field name (symbol), a widget type (keyword).
 
   The user simply chooses the widget type and doesn't write HTML.
@@ -203,7 +203,7 @@ but not (or null shelf) ?
   NAME: the column type field (symbol). If \"shelf2\" refers to the \"shelf\" table, FIELD is \"shelf2\" and NAME must be \"shelf\".
 
   See also `field-input'.")
-  (:method (form field widget &key name)
+  (:method (form field widget &key name record)
     (case widget
       (:select
           (let ((objects (mito:select-dao field)))
@@ -211,6 +211,9 @@ but not (or null shelf) ?
             (djula:render-template* *select-input* nil
                                     :name (or name field)
                                     :options objects
+                                    :record record
+                                    :selected-option-id (ignore-errors
+                                                         (mito:object-id (slot-value record field)))
                                     :empty-choice t
                                     :empty-choice-label (format nil "-- choose a ~a… --"
                                                                 (str:downcase field))
@@ -220,9 +223,11 @@ but not (or null shelf) ?
        (format nil "<div class=\"field\">
 <label class=\"label\"> ~a </label>
  <div class=\"control\">
-  <textarea name=\"~a\" class=\"input\" rows=\"5\"> </textarea>
+  <textarea name=\"~a\" class=\"input\" rows=\"5\">
+    ~a
+  </textarea>
 </div>
-</div>" field field))
+</div>" field field (if record (slot-value record field) "")))
       (:datetime-local
        (format nil "<div class=\"field\">
 <label class=\"label\"> ~a </label>
@@ -253,9 +258,12 @@ but not (or null shelf) ?
     (cond
       ((field-is-related-column field)
        (log:info "render column for ~a" field)
-       (render-widget form (field-is-related-column field) :select :name field))
+       (render-widget form (field-is-related-column field) :select
+                      :name field
+                      :record record))
       ((not (null (input-field-widget form field)))
-       (render-widget form field (input-field-widget form field)))
+       (render-widget form field (input-field-widget form field)
+                      :record record))
       (t
        (format nil "<div class=\"field\">
          <label class=\"label\"> ~a </label>
@@ -274,9 +282,13 @@ but not (or null shelf) ?
 ;; by returning HTML.
 (defmethod field-input ((form book-form) (field (eql 'shelf)) &key record)
   (let ((shelves (mito:select-dao field)))
+    (log:info record)
     (djula:render-template* *select-input* nil
                             :name field
                             :options shelves
+                            :selected-option-id (ignore-errors
+                                                 (mito:object-id (shelf record)))
+                            :record record
                             :empty-choice t
                             :empty-choice-label "-- choose a shelf… --"
                             :label "select a shelf"
@@ -496,15 +508,15 @@ ok!
            :status :error
            ;; list of keys to call djula:render-template*
            :render (list *admin-create-record* nil
-                                  ;; errors:
-                                  :form-errors errors
-                                  :form form
-                                  :target (form-target form)
-                                  :fields fields
-                                  :inputs inputs
-                                  :table table
-                                  ;; global display
-                                  :tables (tables)))))
+                         ;; errors:
+                         :form-errors errors
+                         :form form
+                         :target (form-target form)
+                         :fields fields
+                         :inputs inputs
+                         :table table
+                         ;; global display
+                         :tables (tables)))))
 
       ;; Save record.
       (handler-case
@@ -525,25 +537,27 @@ ok!
           (dict
            :status :error
            :render (list *admin-create-record* nil
-                                  ;; errors:
-                                  :errors errors
-                                  :form form
-                                  :target (form-target form)
-                                  :fields fields
-                                  :inputs inputs
-                                  :table table
-                                  ;; global display
-                                  :tables (tables)))))
+                         ;; errors:
+                         :errors errors
+                         :form form
+                         :target (form-target form)
+                         :fields fields
+                         :inputs inputs
+                         :table table
+                         ;; global display
+                         :tables (tables)))))
 
       ;; Success: redirect to the table view.
       (values
        (dict
         :status :success
-        :redirect (str:concat "/admin/" (str:downcase model))
+        :redirect (if record
+                      (view-record-target form (mito:object-id record))
+                      (view-table-target form))
         ;; Use my messages.lisp helper?
         :successes (list "record created"))
        record)
-       )))
+      )))
 
 #+(or)
 (save-record 'place :params '(("NAME" . "new place test")))
@@ -595,7 +609,7 @@ Works:
       (log:info form (form-target form))
       (djula:render-template* *admin-create-record* nil
                               :form form
-                              :target (print (edit-form-target form id))
+                              :target (edit-form-target form id)
                               :fields fields
                               :inputs inputs
                               :table table
