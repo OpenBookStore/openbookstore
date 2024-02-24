@@ -143,6 +143,7 @@
 #++
 (render-slot p 'title)
 
+;; DEPRECATED
 (defun collect-rendered-slots (o)
   (let* ((class (class-of o))
          (slots (mopp:class-slots class)))
@@ -152,8 +153,19 @@
           (list :name name
                 :html (render-slot o name)))))
 
+(defun collect-rendered-fields-values (o fields)
+  "Similar as `collect-fields-values', but renders the HTML of fields with `render-slot'."
+  (loop for field in fields
+        collect (list :name field
+                      :html (render-slot o field))))
 
+
+;; DEPRECATED
 (defun collect-slots-values (o)
+  "Collect a plist of this record's slot names and values.
+  But this collects *all* slots. Use `collect-fields-values' instead that takes the list of fields, given by `form-fields'.
+
+  Thus, this function isn't useful to me anymore and is DEPRECATED."
   (let* ((class (class-of o))
          (slots (mopp:class-slots class)))
     (loop for slot in slots
@@ -161,6 +173,10 @@
           for val = (slot-value? o slot)
           collect
             (list :name name :value val))))
+
+(defun collect-fields-values (o fields)
+  (loop for field in fields
+        collect (list :name field :value (slot-value? o field))))
 
 
 (defgeneric render-input (obj slot)

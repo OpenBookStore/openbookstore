@@ -40,15 +40,23 @@
                               :records records))))
 
 (defgeneric render-record (table id)
+  ;; TODO: see related column (book shelf)
   (:method (table id)
-    (let* ((record (mito:find-dao table :id id))
+    (let* ((form (make-form table))
+           (record (mito:find-dao table :id id))
            (raw (print-instance-slots record :stream nil))
-           (fields (collect-slots-values record))
-           (rendered-fields (COLLECT-RENDERED-SLOTS record)))
+           ;; (fields (collect-slots-values record))
+           ;;TODO: we want to see created-at
+           (fields/values (collect-fields-values record (form-fields form)))
+           ;; (rendered-fields (collect-rendered-slots record)))
+           (rendered-fields/values
+             (collect-rendered-fields-values record (form-fields form))))
       (djula:render-template* *admin-record* nil
                               :raw raw
-                              :fields fields
-                              :rendered-fields rendered-fields
+                              ;; :fields fields
+                              :fields fields/values
+                              ;; :rendered-fields rendered-fields
+                              :rendered-fields rendered-fields/values
                               :table table
                               :tables (tables)
                               :record record)

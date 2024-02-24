@@ -152,10 +152,13 @@ but not (or null shelf) ?
   (:documentation "Return a list of this form's fields, excluding the fields given in the constructor and in the `exclude-fields' method.")
   (:method (form)
     (with-slots (fields exclude-fields) form
-      ;; set operations don't preserve field order? I think there were in order until now.
-      (set-difference fields (set-exclusive-or
-                              exclude-fields
-                              (exclude-fields form))))))
+      ;; set operations (set-difference) don't respect order.
+      (loop for field in fields
+            with exclude-list-1 = exclude-fields
+            with exclude-list-2 = (exclude-fields form)
+            unless (or (find field exclude-list-1)
+                       (find field exclude-list-2))
+              collect field))))
 
 #+(or)
 (assert (equal 0 (mismatch
