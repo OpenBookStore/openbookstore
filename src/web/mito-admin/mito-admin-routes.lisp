@@ -32,9 +32,10 @@
                              :params (hunchentoot:post-parameters*))))
     (cond
       ((equal :error (access action :status))
+       (log:info "on error: return template…")
        (apply #'djula:render-template* (access action :render)))
       (t
-       (log:info action)
+       (log:info "redirect…" action)
        ;; Does my messages helper work? nope
        ;; Does it in the session activated?
        (mapcar #'bookshops.messages:add-message (access action :successes))
@@ -70,13 +71,18 @@
                               :record record)))
     (cond
       ((equal :error (access action :status))
-       (hunchentoot:redirect (access action :redirect)))
+       (log:info "edit: ")
+       ;; why did I have redirect here?
+       ;; (hunchentoot:redirect (access action :redirect)))
+       (apply #'djula:render-template* (access action :render)))
+
       (t
-       (log:info action)
+       (log:info "edit: redirect…" action)
        ;; Does my messages helper work? nope
        ;; Does it in the session activated?
        (mapcar #'bookshops.messages:add-message (access action :messages))
-       (hunchentoot:redirect (access action :redirect)))))
+       (hunchentoot:redirect (or (access action :redirect)
+                                 (error "The URL to redirect to is null."))))))
   )
 
 

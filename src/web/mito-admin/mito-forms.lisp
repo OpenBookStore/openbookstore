@@ -72,6 +72,9 @@ but not (or null shelf) ?
     :initform nil
     :accessor fields
     :documentation "List of field names to render in the form.")
+   (input-fields
+    :initform nil
+    :documentation "Hash-table. See the `input-fields' method.")
    (exclude-fields
     :initarg :exclude-fields
     :initform nil
@@ -95,7 +98,12 @@ but not (or null shelf) ?
     :initarg :edit-target
     :initform "/admin/:table/:id/edit"
     :documentation "The form URL POST target when updating a record.
-      Allows a :table and a :id placeholder. Use with `edit-form-target'.")))
+      Allows a :table and a :id placeholder. Use with `edit-form-target'.")
+
+   (validators
+    :initargs :validators
+    :accessor validators
+    :documentation "Hash-table: key (field symbol) to a validator function.")))
 
 (defclass book-form (form)
   ())
@@ -250,13 +258,17 @@ but not (or null shelf) ?
 ;;; section: let's continue and generate a form.
 ;;;
 
-(defgeneric field-input (form field &key record)
+(defgeneric field-input (form field &key record errors value)
   (:documentation "Return HTML for this field. It's important to have a name=\"FIELD\" for each input, so that they appear in POST parameters.
 
-  This is the method called by the form creation. When we find a widget specified for a field, we call render-widget.
+  When a record is given, pre-fill the form inputs.
+
+  When an errors list is given, show them.
+
+  This is the method called by the form creation and edition. When we find a widget specified for a field, we call render-widget.
 
   A user can subclass this method and return HTML or just set the widget type and let the default rendering.")
-  (:method (form field &key record)
+  (:method (form field &key record errors value)
     (declare (ignorable form))
     (cond
       ((field-is-related-column field)
@@ -273,11 +285,22 @@ but not (or null shelf) ?
          <div class=\"control\">
            <input name=\"~a\" class=\"input\" type=\"text\" ~a> </input>
          </div>
+          ~a
         </div>"
                field
                field
-               (if record
-                   (format nil "value=\"~a\"" (slot-value? record field))
+               (cond
+                 (record
+                  (format nil "value=\"~a\"" (slot-value? record field)))
+                 (value
+                  (format nil "value=\"~a\"" value))
+                 (t
+                  ""))
+               ;; XXX: use templates to render those fields. It gets messy with errors.
+               (if errors
+                   (with-output-to-string (s)
+                     (loop for error in errors
+                           do (format s "<p class=\"help is-danger\"> ~a </p>" error)))
                    "")
                )))))
 
@@ -417,8 +440,13 @@ ok!
   "Set to T to not have the debugger on an error. We could use hunchentoot's *catch-errors*.")
 
 (defun params-symbols-alist (params)
- (loop for (field . val) in params
-       collect (cons (alexandria:symbolicate (str:upcase field)) val)))
+  "Transform this alist of strings to an alist of symbols."
+  (loop for (field . val) in params
+        collect (cons (alexandria:symbolicate (str:upcase field)) val)))
+
+#+(or)
+(params-symbols-alist '(("NAME" . "test")))
+;; ((NAME . "test"))
 
 (defun params-keywords-alist (params)
  (loop for (field . val) in params
@@ -426,6 +454,9 @@ ok!
 
 (defun params-keywords (params)
   (params-keywords-alist (params-symbols-alist params)))
+#+(or)
+(params-keywords '(("TITLE" . "test")))
+;; ((:TITLE . "test"))
 
 
 (defun field-is-related-column (field)
@@ -468,6 +499,14 @@ ok!
   (assert (not (equal (cdr (assoc "SHELF" params :test #'equal))
                       "1"))))
 
+(defun merge-fields-and-params (fields params-alist)
+  (loop for field in fields
+        for field/value = (assoc field params-alist)
+        if field/value
+          collect field/value
+        else
+          collect `(,field . nil)))
+
 ;; ???: we dispatch on table (symbol), but we use a form object,
 ;; and we always create a new form object. Are the two useful?
 (defgeneric save-record (table &key params record &allow-other-keys)
@@ -484,11 +523,34 @@ ok!
            (inputs (collect-slot-inputs form fields))
            (keywords (params-keywords params))
            (params-symbols-alist (params-symbols-alist params))
+           ;; help preserve order? nope.
+           (fields/values (merge-fields-and-params fields params-symbols-alist))
            (record-provided (and record))
            (model (slot-value form 'model))
            (errors nil))
 
-      ;;TODO: form validation…
+      ;;ONGOING: form validation…
+      ;; (multiple-value-bind (status errors)
+      (multiple-value-bind (status inputs)
+          ;; (validate-form form params-symbols-alist)
+          (validate-collect-slot-inputs form fields/values)
+        (unless status
+          (log:info status errors)
+          (return-from save-record
+            (dict
+             :status :error
+             :render (list *admin-create-record* nil
+                           ;; errors:
+                           ;; :errors errors
+                           :errors (list "Invalid form. Please fix the errors below.")
+                           :form form
+                           :target (form-target form)
+                           :fields fields
+                           :inputs inputs
+                           :table table
+                           ;; global display
+                           :tables (tables))))
+         ))
 
       ;; Create or update?
       (cond
@@ -556,7 +618,7 @@ ok!
         :status :success
         :redirect (if record
                       (view-record-target form (mito:object-id record))
-                      (view-table-target form))
+                      (table-target form))
         ;; Use my messages.lisp helper?
         :successes (list "record created"))
        record)

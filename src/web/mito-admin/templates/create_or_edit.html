@@ -9,7 +9,6 @@ Openbookstore admin · {{ record }}
 
 <h3 class="title"> {{ table }} </h3>
 
-<form class="form" target="{{ target }}" method="POST">
 
   {% for error in errors %}
   <div class="notification is-danger">
@@ -18,6 +17,7 @@ Openbookstore admin · {{ record }}
   </div>
   {% endfor %}
 
+<form class="form" target="{{ target }}" method="POST">
 
   {% for input in inputs %}
   {{ input.html | safe }}
