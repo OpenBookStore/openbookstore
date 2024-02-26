@@ -9,7 +9,6 @@
 
 (defparameter *admin-index* (djula:compile-template* "mito-admin/templates/index.html"))
 (defparameter *admin-table* (djula:compile-template* "mito-admin/templates/table.html"))
-(defparameter *admin-record* (djula:compile-template* "mito-admin/templates/record.html"))
 
 ;;; We might want a admin-page class and instances, to set parameters:
 ;;; - show the search input on the table view?
@@ -39,25 +38,3 @@
                               :tables (tables)
                               :records records))))
 
-(defgeneric render-record (table id)
-  ;; TODO: see related column (book shelf)
-  (:method (table id)
-    (let* ((form (make-form table))
-           (record (mito:find-dao table :id id))
-           (raw (print-instance-slots record :stream nil))
-           ;; (fields (collect-slots-values record))
-           ;;TODO: we want to see created-at
-           (fields/values (collect-fields-values record (form-fields form)))
-           ;; (rendered-fields (collect-rendered-slots record)))
-           (rendered-fields/values
-             (collect-rendered-fields-values record (form-fields form))))
-      (djula:render-template* *admin-record* nil
-                              :raw raw
-                              ;; :fields fields
-                              :fields fields/values
-                              ;; :rendered-fields rendered-fields
-                              :rendered-fields rendered-fields/values
-                              :table table
-                              :tables (tables)
-                              :record record)
-      )))

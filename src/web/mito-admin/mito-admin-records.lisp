@@ -1,6 +1,31 @@
 (in-package :openbookstore.models)
 
-;;; More functions that don't really fit into mito-forms.
+;;; Functions to deal with single records.
+;;; (more are in mito-forms)
+
+(defparameter *admin-record* (djula:compile-template* "mito-admin/templates/record.html"))
+
+(defgeneric render-record (table id)
+  (:method (table id)
+    (let* ((form (make-form table))
+           (record (mito:find-dao table :id id))
+           (raw (print-instance-slots record :stream nil))
+           ;; (fields (collect-slots-values record))
+           ;;TODO: we want to see created-at
+           (fields/values (collect-fields-values record (form-fields form)))
+           ;; (rendered-fields (collect-rendered-slots record)))
+           (rendered-fields/values
+             (collect-rendered-fields-values record (form-fields form))))
+      (djula:render-template* *admin-record* nil
+                              :raw raw
+                              ;; :fields fields
+                              :fields fields/values
+                              ;; :rendered-fields rendered-fields
+                              :rendered-fields rendered-fields/values
+                              :table table
+                              :tables (tables)
+                              :record record)
+      )))
 
 (defgeneric delete-record (table id &key params &allow-other-keys)
   (:documentation "Delete record.
