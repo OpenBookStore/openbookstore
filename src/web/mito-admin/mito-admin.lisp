@@ -72,9 +72,68 @@
 #+(or)
 (class-slot-names 'book)
 
+(defgeneric slot-repr (o slot)
+  (:documentation "String representation of this object slot to be shown on the record view page.
+
+  It is usually the slot name, but in case of related columns, we need to return a string representing this column, instead of the unredeable object representation.
+
+  To render HTML, use `render-slot'.
+
+  Example:
+
+  (slot-value *some-book* 'shelf) ;; => #<SHELF 3 - Littérature>
+
+  but the object representation isn't good for a user-level view page, not considering the fact that the #<…> won't show up in some HTML. What we want is:
+
+  (slot-repr *some-book* 'shelf) ;; => \"Littérature\"
+
+  Specialize methods for your database models like so:
+
+  (defmethod ((obj book) (slot (eql 'field-name)))
+    (when obj
+      (access:accesses obj slot 'related-field-name)))
+
+  Beware: this method is called by `slot-value?', so don't call it here.
+
+  note: we strip the #< and > parts of the object representation for now, let's see in usage.
+ ")
+  (:method (o slot)
+    (when (and o (slot-boundp o slot))
+      (str:replace-using (list "#<" ""
+                               ">" "")
+                         (princ-to-string
+                          (slot-value o slot))))))
+
+(defmethod slot-repr (o (slot (eql 'shelf)))
+  (when o
+    (access:accesses o slot 'name)))
+
+;; or simply use pprint for a class object?!
+(defgeneric object-repr (s)
+  (:documentation "Return a string representation of this object. Specialize to print a user-viewable representation of a table.
+
+  Example:
+
+  (defmethod ((obj shelf))
+    (name obj))")
+  (:method (s)
+    s))
+
+(defmethod object-repr ((obj shelf))
+  (name obj))
+
+#+(or)
+(slot-repr (mito:find-dao 'book :id 109) 'shelf)
+
 (defun slot-value? (o slot)
-  "slot: slot-definition or symbol."
+  "slot: slot-definition object or symbol."
   (cond
+    ((and (symbolp slot)
+          (field-is-related-column slot))
+     (log:info "render column for ~a" slot)
+     (slot-repr o slot))
+     ;; that's just less natural to call:
+     ;; (object-repr (slot-value o slot)))
     ((symbolp slot)
      (when (slot-boundp o slot)
        (slot-value o slot)))
@@ -147,6 +206,11 @@
   (let ((val (or (slot-value? obj slot)
                  "")))
     (short-timestamp val)))
+
+(defmethod render-slot ((obj book) (slot (eql 'shelf)))
+  (let ((val (or (slot-value? obj slot)
+                 "")))
+    (format nil "~a" val val)))
 
 #++
 (render-slot p 'title)
