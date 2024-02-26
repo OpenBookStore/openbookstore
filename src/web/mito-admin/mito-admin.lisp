@@ -59,8 +59,16 @@
 ;; PUBLISHER-ASCII AUTHORS AUTHORS-ASCII SHELF SHELF-ID COVER-URL
 ;; REVIEW)
 ;; so:
-(defun class-direct-slot-names (class-symbol)
-  (mapcar #'slot-name (mopp:class-direct-slots (find-class class-symbol))))
+(defun class-direct-slot-names (class)
+  "class: symbol or class object.
+
+  (class-direct-slot-names (class-of *book*))
+  =
+  (class-direct-slot-names 'book)"
+  (let ((class (if (symbolp class)
+                   (find-class class)
+                   class)))
+    (mapcar #'slot-name (mopp:class-direct-slots class))))
 #+(or)
 (class-slot-names 'book)
 
