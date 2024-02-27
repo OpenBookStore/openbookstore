@@ -6,6 +6,7 @@
 (in-package :openbookstore.models)
 
 (djula:def-filter :render-object-field (obj val)
+  (declare (ignorable obj val))
   (format nil "hello"))
 
 (easy-routes:defroute route-admin-index ("/admin/" :method :get) ()
@@ -105,3 +106,6 @@
   "Show Lisp errors in the browser."
   (setf hunchentoot:*catch-errors-p* (if val-p val t))
   (setf hunchentoot:*show-lisp-errors-p* (if val-p val t)))
+
+#+(or)
+(toggle-devel-profile nil)

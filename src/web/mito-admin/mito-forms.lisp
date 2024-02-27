@@ -199,7 +199,7 @@ but not (or null shelf) ?
 (defun input-field-widget (form field)
   (access:accesses (input-fields form) field :widget))
 #+(or)
-(input-field-widget BOOK-FORM 'review)
+(input-field-widget (make-form 'book) 'review)
 ;; :TEXTAREA
 
 
@@ -306,7 +306,7 @@ but not (or null shelf) ?
 
 ;; We can override an input fields for a form & field name
 ;; by returning HTML.
-(defmethod field-input ((form book-form) (field (eql 'shelf)) &key record)
+(defmethod field-input ((form book-form) (field (eql 'shelf)) &key record errors value)
   (let ((shelves (mito:select-dao field)))
     (log:info record)
     (djula:render-template* *select-input* nil

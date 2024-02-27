@@ -23,7 +23,7 @@
 (defparameter p-class (class-of p))
 ;; or
 (defparameter p-class (find-class 'book))
-#<MITO.DAO.TABLE:DAO-TABLE-CLASS OPENBOOKSTORE.MODELS:BOOK>
+;; #<MITO.DAO.TABLE:DAO-TABLE-CLASS OPENBOOKSTORE.MODELS:BOOK>
 
 ;; The class direct slots.
 (defparameter slots
@@ -54,6 +54,7 @@
 (defun slot-name (slot-definition)
   (sb-mop:slot-definition-name slot-definition))
 
+#+(or)
 (mapcar #'slot-name slots)
 ;; (DATASOURCE DETAILS-URL TITLE TITLE-ASCII ISBN PRICE DATE-PUBLICATION PUBLISHER
 ;; PUBLISHER-ASCII AUTHORS AUTHORS-ASCII SHELF SHELF-ID COVER-URL
@@ -142,6 +143,7 @@
        (when (slot-boundp o name)
          (slot-value o name))))))
 
+#++
 (mapcar (^ (slot) (slot-value? p slot)) slots)
 ;; (NIL NIL "clos introspection" NIL NIL "10k" NIL NIL NIL NIL NIL NIL NIL NIL NIL)
 
@@ -210,7 +212,7 @@
 (defmethod render-slot ((obj book) (slot (eql 'shelf)))
   (let ((val (or (slot-value? obj slot)
                  "")))
-    (format nil "~a" val val)))
+    (format nil "~a" val)))
 
 #++
 (render-slot p 'title)
