@@ -34,9 +34,26 @@
                     (clavier:len :max 200)
                     (clavier:len :min 2))))
 
+#+(or)
+(defparameter *validator* (clavier:||
+                                   (clavier:blank)
+                                   (clavier:&& (clavier:is-a-string)
+                                               (clavier:len :min 10)))
+  "Allow blank. When non blank validate.")
+;; I want to simplify this to:
+;;
+;; (list :allow-blank (clavier:len :min 10))
+;;
+;; see https://github.com/mmontone/clavier/pull/10
+
 (defmethod validators ((obj (eql 'book)))
-  (dict 'isbn (clavier:len :min 10 :max 13)
-        'title (make-instance 'clavier:not-equal-to-validator :object "test")))
+  (dict 'isbn (list :allow-blank
+                    (clavier:len :min 10 :max 13
+                                 ;; :message works with clavier's commit of <2024-02-27>
+                                 ;; :message "an ISBN must be between 10 and 13 characters long"
+                                 ))
+        'title (clavier:~= "test"
+                           "this title is too common, please change it!")))
 
 (defun field-validators (table field)
   ;; f**, access returns NIL,T ??
@@ -44,24 +61,39 @@
    (gethash field (validators table))))
 
 #+test-openbookstore
-(validate-field 'book 'isbn "123")
+(progn
+  ;; Allow blanks:
+  (validate-field 'book 'isbn "")
+  ;; if non blank, validate:
+  (validate-field 'book 'isbn "123")
+  )
+(defun validate-all (validators object)
+  "Run all validators in turn. Return two values: the status (boolean), and a list of messages.
+
+  Allow a keyword validator: :allow-blank. Accepts a blank value. If not blank, validate."
+  ;; I wanted this to be part of clavier, but well.
+  ;; https://github.com/mmontone/clavier/pull/10
+  (let ((messages nil)
+        (valid t))
+    (loop for validator in validators
+          if (and (eql :allow-blank validator)
+                  (equal "" (str:trim object)))
+            return t
+          else
+            do (unless (symbolp validator)
+                 (multiple-value-bind (status message)
+                     (clavier:validate validator object :error-p nil)
+                   (unless status
+                     (setf valid nil))
+                   (when message
+                     (push message messages)))))
+    (values valid
+            (reverse (uiop:ensure-list messages)))))
 
 (defgeneric validate-field (table field val)
   (:documentation "Return two values: T if the field passes validation, a list of messages.")
   (:method (table field val)
-    (let ((validators (field-validators table field))
-          (messages '())
-          (ok t))
-      (loop for validator in validators
-            do (multiple-value-bind (success msg)
-                   (clavier:validate validator val)
-                 (unless success
-                   (setf ok nil)
-                   (push (format nil "~a: ~a"
-                                 (str:downcase field)
-                                 (str:downcase msg))
-                         messages))))
-      (values ok messages))))
+    (validate-all (field-validators table field) val)))
 
 #+test-openbookstore
 (validate-field 'place 'name "rst")
@@ -111,7 +143,7 @@
                  (push (list :name field
                              :html (field-input form field :errors msgs :value value))
                        inputs)))
-      (values ok inputs))))
+      (values ok (reverse inputs)))))
 
 #+(or)
 ;; Must return NIL and the HTML contain a validation error:
