@@ -458,6 +458,14 @@ ok!
 (params-keywords '(("TITLE" . "test")))
 ;; ((:TITLE . "test"))
 
+(defun cleanup-params-keywords (params-keywords)
+  "Remove null values."
+  (loop for (field . val) in params-keywords
+        if (not (null val))
+          collect (cons field val)))
+#+(or)
+(cleanup-params-keywords '((TEST . :yes) (FOO . NIL)))
+;;((TEST . :YES))
 
 (defun field-is-related-column (field)
   "The Mito table-column-type of this field (symbol) is a DB table (listed in our *tables*).
@@ -487,10 +495,15 @@ ok!
         for col = (and slot (mito.class:table-column-type slot))
         for col-obj = nil
         if (find col *tables*)
-          do (setf col-obj (mito:find-dao col :id val))
-             (log:debug "~a is a related column: ~s" field col-obj)
-             (setf (cdr (assoc field params :test #'equal))
-                   col-obj))
+          do (if val
+                 (progn
+                   (setf col-obj (mito:find-dao col :id val))
+                   (log:debug "~a is a related column: ~s" field col-obj)
+                   (setf (cdr (assoc field params :test #'equal))
+                         col-obj))
+                 ;; The shelf value from the form can be NIL and not ""
+                 ;; (use cleanup-params-keywords to avoid).
+                 (log:debug "ignoring field with no value: " field)))
   params)
 
 #+test-openbookstore
@@ -498,6 +511,10 @@ ok!
   ;; => (("TITLE" . "test") ("SHELF" . #<SHELF 1 - Histoire>))
   (assert (not (equal (cdr (assoc "SHELF" params :test #'equal))
                       "1"))))
+
+#+test-openbookstore
+(let ((params (replace-related-objects '(("TITLE" . "test") ("SHELF" . NIL)))))
+  (assert params))
 
 (defun merge-fields-and-params (fields params-alist)
   (loop for field in fields
@@ -556,13 +573,23 @@ ok!
       (cond
         ;; Create object, unless we are editing one.
         ((null record)
-         (handler-case
-             ;; produce:
-             ;; (MAKE-INSTANCE 'BOOK :TITLE "new title")
-             (setf record
-                   (apply #'make-instance model (alexandria:flatten keywords)))
-           (error (c)
-             (push (format nil "~a" c) errors))))
+         (handler-bind
+             ((error (lambda (c)
+                       ;; Return our error when in development mode,
+                       ;; inside handler-bind so we have the full backtrace of what happened
+                       ;; before this point.
+                       (unless *catch-errors*
+                         (error c))
+                       (log:error "create or update record error: " c)
+                       (push (format nil "~a" c) errors))))
+
+           ;; produce:
+           ;; (MAKE-INSTANCE 'BOOK :TITLE "new title")
+           (setf record
+                 (apply #'make-instance model
+                        (alexandria:flatten
+                         (cleanup-params-keywords keywords))))
+           ))
         ;; Update
         (t
          (update-record-with-params record params-symbols-alist)))

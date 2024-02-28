@@ -77,7 +77,7 @@
         (valid t))
     (loop for validator in validators
           if (and (eql :allow-blank validator)
-                  (equal "" (str:trim object)))
+                  (str:blankp object))
             return t
           else
             do (unless (symbolp validator)
