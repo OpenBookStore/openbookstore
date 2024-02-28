@@ -21,9 +21,13 @@
   "Admin index: show our database tables and a simple dashboard."
   (openbookstore.models::render-index))
 
-(easy-routes:defroute route-admin-table ("/admin/:table" :method :get) ()
-  "List this table's records."
-  (render-table (alexandria:symbolicate (str:upcase table))))
+(easy-routes:defroute route-admin-table ("/admin/:table" :method :get)
+    (q (page :parameter-type 'integer) (page-size :parameter-type 'integer))
+  "List this table's records with pagination."
+  (render-table (alexandria:symbolicate (str:upcase table))
+                :search-value q
+                :page page
+                :page-size page-size))
 
 (easy-routes:defroute route-admin-record ("/admin/:table/:id" :method :get) ()
   "Show record."

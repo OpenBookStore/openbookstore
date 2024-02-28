@@ -45,6 +45,10 @@ Openbookstore admin · {{ table }}
   </form>
 </div>
 
+<div style="margin: 1em">
+  {{ pagination-template | safe }}
+</div>
+
 <table class="table is-hoverable">
   <tbody>
 
@@ -95,5 +99,9 @@ Openbookstore admin · {{ table }}
 
   </tbody>
 </table>
+
+<div style="margin: 1em">
+  {{ pagination-template | safe }}
+</div>
 
 {% endblock %}
