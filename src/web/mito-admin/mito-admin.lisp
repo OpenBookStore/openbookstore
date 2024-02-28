@@ -140,6 +140,8 @@
 (defun slot-value? (o slot)
   "slot: slot-definition object or symbol."
   (cond
+    ((null o)
+     (error "slot-value? object should not be null"))
     ((and (symbolp slot)
           (field-is-related-column slot))
      (log:info "render column for ~a" slot)
@@ -151,7 +153,7 @@
        (slot-value o slot)))
     (t
      (let ((name (slot-name slot)))
-       (when (slot-boundp o name)
+       (when (and name (slot-boundp o name))
          (slot-value o name))))))
 
 #++
