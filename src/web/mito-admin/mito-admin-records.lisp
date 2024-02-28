@@ -16,16 +16,24 @@
            ;; (rendered-fields (collect-rendered-slots record)))
            (rendered-fields/values
              (collect-rendered-fields-values record (form-fields form))))
-      (djula:render-template* *admin-record* nil
-                              :raw raw
-                              ;; :fields fields
-                              :fields fields/values
-                              ;; :rendered-fields rendered-fields
-                              :rendered-fields rendered-fields/values
-                              :table table
-                              :tables (tables)
-                              :record record)
-      )))
+
+      ;; Arf… a discovered Djula thingy. To call a function/method on an object,
+      ;; like {{ record.print-record }}
+      ;; we need to set Djula's execute package. It uses cl-user by default.
+      ;; see https://github.com/mmontone/djula/issues/34
+      ;; (let ((djula:*djula-execute-package* :openbookstore.models))
+        (djula:render-template* *admin-record* nil
+                                :raw raw
+                                ;; :fields fields
+                                :fields fields/values
+                                ;; :rendered-fields rendered-fields
+                                :rendered-fields rendered-fields/values
+                                :table table
+                                :tables (tables)
+                                :record record
+                                )
+      ;; )
+        )))
 
 (defgeneric delete-record (table id &key params &allow-other-keys)
   (:documentation "Delete record.

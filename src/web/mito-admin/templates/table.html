@@ -7,7 +7,25 @@ Openbookstore admin · {{ table }}
 
 {% block content %}
 
-<h3 class="title"> {{ table }} </h3>
+
+<div class="columns">
+  <div class="column is-four-fifths">
+    <h3 class="title"> {{ table }} </h3>
+  </div>
+
+  <div class="column"> </div>
+
+  <div class="column">
+    <a class="button is-info is-light"
+        href="/admin/{{ table | lower }}/create"
+        title="create">
+      <span class="icon">
+        <i class="fas fa-plus"></i>
+      </span>
+    </a>
+  </div>
+
+</div>
 
 {% for message in messages %}
 <div class="notification {{ message.class }}">

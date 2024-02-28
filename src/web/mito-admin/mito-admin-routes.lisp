@@ -9,6 +9,14 @@
   (declare (ignorable obj val))
   (format nil "hello"))
 
+;; XXX: this filter shouldn't be needed.
+;; In Djula templates we should be able to call methods like:
+;; {{ record.print-record }}
+;; but… doesn't work? => use *djula-execute-package*
+;; This filter always works.
+(djula:def-filter :print-record (obj)
+  (print-record obj))
+
 (easy-routes:defroute route-admin-index ("/admin/" :method :get) ()
   "Admin index: show our database tables and a simple dashboard."
   (openbookstore.models::render-index))

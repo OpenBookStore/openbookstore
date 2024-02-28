@@ -17,7 +17,7 @@ Openbookstore admin · {{ record }}
   </div>
   {% endfor %}
 
-<form class="form" target="{{ target }}" method="POST">
+<form class="form" action="{{ target }}" method="POST">
 
   {% for input in inputs %}
   {{ input.html | safe }}

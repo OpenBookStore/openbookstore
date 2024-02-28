@@ -2,8 +2,10 @@
 
 {% extends "base.html" %}
 
+<!-- {% set-package :OPENBOOKSTORE.MODELS %} -->
+
 {% block title %}
-Openbookstore admin · {{ record }}
+Openbookstore admin · {{ record.print-record }}
 {% endblock %}
 
 {% block content %}
@@ -12,7 +14,24 @@ Openbookstore admin · {{ record }}
 
 <div class="columns">
   <div class="column is-four-fifths">
-    <h4 class="title"> {{ record }} </h4>
+    <h4 class="title">
+      <!-- This method call works with djula:*djula-execute-package* -->
+      {{ record.print-record }}
+      <!-- A filter always works. -->
+      <!-- {{ record | print-record }} -->
+      <!-- Raw object view. -->
+      <!-- {{ record }} -->
+    </h4>
+  </div>
+
+  <div class="column">
+    <a class="button is-info is-light"
+        href="/admin/{{ table | lower }}/create"
+        title="create">
+      <span class="icon">
+        <i class="fas fa-plus"></i>
+      </span>
+    </a>
   </div>
 
   <div class="column">
