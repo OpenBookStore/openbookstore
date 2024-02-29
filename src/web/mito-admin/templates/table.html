@@ -49,7 +49,7 @@ Openbookstore admin · {{ table }}
   {{ pagination-template | safe }}
 </div>
 
-<table class="table is-hoverable">
+<table class="table is-hoverable is-fullwidth">
   <tbody>
 
     {% if not records %}
@@ -77,23 +77,26 @@ Openbookstore admin · {{ table }}
       </td>
 
       <td>
-        <a class="button" href="/admin/{{ table | lower }}/{{ record.id }}/edit">
-          <span class="icon">
-            <i class="fas fa-edit"></i>
-          </span>
-        </a>
+        <div class="field is-grouped" style="float:right;">
+          <a class="control button" href="/admin/{{ table | lower }}/{{ record.id }}/edit">
+            <span class="icon">
+              <i class="fas fa-edit"></i>
+            </span>
+          </a>
+
+          <div class="control">
+            <form action="/admin/{{table}}/{{ record.id }}/delete" method="POST"
+                onsubmit="return confirm('Are you sure to delete this record?');">
+              <button class="button is-danger" >
+                <span class="icon">
+                  <i class="fas fa-trash"></i>
+                </span>
+              </button>
+            </form>
+          </div>
+        </div>
       </td>
 
-      <td>
-        <form action="/admin/{{table}}/{{ record.id }}/delete" method="POST"
-            onsubmit="return confirm('Are you sure to delete this record?');">
-          <button class="button is-danger" >
-            <span class="icon">
-              <i class="fas fa-trash"></i>
-            </span>
-          </button>
-        </form>
-      </td>
     </tr>
     {% endfor %}
 
