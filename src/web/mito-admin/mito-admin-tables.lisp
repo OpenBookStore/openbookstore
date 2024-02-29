@@ -54,6 +54,19 @@
   (table-records 'book :page 2)
   )
 
+(defun href-format (base &key q)
+  "Return something like: /admin/book/search?q=foo&page=2
+
+  If no search query, no \"search?q\" part."
+  ;; XXX: use a search URL and accessors on the table form.
+  (str:concat base
+              (if (str:non-blank-string-p q)
+                  (format nil "/search?q=~a" q)
+                  "?q=")))
+
+#+test-openbookstore
+(assert (equal (href-format "/admin/book" :q "foo")
+               "/admin/book/search?q=foo"))
 
 (defgeneric render-table (table &key records search-value page page-size) ;; &key (order-by :desc))
   (:method (table &key (records nil records-provided-p)
@@ -67,11 +80,12 @@
                         records
                         (table-records table :page (or page 1)
                                              :page-size (or page-size *page-size*))))
-           (count (mito:count-dao table))
+           (count (if (str:non-blank-string-p search-value)
+                      (count-records table search-value)
+                      (mito:count-dao table)))
            (pagination (cosmo/pagination:make-pagination
-                        :href (format nil "/admin/~a?q=~a"
-                                      (str:downcase table)
-                                      (or search-value ""))
+                        :href (href-format (format nil "/admin/~a" (str:downcase table))
+                                           :q search-value)
                         :page (or page 1)
                         :page-size (or page-size *page-size*)
                         :nb-elements count))

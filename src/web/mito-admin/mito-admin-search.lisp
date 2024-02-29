@@ -55,7 +55,7 @@ to join them with another filter."
 
 ;; You don't imagine the time I needed to figure this out ;) (years ago as a Lisp newcomer, but still)
 
-(defun select-query-by-fields (table q fields)
+(defun select-query-by-fields (table q fields &key offset limit)
   (let* ((order-by '(:desc :id))
          (fields (uiop:ensure-list fields))
          (search-field :name)
@@ -65,7 +65,11 @@ to join them with another filter."
       (sxql:where
        (%join-or
         (%build-sxql-like-query sql-query fields)))
-      (sxql:order-by order-by))))
+      (sxql:order-by order-by)
+      (when limit
+        (sxql:limit limit))
+      (when offset
+        (sxql:offset offset)))))
 #++
 (select-query-by-fields 'book "foo" '(title name))
 ;; (#<BOOK 121 - foo. SHELF: Histoire> #<BOOK 120 - foo. SHELF: NIL>)
@@ -75,15 +79,49 @@ to join them with another filter."
 ;; Searching for books with "lisp" in title should return results.
 (assert (select-query-by-fields 'book "lisp" '(title name)))
 
-(defgeneric search-records (table q)
+(defparameter *page-size* 50) ;TODO: re-use other parameter.
+
+(defgeneric search-records (table q &key page page-size)
   (:documentation "Search records in TABLE by the query Q (string)")
-  (:method (table q)
+  (:method (table q &key page (page-size *page-size*))
     (let* ((order-by '(:desc :id))
            (search-field :name)
            (sql-query (join-query-by-% q))
+           (offset (when page
+                     (* (1- page) page-size)))
            (records nil))
       (print "searching…")
       (setf records
-            (select-query-by-fields table q (search-fields table)))
+            (select-query-by-fields table q (search-fields table)
+                                    :offset offset
+                                    :limit page-size))
       (log:info records)
       records)))
+
+(defun count-query-by-fields (table q fields)
+  "Build our lax search query across those fields, but count the result only."
+  ;; mito:count-dao is too simple, doesn't allow to filter.
+  ;; https://github.com/fukamachi/mito/issues/110
+  (let* ((order-by '(:desc :id))
+         (fields (uiop:ensure-list fields))
+         (sql-query (join-query-by-% q)))
+    (cadr (first
+           ;; result is like ((:|COUNT(*)| 6))
+           (mito:retrieve-by-sql
+            (sxql:select ((:count :*))
+              (sxql:from table)
+              (sxql:where
+               (%join-or
+                (%build-sxql-like-query sql-query fields)))
+              (sxql:order-by order-by)))))))
+#++
+(progn
+  (count-query-by-fields 'book "foo" '(title name))
+  ;; 0 result with an author search??
+  (count-query-by-fields 'book "sofocle" '(title name authors-ascii))
+  )
+
+(defgeneric count-records (table q)
+  (:documentation "Filter results by the query Q and count the number of results.")
+  (:method (table q)
+    (count-query-by-fields table q (search-fields table))))

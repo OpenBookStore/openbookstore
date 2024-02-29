@@ -31,7 +31,11 @@
 
 (easy-routes:defroute route-admin-record ("/admin/:table/:id" :method :get) ()
   "Show record."
-  (render-record (alexandria:symbolicate (str:upcase table)) id))
+  (if (str:blankp id)
+      ;; Happens with /admin/book/
+      ;; we should define a route with regexp and optional trailing /
+      (hunchentoot:redirect (easy-routes:genurl* 'route-admin-table :table table))
+      (render-record (alexandria:symbolicate (str:upcase table)) id)))
 
 (easy-routes:defroute route-admin-record-create ("/admin/:table/create" :method :get) ()
   "Create record: show a form."
@@ -103,13 +107,14 @@
 ;;; section: search
 ;;;
 
-(easy-routes:defroute route-admin-table-search ("/admin/:table/search" :method :get) (q)
+(easy-routes:defroute route-admin-table-search ("/admin/:table/search" :method :get)
+  (q (page :parameter-type 'integer) (page-size :parameter-type 'integer))
   "Search records.
 
   Search on the table or form `search-fields'."
   (log:info "search! " q)
   (let* ((table (alexandria:symbolicate (str:upcase table)))
-         (records (search-records table q)))
+         (records (search-records table q :page (or page 1) :page-size (or page-size *page-size*))))
     (render-table table
                   :records records
                   :search-value q)))
