@@ -646,16 +646,17 @@ Slime reminders:
   (let* ((today (local-time:today))
          ;; OK, so this works but is fragile.
          (slugdate (str:split "-" yearmonth))
+         (year (parse-integer (first slugdate)))
+         (month (parse-integer (second slugdate)))
          (min-date (local-time:encode-timestamp 0 0 0 0 1 ;; first day of month.
-                                                (parse-integer (second slugdate))
-                                                (parse-integer (first slugdate))))
+                                                month
+                                                year))
          ;; (min-date (utils::x-days-ago 30))
          ;; (max-date (local-time:today))
          (max-date (local-time:encode-timestamp 0 0 0 0
-                                                (local-time:days-in-month (parse-integer (second slugdate))
-                                                                          (parse-integer (first slugdate)))
-                                                (parse-integer (second slugdate))
-                                                (parse-integer (first slugdate))))
+                                                (local-time:days-in-month month year)
+                                                month
+                                                year))
          ;; We could have a search function that accepts strings for dates
          ;; (easier for testing).
          (data (models::group-sells-and-soldcards :order :desc
