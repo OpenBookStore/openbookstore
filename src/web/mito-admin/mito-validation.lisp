@@ -1,5 +1,5 @@
 
-(in-package :openbookstore.models)
+(in-package :mito-admin)
 
 ;;;
 ;;; This is were cl-forms seems good at.
@@ -15,9 +15,6 @@
     :formatter #'identity)))
 
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (ql:quickload "clavier"))
-
 #+(or)
 (clavier:not-blank)
 ;; aka (make-instance 'clavier::not-blank-validator)
@@ -29,6 +26,7 @@
   (:method (obj)
     (dict)))
 
+#+openbookstore
 (defmethod validators ((obj (eql 'place)))
   (dict 'name (list (clavier:not-blank)
                     (clavier:len :max 200)
@@ -46,14 +44,15 @@
 ;;
 ;; see https://github.com/mmontone/clavier/pull/10
 
-(defmethod validators ((obj (eql 'book)))
-  (dict 'isbn (list :allow-blank
-                    (clavier:len :min 10 :max 13
-                                 ;; :message works with clavier's commit of <2024-02-27>
-                                 ;; :message "an ISBN must be between 10 and 13 characters long"
-                                 ))
-        'title (clavier:~= "test"
-                           "this title is too common, please change it!")))
+;; moved to demo app:
+;; (defmethod mito-admin::validators ((obj (eql 'book)))
+;;   (dict 'isbn (list :allow-blank
+;;                     (clavier:len :min 10 :max 13
+;;                                  ;; :message works with clavier's commit of <2024-02-27>
+;;                                  ;; :message "an ISBN must be between 10 and 13 characters long"
+;;                                  ))
+;;         'title (clavier:~= "test"
+;;                            "this title is too common, please change it!")))
 
 (defun field-validators (table field)
   ;; f**, access returns NIL,T ??

@@ -1,5 +1,5 @@
 
-(in-package :openbookstore.models)
+(in-package :mito-admin)
 
 (defun join-query-by-% (q)
   "Intersect \"%\" signs in the search query (string)

@@ -2,10 +2,13 @@
 
 {% extends "base.html" %}
 
-<!-- {% set-package :OPENBOOKSTORE.MODELS %} -->
+<!-- This would set the Djula package for all templates.
+     So far we use (let ((djula:*djula-execute-package*)) … render-template* ) -->
+<!-- {% set-package "openbookstore.models" %} -->
+<!-- {% set-package "mito-admin" %} -->
 
 {% block title %}
-Openbookstore admin · {{ record.print-record }}
+mito-admin · {{ record.print-record }}
 {% endblock %}
 
 {% block content %}
@@ -56,12 +59,13 @@ Openbookstore admin · {{ record.print-record }}
 </div>
 
 
-<!-- {% if raw %} -->
-<!-- <pre> -->
-<!--   {{ raw }} -->
-<!-- </pre> -->
-<!-- {% endif %} -->
+{% if debug and raw %}
+<pre>
+{{ raw }}
+</pre>
+{% endif %}
 
+slots:
 
 <table class="table is-hoverable">
   <tbody>
@@ -80,7 +84,7 @@ Openbookstore admin · {{ record.print-record }}
   </tbody>
 </table>
 
-With rendered slots:
+Rendered slots:
 
 <table class="table is-hoverable">
   <tbody>

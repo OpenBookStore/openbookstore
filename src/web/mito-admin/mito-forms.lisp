@@ -1,5 +1,5 @@
 
-(in-package :openbookstore.models)
+(in-package :mito-admin)
 
 
 #|
@@ -66,6 +66,7 @@ but not (or null shelf) ?
   ((model
     :initarg :model
     :initform nil
+    :accessor form-model
     :documentation "Class table symbol. Eg: 'book")
    (fields
     :initarg :fields
@@ -105,20 +106,23 @@ but not (or null shelf) ?
     :accessor validators
     :documentation "Hash-table: key (field symbol) to a validator function.")))
 
+#+openbookstore
 (defclass book-form (form)
   ())
 
+#+openbookstore
 (defclass place-form (form)
   ())
 
 ;; => automatically create a <table>-form class for all tables.
 
+#+openbookstore
 (defparameter book-form (make-instance 'book-form :model 'book))
 
 
-(defparameter *select-input* (djula:compile-template* "mito-admin/templates/includes/select.html"))
+(defparameter *template-select-input* (djula:compile-template* "includes/select.html"))
 
-(defparameter *admin-create-record* (djula:compile-template* "mito-admin/templates/create_or_edit.html"))
+(defparameter *template-admin-create-record* (djula:compile-template* "create_or_edit.html"))
 
 (defmethod initialize-instance :after ((obj form) &key)
   "Populate fields from the class name."
@@ -131,8 +135,14 @@ but not (or null shelf) ?
             ;;(mito.class:table-column-type (mito.class:find-slot-by-name 'book 'shelf-id))
             ;; SHELF
             ;; => it's a table, so exclude shelf-id.
-            (class-direct-slot-names model)))))
+            (mito-admin::class-direct-slot-names model)))))
 
+(defgeneric exclude-fields (obj)
+  (:documentation "Return a list of fields (symbols) to exclude from the form. This method can be overriden. See also the form object :exclude-fields slot.")
+  (:method (obj)
+    (list)))
+
+#+openbookstore
 (defmethod exclude-fields (book-form)
   "Return a list of field names (symbols) to exclude from the creation form."
   '(title-ascii
@@ -150,9 +160,11 @@ but not (or null shelf) ?
 (defmethod search-fields (table)
   '(title name))
 
+#+openbookstore
 (defmethod search-fields ((form book-form))
   '(title))
 
+#+openbookstore
 (defmethod search-fields ((table (eql 'book)))
   '(title authors-ascii))
 
@@ -190,6 +202,7 @@ but not (or null shelf) ?
   (declare (ignorable it))
   (print "ok!"))
 
+#+openbookstore
 (defmethod input-fields ((form book-form))
   ;; Here we don't use another class to not bother with special :widget slots and a metaclass…
   (dict 'review (list :widget :textarea :validator #'validate-ok)
@@ -219,7 +232,7 @@ but not (or null shelf) ?
       (:select
           (let ((objects (mito:select-dao field)))
             (log:info "caution: we expect ~a objects to have an ID and a NAME field" field)
-            (djula:render-template* *select-input* nil
+            (djula:render-template* *template-select-input* nil
                                     :name (or name field)
                                     :options objects
                                     :record record
@@ -271,9 +284,9 @@ but not (or null shelf) ?
   (:method (form field &key record errors value)
     (declare (ignorable form))
     (cond
-      ((field-is-related-column field)
+      ((field-is-related-column (form-model form) field)
        (log:info "render column for ~a" field)
-       (render-widget form (field-is-related-column field) :select
+       (render-widget form (field-is-related-column (form-model form) field) :select
                       :name field
                       :record record))
       ((not (null (input-field-widget form field)))
@@ -306,10 +319,11 @@ but not (or null shelf) ?
 
 ;; We can override an input fields for a form & field name
 ;; by returning HTML.
+#+openbookstore
 (defmethod field-input ((form book-form) (field (eql 'shelf)) &key record errors value)
   (let ((shelves (mito:select-dao field)))
     (log:info record)
-    (djula:render-template* *select-input* nil
+    (djula:render-template* *template-select-input* nil
                             :name field
                             :options shelves
                             :selected-option-id (ignore-errors
@@ -327,6 +341,8 @@ but not (or null shelf) ?
 
 (defun make-form (table)
   "From this table name, return a new form."
+  ;; XXX: here, if the class <db model>-form (shelf-form) doesn't exist why not define
+  ;; and create it?
   (make-instance (alexandria:symbolicate (str:upcase table) "-" 'form)
                  :model (alexandria:symbolicate (str:upcase table))))
 
@@ -388,7 +404,7 @@ but not (or null shelf) ?
            (fields (form-fields form))
            (inputs (collect-slot-inputs form fields)))
       (log:info form (form-target form))
-      (djula:render-template* *admin-create-record* nil
+      (djula:render-template* *template-admin-create-record* nil
                               :form form
                               :target (form-target form)
                               :fields fields
@@ -467,21 +483,33 @@ ok!
 (cleanup-params-keywords '((TEST . :yes) (FOO . NIL)))
 ;;((TEST . :YES))
 
-(defun field-is-related-column (field)
+(defun field-is-related-column (model field)
   "The Mito table-column-type of this field (symbol) is a DB table (listed in our *tables*).
 
   Return: field symbol or nil."
-  (let* ((slot (mito.class:find-slot-by-name 'book (alexandria:symbolicate (str:upcase field))))
+  ;; (let* ((slot (mito.class:find-slot-by-name 'book (alexandria:symbolicate (str:upcase field))))
+  (let* ((slot (mito.class:find-slot-by-name model (alexandria:symbolicate (str:upcase field))))
          (column-type (and slot (mito.class:table-column-type slot))))
+    (log:info slot column-type (tables))
     (find column-type (tables))))
 #++
-(field-is-related-column 'shelf)
+(field-is-related-column 'book 'shelf)
 ;; SHELF
 #++
-(field-is-related-column 'title)
+(assert
+ ;; TODO: this was working with all symbols in the same package.
+ ;; (alexandria:symbolicate 'cosmo-admin-demo::book)
+ ;; => BOOK => we loose the package prefix.
+ ;; but… the book creation form loads correctly O_o
+ ;; Same for str:upcase.
+ (equal
+  (field-is-related-column 'cosmo-admin-demo::book 'cosmo-admin-demo::shelf)
+  'SHELF))
+#++
+(field-is-related-column 'book 'title)
 ;; NIL
 
-(defun replace-related-objects (params)
+(defun replace-related-objects (table params)
   "If a parameter is a related column, find the object by its ID and put it in the PARAMS alist.
   Change the alist in place.
 
@@ -491,29 +519,42 @@ ok!
 
   Return: params, modified."
   (loop for (field . val) in params
-        for slot = (mito.class:find-slot-by-name 'book (alexandria:symbolicate (str:upcase field)))
+        ;; for slot = (mito.class:find-slot-by-name 'book (alexandria:symbolicate (str:upcase field)))
+        for slot = (mito.class:find-slot-by-name table (alexandria:symbolicate (str:upcase field)))
         for col = (and slot (mito.class:table-column-type slot))
         for col-obj = nil
-        if (find col *tables*)
+        if (find col (tables))
           do (if val
                  (progn
                    (setf col-obj (mito:find-dao col :id val))
-                   (log:debug "~a is a related column: ~s" field col-obj)
-                   (setf (cdr (assoc field params :test #'equal))
-                         col-obj))
+                   (log:info "~a is a related column with value: ~s" field col-obj)
+                   (if col-obj
+                       (setf (cdr (assoc field params :test #'equal))
+                             col-obj)
+                       ;; when col-obj is NIL, remove field from list.
+                       ;; Otherwise Mito tries to get the ID of an empty string.
+                       (progn
+                         (log:info "delete param ~a from the params list: it is a related object with no value." field)
+                         (setf params (remove field params :test #'equal :key #'car)))))
                  ;; The shelf value from the form can be NIL and not ""
                  ;; (use cleanup-params-keywords to avoid).
-                 (log:debug "ignoring field with no value: " field)))
+                 (progn
+                   (log:info "~a is NOT a related column: ~s" field col-obj)
+                   (log:info "ignoring field with no value: " field)))
+        else
+          do
+             (log:info "ignoring column ~a, not found in (tables)" col))
   params)
 
+;TODO: test again with cosmo-admin-demo
 #+test-openbookstore
-(let ((params (replace-related-objects '(("TITLE" . "test") ("SHELF" . "1")))))
+(let ((params (replace-related-objects 'book '(("TITLE" . "test") ("SHELF" . "1")))))
   ;; => (("TITLE" . "test") ("SHELF" . #<SHELF 1 - Histoire>))
   (assert (not (equal (cdr (assoc "SHELF" params :test #'equal))
                       "1"))))
 
 #+test-openbookstore
-(let ((params (replace-related-objects '(("TITLE" . "test") ("SHELF" . NIL)))))
+(let ((params (replace-related-objects 'book '(("TITLE" . "test") ("SHELF" . NIL)))))
   (assert params))
 
 (defun merge-fields-and-params (fields params-alist)
@@ -532,7 +573,7 @@ ok!
     Return a hash-table to tell the route what to do: render a template or redirect.")
   (:method (table &key params record &allow-other-keys)
     (log:info params)
-    (setf params (replace-related-objects params))
+    (setf params (replace-related-objects table params))
     (log:info "params with relations: ~a" params)
 
     (let* ((form (make-form table))
@@ -556,7 +597,7 @@ ok!
           (return-from save-record
             (dict
              :status :error
-             :render (list *admin-create-record* nil
+             :render (list *template-admin-create-record* nil
                            ;; errors:
                            ;; :errors errors
                            :errors (list "Invalid form. Please fix the errors below.")
@@ -599,7 +640,7 @@ ok!
           (dict
            :status :error
            ;; list of keys to call djula:render-template*
-           :render (list *admin-create-record* nil
+           :render (list *template-admin-create-record* nil
                          ;; errors:
                          :form-errors errors
                          :form form
@@ -628,7 +669,7 @@ ok!
         (return-from save-record
           (dict
            :status :error
-           :render (list *admin-create-record* nil
+           :render (list *template-admin-create-record* nil
                          ;; errors:
                          :errors errors
                          :form form
@@ -699,7 +740,7 @@ Works:
            (record (mito:find-dao table :id id))
            (inputs (collect-slot-inputs form fields :record record)))
       (log:info form (form-target form))
-      (djula:render-template* *admin-create-record* nil
+      (djula:render-template* *template-admin-create-record* nil
                               :form form
                               :target (edit-form-target form id)
                               :fields fields

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,16 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bulma, Buefy -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
-
-
-    <script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
-    <!-- Icons for default Buefy theme -->
-    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/5.3.45/css/materialdesignicons.min.css">
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
 
     <!-- Notiflix: cool notification -->
     <script defer src="https://cdn.jsdelivr.net/npm/notiflix@2.1.3/dist/AIO/notiflix-aio-2.1.3.min.js"></script>
@@ -25,95 +16,146 @@
     <!-- <script src="https://unpkg.com/htmx.org@1.3.3"></script> -->
     <script src="https://unpkg.com/htmx.org@1.8.0" integrity="sha384-cZuAZ+ZbwkNRnrKi05G/fjBX+azI9DNOkNYysZ0I/X5ZFgsmMiBXgDZof30F5ofc" crossorigin="anonymous"></script>
     <!-- WebSocket extension -->
-    <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
+    <!-- <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script> -->
 
     <!-- stylo editor -->
-    <script type="module" src="https://unpkg.com/@papyrs/stylo@latest/dist/stylo/stylo.esm.js"></script>
+    <!-- <script type="module" src="https://unpkg.com/@papyrs/stylo@latest/dist/stylo/stylo.esm.js"></script> -->
 
     <!-- Other JS and UI helpers -->
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
     <!-- The app JS (global. More JS can be loaded per page) -->
-    <script defer src="/static/openbookstore.js"></script>
+    <script defer src="/static/mito-admin.js"></script>
 
     <!-- The app CSS -->
     <!-- <link rel="stylesheet" type="text/css" href="/static/css/admin.css"> -->
 
-    <title>{% block title %} OpenBookStore Admin dashboard {% endblock %}</title>
+    <title>{% block title %} Admin dashboard {% endblock %}</title>
   </head>
 
   <body>
     <!-- START NAV -->
-    <nav class="navbar is-white">
+    <nav class="navbar">
       <div class="container">
+
         <div class="navbar-brand">
-          <a class="navbar-item brand-text" href="/"> OpenBookStore </a>
+          <a class="navbar-item brand-text" href="/admin/"> admin </a>
           <div class="navbar-burger burger" data-target="navMenu">
             <span></span>
             <span></span>
             <span></span>
           </div>
         </div>
+
         <div id="navMenu" class="navbar-menu">
           <div class="navbar-start">
             <a class="navbar-item" href="/">
-              <div class="navbar-item has-dropdown is-hoverable">
+              <div class="navbar-item has-dropdown is-hoverable navbar-menu">
                 <a class="navbar-link">
                   Database
                 </a>
+
+                <div class="navbar-dropdown is-right">
+                  <a class="navbar-item">
+                    Quick Action
+                  </a>
+                </div>
+
               </div>
             </a>
 
             <div id ="quick-search" class="navbar-item field">
               <p class="control has-icons-right">
-                  <b-autocomplete placeholder="ISBN or Keywords..."
-                                  v-model="name"
-                                  field="title"
-                                  :data ="data"
-                                  :loading="isFetching"
-                                  @typing="getAsyncData"
-                                  @select="option => itemSelected(option)"
-                  ><template slot-scope="props">{$ {{ props.option.title }} $}</template>
-                  </b-autocomplete>
+                <b-autocomplete placeholder="ISBN or Keywords..."
+                    v-model="name"
+                    field="title"
+                    :data ="data"
+                    :loading="isFetching"
+                    @typing="getAsyncData"
+                    @select="option => itemSelected(option)"
+                ><template slot-scope="props">{$ {{ props.option.title }} $}</template>
+                </b-autocomplete>
                 <span class="icon is-small is-right">
                 </span>
               </p>
             </div>
-
           </div>
         </div>
 
+
+
         <div class="navbar-end" >
-          <div class="navbar-item" >
-            {% if current-user %}
-            <div class="dropdown is-hoverable">
-              <div class="dropdown-trigger" >
-                <button class="button" aria-haspopup="true" aria-controls="profile-dropdown" >
-                  <span class="icon is-small" >
-                    <i class="fas fa-user" aria-hidden="true"></i>
+
+          <div class="navbar-item has-dropdown is-hoverable navbar-menu" data-target="navMenu">
+            <a class="navbar-link is-arrowless">
+              <span class="icon">
+                <i class="fas fa-lg fa-sun" aria-hidden="true"></i>
+              </span>
+            </a>
+
+            <div class="navbar-dropdown is-right">
+
+              <a class="navbar-item">
+                <button data-scheme="light" class="bd-nav-item is-sun" aria-label="Light mode"
+                    onclick="setTheme('light')">
+                  <span class="icon">
+                    <i class="fas fa-sun" aria-hidden="true"></i>
                   </span>
-                  <span>{{ current-user | user-name }}</span>
+                  <span>Light</span>
                 </button>
-              </div>
-              <div class="dropdown-menu" role="menu" id="profile-dropdown">
-                <div class="dropdown-content" >
-                  <div class="dropdown-item" >
-                    <form action="/logout" method="POST" >
-                      <button class="button is-light">Logout</button>
-                    </form>
+              </a>
+
+              <a class="navbar-item">
+                <button data-scheme="dark" class="bd-nav-item is-moon" aria-label="Dark mode"
+                    onclick="setTheme('dark')">
+                  <span class="icon">
+                    <i class="fas fa-moon" aria-hidden="true"></i>
+                  </span>
+                  <span> Dark </span>
+                </button>
+              </a>
+
+              <a class="navbar-item">
+                <button data-scheme="system" class="bd-nav-item is-system" aria-label="System mode"
+                    onclick="setTheme('system')">
+                  <span class="icon">
+                    <i class="fas fa-desktop" aria-hidden="true"></i>
+                  </span>
+                  <span> System </span>
+                </button>
+              </a>
+
+            </div>
+
+            <div class="navbar-item" >
+              {% if current-user %}
+              <div class="dropdown is-hoverable">
+                <div class="dropdown-trigger" >
+                  <button class="button" aria-haspopup="true" aria-controls="profile-dropdown" >
+                    <span class="icon is-small" >
+                      <i class="fas fa-user" aria-hidden="true"></i>
+                    </span>
+                    <span>{{ current-user | user-name }}</span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" role="menu" id="profile-dropdown">
+                  <div class="dropdown-content" >
+                    <div class="dropdown-item" >
+                      <form action="/logout" method="POST" >
+                        <button class="button is-light">Logout</button>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </div>
+              {% else %}
+              <form action="/login" >
+                <input name="referer-route" type="hidden" value="{{ request-uri }}"/>
+                <button class="button is-light" >Login</button>
+              </form>
+              {% endif %}
             </div>
-            {% else %}
-            <form action="/login" >
-              <input name="referer-route" type="hidden" value="{{ request-uri }}"/>
-              <button class="button is-light" >Login</button>
-            </form>
-            {% endif %}
           </div>
-        </div>
     </nav>
     <!-- END NAV -->
 
@@ -152,7 +194,7 @@
     <footer class="footer" style="margin-top: 15em">
       <div class="content has-text-centered">
         <p>
-          <strong>OpenBookStore</strong> version <a href="#"> 0.01</a>. The <a href="https://github.com/OpenBookStore/openbookstore"> source code </a> is licensed under the GPLv3. <a href="https://github.com/sponsors/vindarel/"> We need your support! </a>
+          <strong> mito-admin </strong> version <a href="#"> 0.01</a>. The <a href="#"> source code </a> is licensed under the GPLv3. <a href="https://github.com/sponsors/vindarel/"> We need your support! </a>
         </p>
       </div>
     </footer>
@@ -169,5 +211,121 @@
         menu.classList.toggle('is-active');
       });
     })();
+
+
+    // Straight from Bulma website:
+    // (we could clean up some CSS classes: bd- etc)
+
+    // THEMES
+    const STORAGE_KEY = "bulma-theme";
+    const SYSTEM_THEME = "system";
+    // const DEFAULT_THEME = "light";
+    const DEFAULT_THEME = "dark";
+
+    const state = {
+      chosenTheme: SYSTEM_THEME, // light|dark|system
+      appliedTheme: DEFAULT_THEME, // light|dark
+      OSTheme: null, // light|dark|null
+    };
+
+    const $themeCycle = document.getElementById("js-cycle");
+    const $themeSwitchers = document.querySelectorAll(".js-themes button");
+    const $darkmodes = document.querySelectorAll(".js-darkmode");
+
+    const updateThemeUI = () => {
+      if (state.appliedTheme === "light") {
+        $themeCycle.className = "bd-cycle js-burger is-sun";
+      } else {
+        $themeCycle.className = "bd-cycle js-burger is-moon";
+      }
+
+      $themeSwitchers.forEach((el) => {
+        const swatchTheme = el.dataset.scheme;
+
+        if (state.chosenTheme === swatchTheme) {
+          el.classList.add("is-active");
+        } else {
+          el.classList.remove("is-active");
+        }
+      });
+    };
+
+    const setTheme = (theme, save = true) => {
+      state.chosenTheme = theme;
+      state.appliedTheme = theme;
+
+      if (theme === SYSTEM_THEME) {
+        state.appliedTheme = state.OSTheme;
+        document.documentElement.removeAttribute("data-theme");
+        window.localStorage.removeItem(STORAGE_KEY);
+      } else {
+        document.documentElement.setAttribute("data-theme", theme);
+
+        if (save) {
+          window.localStorage.setItem(STORAGE_KEY, theme);
+        }
+      }
+
+      updateThemeUI();
+    };
+
+    const toggleTheme = () => {
+      if (state.appliedTheme === "light") {
+        setTheme("dark");
+      } else {
+        setTheme("light");
+      }
+    };
+
+    const detectOSTheme = () => {
+      if (!window.matchMedia) {
+        // matchMedia method not supported
+        return DEFAULT_THEME;
+      }
+
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        // OS theme setting detected as dark
+        return "dark";
+      } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+        return "light";
+      }
+
+      return DEFAULT_THEME;
+    };
+
+    // On load, check if any preference was saved
+    const localTheme = window.localStorage.getItem(STORAGE_KEY);
+    state.OSTheme = detectOSTheme();
+
+    if (localTheme) {
+      setTheme(localTheme, false);
+    } else {
+      setTheme(SYSTEM_THEME);
+    }
+
+    // Event listeners
+    $themeSwitchers.forEach((el) => {
+      el.addEventListener("click", () => {
+        const theme = el.dataset.scheme;
+        setTheme(theme);
+      });
+    });
+
+    $darkmodes.forEach((el) => {
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggleTheme();
+      });
+    });
+
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (event) => {
+        const theme = event.matches ? "dark" : "light";
+        state.OSTheme = theme;
+        setTheme(theme);
+      });
+
+
   </script>
 </html>

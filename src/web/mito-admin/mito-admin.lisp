@@ -1,4 +1,13 @@
-(IN-PACKAGE :openbookstore.models)
+(in-package :mito-admin)
+
+(defparameter *app-package* *package*
+  "The app package name.
+
+  It is necessary to register our app package, because many functions and methods manipulate symbols: in /admin/:table/:id, table is turned to the 'BOOK symbol, and this symbol exists in the application, not in mito-admin where the route is defined.")
+
+(defun register-app (name)
+  ;; We then use find-package.
+  (setf *app-package* name))
 
 ;; A class.
 ;; book
@@ -17,15 +26,19 @@
 ;;     :col-type (or :null shelf)
 
 ;; An object.
+#+openbookstore
 (defparameter p (make-instance 'book :title "clos introspection" :price "10k"))
 
 ;; The object's class.
+#+openbookstore
 (defparameter p-class (class-of p))
 ;; or
+#+openbookstore
 (defparameter p-class (find-class 'book))
 ;; #<MITO.DAO.TABLE:DAO-TABLE-CLASS OPENBOOKSTORE.MODELS:BOOK>
 
 ;; The class direct slots.
+#+openbookstore
 (defparameter slots
   (closer-mop:class-slots p-class))  ;; all slots, not only direct ones.
 ;; (#<SB-MOP:STANDARD-EFFECTIVE-SLOT-DEFINITION MITO.DAO.MIXIN::CREATED-AT>
@@ -48,6 +61,7 @@
 ;;  #<MITO.DAO.COLUMN:DAO-TABLE-COLUMN-CLASS OPENBOOKSTORE.MODELS:COVER-URL>
 ;;  #<MITO.DAO.COLUMN:DAO-TABLE-COLUMN-CLASS OPENBOOKSTORE.MODELS::REVIEW>)
 
+#+openbookstore
 (defparameter slots *)
 
 ;; Get slot values.
@@ -59,6 +73,7 @@
 ;; (DATASOURCE DETAILS-URL TITLE TITLE-ASCII ISBN PRICE DATE-PUBLICATION PUBLISHER
 ;; PUBLISHER-ASCII AUTHORS AUTHORS-ASCII SHELF SHELF-ID COVER-URL
 ;; REVIEW)
+
 ;; so:
 (defun class-direct-slot-names (class)
   "class: symbol or class object.
@@ -73,6 +88,7 @@
 #+(or)
 (class-slot-names 'book)
 
+(export 'print-record)
 (defgeneric print-record (o)
   (:documentation "Pretty print this record for end-users. Used everywhere in the admin: list of search results, the view page, etc.
 
@@ -83,15 +99,18 @@
   (:method (o)
     (princ-to-string o)))
 
+#+openbookstore
 (defmethod print-record ((o book))
   (or (title o)
       ;; and… just in case.
       (princ-to-string o)))
 
+#+openbookstore
 (defmethod print-record ((o place))
   (or (name o)
       (princ-to-string o)))
 
+#+openbookstore
 (defmethod print-record ((o shelf))
   (name o))
 
@@ -127,6 +146,7 @@
                          (princ-to-string
                           (slot-value o slot))))))
 
+#+openbookstore
 (defmethod print-slot (o (slot (eql 'shelf)))
   (when o
     (access:accesses o slot 'name)))
@@ -138,23 +158,38 @@
 (print-slot (mito:find-dao 'book :id 109) 'shelf)
 
 (defun slot-value? (o slot)
-  "slot: slot-definition object or symbol."
+  "o : class symbol or Mito record.
+  slot: slot-definition symbol or object (MOP)."
+  ;; (log:info *package* o slot (slot-value o slot))
+  ;; (log:info o)  ;; silly. Without it we won't get the shelf.
+  ;; (describe o)
   (cond
     ((null o)
      (error "slot-value? object should not be null"))
     ((and (symbolp slot)
-          (field-is-related-column slot))
+          ;; (symbolp o) ;; I saw this called with a Mito object. Correct?
+          (field-is-related-column (if (symbolp o)
+                                       o
+                                       (type-of o)) ;; if book record, get 'book symbol.
+                                   slot))
      (log:info "render column for ~a" slot)
      (print-slot o slot))
-     ;; that's just less natural to call:
-     ;; (print-record (slot-value o slot)))
-    ((symbolp slot)
-     (when (slot-boundp o slot)
-       (slot-value o slot)))
-    (t
+    ;; that's just less natural to call:
+    ;; (print-record (slot-value o slot)))
+    ((and (symbolp slot)
+          (slot-boundp o slot))
+     (log:info "slot ~a is bound in ~a" slot o)
+     (slot-value o slot))
+    ((not (symbolp slot))
      (let ((name (slot-name slot)))
+       (log:info "last case: slot-boundp avec " o slot name)
        (when (and name (slot-boundp o name))
-         (slot-value o name))))))
+         (slot-value o name))))
+    (t
+     (error "slot-value? doesn't know how to deal with object ~a of type ~a and the slot ~a of type ~a" o (type-of o) slot (type-of slot)))))
+
+#++
+(slot-value? COSMO-ADMIN-DEMO::COOKBOOK 'COSMO-ADMIN-DEMO::shelf)
 
 #++
 (mapcar (^ (slot) (slot-value? p slot)) slots)
@@ -197,35 +232,35 @@
   (:method (object slot)
     (format nil " <div>~a</div>" (slot-value? object slot))))
 
-(defmethod render-slot ((obj book) (slot (eql 'title)))
-  (format nil "<div> ~a </div>"
-          (if (slot-boundp obj slot)
-              (slot-value obj slot)
-              "")))
+;; (defmethod render-slot ((obj book) (slot (eql 'title)))
+;;   (format nil "<div> ~a </div>"
+;;           (if (slot-boundp obj slot)
+;;               (slot-value obj slot)
+;;               "")))
 
-(defmethod render-slot ((obj book) (slot (eql 'cover-url)))
-  (let ((val (or (slot-value? obj slot)
-                 "")))
-    (format nil "<a href=\"~a\"> ~a </a>" val val)))
+;; (defmethod render-slot ((obj book) (slot (eql 'cover-url)))
+;;   (let ((val (or (slot-value? obj slot)
+;;                  "")))
+;;     (format nil "<a href=\"~a\"> ~a </a>" val val)))
 
-(defun short-timestamp (date)
-  (local-time:format-timestring
-     nil date :format '(:year "/" (:month 2) "/" (:day 2) " " (:hour 2) ":" (:min 2))))
+;; (defun short-timestamp (date)
+;;   (local-time:format-timestring
+;;      nil date :format '(:year "/" (:month 2) "/" (:day 2) " " (:hour 2) ":" (:min 2))))
 
-(defmethod render-slot ((obj book) (slot (eql 'mito.dao.mixin::created-at)))
-  (let ((val (or (slot-value? obj slot)
-                 "")))
-    (short-timestamp val)))
+;; (defmethod render-slot ((obj book) (slot (eql 'mito.dao.mixin::created-at)))
+;;   (let ((val (or (slot-value? obj slot)
+;;                  "")))
+;;     (short-timestamp val)))
 
-(defmethod render-slot ((obj book) (slot (eql 'mito.dao.mixin::updated-at)))
-  (let ((val (or (slot-value? obj slot)
-                 "")))
-    (short-timestamp val)))
+;; (defmethod render-slot ((obj book) (slot (eql 'mito.dao.mixin::updated-at)))
+;;   (let ((val (or (slot-value? obj slot)
+;;                  "")))
+;;     (short-timestamp val)))
 
-(defmethod render-slot ((obj book) (slot (eql 'shelf)))
-  (let ((val (or (slot-value? obj slot)
-                 "")))
-    (format nil "~a" val)))
+;; (defmethod render-slot ((obj book) (slot (eql 'shelf)))
+;;   (let ((val (or (slot-value? obj slot)
+;;                  "")))
+;;     (format nil "~a" val)))
 
 #++
 (render-slot p 'title)
@@ -242,6 +277,7 @@
 
 (defun collect-rendered-fields-values (o fields)
   "Similar as `collect-fields-values', but renders the HTML of fields with `render-slot'."
+  (log:info "package " *package*)
   (loop for field in fields
         collect (list :name field
                       :html (render-slot o field))))

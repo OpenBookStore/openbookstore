@@ -1,20 +1,24 @@
 
-(in-package :openbookstore.models)
+(in-package :mito-admin)
 
 ;; We have Mito *tables*
 ;; (BOOK PLACE PLACE-COPIES CONTACT CONTACT-COPIES BASKET BASKET-COPIES USER ROLE USER-ROLE ROLE-COPY SELL SOLD-CARDS SHELF PAYMENT-METHOD)
 
 (djula:add-template-directory
- (asdf:system-relative-pathname "openbookstore" "src/web/"))
+ (print (asdf:system-relative-pathname "mito-admin" "templates/")))
 
-(defparameter *admin-index* (djula:compile-template* "mito-admin/templates/index.html"))
-(defparameter *admin-table* (djula:compile-template* "mito-admin/templates/table.html"))
+(defparameter *admin-index* (djula:compile-template* "index.html"))
+(defparameter *admin-table* (djula:compile-template* "table.html"))
 
 ;;; We might want a admin-page class and instances, to set parameters:
 ;;; - show the search input on the table view?
 ;;; - action buttons (to do)
 ;;; - more settings.
 
+(defparameter *tables* '(user)
+  "List of tables names to include in the admin dashboard. Override with the TABLES method.")
+
+;; Specialize for an admin app?
 (defgeneric tables ()
   (:method ()
     *tables*))
@@ -39,10 +43,9 @@
 (defparameter *page-size* 50
   "Default page size when listing records.")
 
-(defun table-records (table q &key (page 1) (page-size *page-size*))
+(defun table-records (table &key (page 1) (page-size *page-size*))
   (let ((offset (* (1- page) page-size)))
     (mito:select-dao table
-      ;; (if (str:non-blank-string-p q))
       (sxql:order-by (:desc :created-at))
       (sxql:limit page-size)
       (sxql:offset offset))))
@@ -89,12 +92,14 @@
                         :page (or page 1)
                         :page-size (or page-size *page-size*)
                         :nb-elements count))
-           (messages (bookshops.messages:get-message/status)))
+           ;; XXX: add our message utility.
+           ;; (messages (bookshops.messages:get-message/status))
+           )
 
-      (log:info messages pagination)
+      ;; (log:info messages pagination)
 
       (djula:render-template* *admin-table* nil
-                              :messages messages
+                              ;; :messages messages
                               :table table
                               :search-value search-value
                               :tables (tables)
