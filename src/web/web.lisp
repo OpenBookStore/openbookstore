@@ -42,7 +42,9 @@ Slime reminders:
 (djula:def-filter :price (val)
   "Price is an integer, divide by 100 to get its value.
   Return as a string, number printed with 2 decimals."
-  (format nil "~,2F" (/ val 100)))
+  (if (str:non-blank-string-p val)
+      (format nil "~,2F" (/ val 100))
+      ""))
 
 (defun card-url (card)
   "Create a full URL to uniquely identify this card."
