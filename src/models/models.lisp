@@ -529,8 +529,9 @@ searches. This method was thought the most portable.
     book))
 
 (defun create-book (&rest initargs)
-  "Create a book and save it. CAUTION: you must provide title-ascii and authors-ascii.
-  Or use make-book and save-book."
+  "Create a book and save it.
+
+  CAUTION: you must provide title-ascii and authors-ascii. Or use make-book and save-book that will infer them."
   (unless (member :title-ascii initargs)
     (warn "create-book: you probably forgot to give title-ascii."))
   (unless (member :authors-ascii initargs)
@@ -554,7 +555,9 @@ searches. This method was thought the most portable.
             new)))))
 
 (defun find-by (key val)
-  "Find a book by slot. Example: (find-by :isbn xxx). Return only the first matching result."
+  "Find a book by slot.
+
+  Example: (find-by :isbn xxx). Return only the first matching result."
   (when val
     (mito:find-dao 'book key val)))
 
